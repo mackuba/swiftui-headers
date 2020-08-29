@@ -13,6 +13,7 @@ import os.signpost
 
 /// The kind of an Accessibility action. Includes name information for custom
 /// actions
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 public struct AccessibilityActionKind : Equatable {
 
     public static let `default`: AccessibilityActionKind
@@ -37,6 +38,7 @@ public struct AccessibilityActionKind : Equatable {
 }
 
 /// Specifies which way an adjustment should be made.
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 public enum AccessibilityAdjustmentDirection {
 
     case increment
@@ -78,21 +80,19 @@ public enum AccessibilityAdjustmentDirection {
     public func hash(into hasher: inout Hasher)
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension AccessibilityAdjustmentDirection : Equatable {
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension AccessibilityAdjustmentDirection : Hashable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct AccessibilityAttachmentModifier {
+public struct AccessibilityAttachmentModifier : ViewModifier {
 
     /// The type of view representing the body of `Self`.
     public typealias Body = Never
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension AccessibilityAttachmentModifier : ViewModifier {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -139,10 +139,12 @@ extension AccessibilityChildBehavior {
     /// Child accessibility elements are ignored
     public static let ignore: AccessibilityChildBehavior
 
-    /// Any child accessibility elements become children of the new accessibility element
+    /// Any child accessibility elements become children of the new
+    /// accessibility element
     public static let contain: AccessibilityChildBehavior
 
-    /// Combine any child accessibility element's properties for the new accessibility element
+    /// Combine any child accessibility element's properties for the
+    /// new accessibility element
     public static let combine: AccessibilityChildBehavior
 }
 
@@ -472,7 +474,7 @@ public struct Alert {
 
 /// An alignment in both axes.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Alignment : Equatable {
+@frozen public struct Alignment : Equatable {
 
     public var horizontal: HorizontalAlignment
 
@@ -524,17 +526,16 @@ public protocol AlignmentID {
 
 /// An opaque value derived from an `Anchor<Value>.Source` and a
 /// particular view. It may be converted to a `Value` in the coordinate
-/// space of a target view, using a `LayoutContext` to specify the
-/// target view.
+/// space of a target view, using a `GeometryProxy` value to specify
+/// the target view.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Anchor<Value> {
+@frozen public struct Anchor<Value> {
 
     /// A type-erased geometry value that produces an anchored value of
     /// type `Value`. Anchored geometry values are passed around the
     /// view tree via preference keys, and then converted back into the
-    /// local coordinate via a LayoutContext, e.g. in a layout's
-    /// situate() function.
-    public struct Source {
+    /// local coordinate space via a `GeometryProxy` value.
+    @frozen public struct Source {
     }
 }
 
@@ -575,6 +576,7 @@ extension Anchor.Source where Value == CGPoint {
     public static var bottomTrailing: Anchor<CGPoint>.Source { get }
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Anchor.Source {
 
     public init<T>(_ array: [Anchor<T>.Source]) where Value == [T]
@@ -588,7 +590,7 @@ extension Anchor.Source {
 
 /// A geometric angle whose value can be accessed either in radians or degrees.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Angle {
+@frozen public struct Angle {
 
     public var radians: Double
 
@@ -677,7 +679,7 @@ extension Angle : Animatable {
 /// center point is mapped into the bounding rectangle of each shape
 /// filled with the gradient.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct AngularGradient : ShapeStyle, View {
+@frozen public struct AngularGradient : ShapeStyle, View {
 
     public init(gradient: Gradient, center: UnitPoint, startAngle: Angle = .zero, endAngle: Angle = .zero)
 
@@ -722,7 +724,7 @@ public protocol AnimatableModifier : Animatable, ViewModifier {
 
 /// A pair of animatable values, which is itself animatable.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct AnimatablePair<First, Second> : VectorArithmetic where First : VectorArithmetic, Second : VectorArithmetic {
+@frozen public struct AnimatablePair<First, Second> : VectorArithmetic where First : VectorArithmetic, Second : VectorArithmetic {
 
     /// The first value.
     public var first: First
@@ -816,7 +818,7 @@ public struct AnimatablePair<First, Second> : VectorArithmetic where First : Vec
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Animation {
+@frozen public struct Animation : Equatable {
 
     /// Returns a Boolean value indicating whether two values are equal.
     ///
@@ -989,11 +991,7 @@ extension Animation : CustomStringConvertible, CustomDebugStringConvertible, Cus
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Animation : Equatable {
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct AnyGesture<Value> {
+@frozen public struct AnyGesture<Value> : Gesture {
 
     public init<T>(_ gesture: T) where Value == T.Value, T : Gesture
 
@@ -1001,13 +999,9 @@ public struct AnyGesture<Value> {
     public typealias Body = Never
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension AnyGesture : Gesture {
-}
-
 /// A type-erased `Transition`.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct AnyTransition {
+@frozen public struct AnyTransition {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1034,6 +1028,7 @@ extension AnyTransition {
     public static let opacity: AnyTransition
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension AnyTransition {
 
     /// A transition that inserts by moving in from the leading edge, and
@@ -1097,7 +1092,7 @@ extension AnyTransition {
 /// changes, the old hierarchy is destroyed and a new hierarchy is
 /// created for the new type.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct AnyView : View {
+@frozen public struct AnyView : View {
 
     /// Create an instance that type-erases `view`.
     public init<V>(_ view: V) where V : View
@@ -1112,7 +1107,7 @@ public struct AnyView : View {
 /// A value indicating either the horizontal or vertical dimension in a
 /// 2D coordinate system
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public enum Axis : Int8, CaseIterable {
+@frozen public enum Axis : Int8, CaseIterable {
 
     /// The horizontal dimension.
     case horizontal
@@ -1121,7 +1116,7 @@ public enum Axis : Int8, CaseIterable {
     case vertical
 
     /// An efficient set of axes.
-    public struct Set : OptionSet {
+    @frozen public struct Set : OptionSet {
 
         /// The element type of the option set.
         ///
@@ -1188,6 +1183,23 @@ public enum Axis : Int8, CaseIterable {
     /// type that don't have a corresponding value of the conforming type.
     public typealias RawValue = Int8
 
+    /// The corresponding value of the raw type.
+    ///
+    /// A new instance initialized with `rawValue` will be equivalent to this
+    /// instance. For example:
+    ///
+    ///     enum PaperSize: String {
+    ///         case A4, A5, Letter, Legal
+    ///     }
+    ///
+    ///     let selectedSize = PaperSize.Letter
+    ///     print(selectedSize.rawValue)
+    ///     // Prints "Letter"
+    ///
+    ///     print(selectedSize == PaperSize(rawValue: selectedSize.rawValue)!)
+    ///     // Prints "true"
+    public var rawValue: Int8 { get }
+
     /// Creates a new instance with the specified raw value.
     ///
     /// If there is no value of the type that corresponds with the specified raw
@@ -1206,23 +1218,6 @@ public enum Axis : Int8, CaseIterable {
     /// - Parameter rawValue: The raw value to use for the new instance.
     public init?(rawValue: Int8)
 
-    /// The corresponding value of the raw type.
-    ///
-    /// A new instance initialized with `rawValue` will be equivalent to this
-    /// instance. For example:
-    ///
-    ///     enum PaperSize: String {
-    ///         case A4, A5, Letter, Legal
-    ///     }
-    ///
-    ///     let selectedSize = PaperSize.Letter
-    ///     print(selectedSize.rawValue)
-    ///     // Prints "Letter"
-    ///
-    ///     print(selectedSize == PaperSize(rawValue: selectedSize.rawValue)!)
-    ///     // Prints "true"
-    public var rawValue: Int8 { get }
-
     /// A type that can represent a collection of all values of this type.
     public typealias AllCases = [Axis]
 
@@ -1230,6 +1225,7 @@ public enum Axis : Int8, CaseIterable {
     public static var allCases: [Axis] { get }
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Axis : CustomStringConvertible {
 
     /// A textual representation of this instance.
@@ -1259,6 +1255,10 @@ extension Axis : CustomStringConvertible {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+extension Axis : Equatable {
+}
+
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Axis : Hashable {
 }
 
@@ -1268,7 +1268,7 @@ extension Axis : RawRepresentable {
 
 /// A value and a means to mutate it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper @dynamicMemberLookup public struct Binding<Value> {
+@frozen @propertyWrapper @dynamicMemberLookup public struct Binding<Value> {
 
     /// The transaction used for any changes to the binding's value.
     public var transaction: Transaction
@@ -1305,9 +1305,12 @@ extension Binding {
     /// unwrapped value, or returns `nil` if the base value is `nil`.
     public init?(_ base: Binding<Value?>)
 
-    public init<V>(_ base: Binding<V>) where V : Hashable
+    /// Creates an instance by projecting the base `Hashable` value to an
+    /// `AnyHashable` value.
+    public init<V>(_ base: Binding<V>) where Value == AnyHashable, V : Hashable
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Binding {
 
     /// Create a new Binding that will apply `transaction` to any changes.
@@ -1402,6 +1405,10 @@ public enum BlendMode {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+extension BlendMode : Equatable {
+}
+
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension BlendMode : Hashable {
 }
 
@@ -1421,7 +1428,6 @@ public struct BorderlessButtonStyle : PrimitiveButtonStyle {
     /// This method will be called for each instance of `Button` created within
     /// a view hierarchy where this style is the current `ButtonStyle`.
     public func makeBody(configuration: BorderlessButtonStyle.Configuration) -> some View
-
 
     /// A `View` representing the body of a `Button`.
     public typealias Body = some View
@@ -1534,7 +1540,7 @@ public struct ButtonStyleConfiguration {
 /// Equivalent to a rounded rectangle where the corner radius is chosen
 /// as half the length of the rectangle's smallest edge.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Capsule : Shape {
+@frozen public struct Capsule : Shape {
 
     public var style: RoundedCornerStyle
 
@@ -1562,7 +1568,6 @@ extension Capsule : InsettableShape {
     /// Returns `self` inset by `amount`.
     @inlinable public func inset(by amount: CGFloat) -> some InsettableShape
 
-
     /// The type of the inset shape.
     public typealias InsetShape = some InsettableShape
 }
@@ -1571,7 +1576,7 @@ extension Capsule : InsettableShape {
 /// radius is chosen as half the length of the rectangle's smallest
 /// edge.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Circle : Shape {
+@frozen public struct Circle : Shape {
 
     /// Describes this shape as a path within a rectangular frame of reference.
     ///
@@ -1597,7 +1602,6 @@ extension Circle : InsettableShape {
     /// Returns `self` inset by `amount`.
     @inlinable public func inset(by amount: CGFloat) -> some InsettableShape
 
-
     /// The type of the inset shape.
     public typealias InsetShape = some InsettableShape
 }
@@ -1608,7 +1612,7 @@ extension Circle : InsettableShape {
 /// when it is about to be used in a given environment. At that time it is
 /// resolved to a concrete value.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Color : Hashable, CustomStringConvertible {
+@frozen public struct Color : Hashable, CustomStringConvertible {
 
     /// Hashes the essential components of this value by feeding them into the
     /// given hasher.
@@ -1671,7 +1675,7 @@ public struct Color : Hashable, CustomStringConvertible {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Color {
+extension Color : View {
 
     /// The type of view representing the body of this view.
     ///
@@ -1731,10 +1735,6 @@ extension Color {
     public init(_ colorSpace: Color.RGBColorSpace = .sRGB, white: Double, opacity: Double = 1)
 
     public init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1)
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Color {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1806,10 +1806,6 @@ extension Color {
 extension Color {
 
     public func opacity(_ opacity: Double) -> Color
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Color : View {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1892,6 +1888,16 @@ public enum ColorScheme : CaseIterable {
 
     case dark
 
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: ColorScheme, b: ColorScheme) -> Bool
+
     /// The hash value.
     ///
     /// Hash values are not guaranteed to be equal across different executions of
@@ -1915,16 +1921,6 @@ public enum ColorScheme : CaseIterable {
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
     public func hash(into hasher: inout Hasher)
-
-    /// Returns a Boolean value indicating whether two values are equal.
-    ///
-    /// Equality is the inverse of inequality. For any values `a` and `b`,
-    /// `a == b` implies that `a != b` is `false`.
-    ///
-    /// - Parameters:
-    ///   - lhs: A value to compare.
-    ///   - rhs: Another value to compare.
-    public static func == (a: ColorScheme, b: ColorScheme) -> Bool
 
     /// A type that can represent a collection of all values of this type.
     public typealias AllCases = [ColorScheme]
@@ -1950,6 +1946,16 @@ public enum ColorSchemeContrast : CaseIterable {
 
     case increased
 
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: ColorSchemeContrast, b: ColorSchemeContrast) -> Bool
+
     /// The hash value.
     ///
     /// Hash values are not guaranteed to be equal across different executions of
@@ -1974,16 +1980,6 @@ public enum ColorSchemeContrast : CaseIterable {
     ///   of this instance.
     public func hash(into hasher: inout Hasher)
 
-    /// Returns a Boolean value indicating whether two values are equal.
-    ///
-    /// Equality is the inverse of inequality. For any values `a` and `b`,
-    /// `a == b` implies that `a != b` is `false`.
-    ///
-    /// - Parameters:
-    ///   - lhs: A value to compare.
-    ///   - rhs: Another value to compare.
-    public static func == (a: ColorSchemeContrast, b: ColorSchemeContrast) -> Bool
-
     /// A type that can represent a collection of all values of this type.
     public typealias AllCases = [ColorSchemeContrast]
 
@@ -2000,7 +1996,7 @@ extension ColorSchemeContrast : Hashable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public enum ContentMode : Hashable, CaseIterable {
+@frozen public enum ContentMode : Hashable, CaseIterable {
 
     case fit
 
@@ -2074,6 +2070,21 @@ public enum ContentSizeCategory : Hashable, CaseIterable {
 
     case accessibilityExtraExtraExtraLarge
 
+    /// A `Bool` value indicating whether the content size category is one that
+    /// is associated with accessibility.
+    @available(iOS 13.4, OSX 10.15.4, tvOS 13.4, watchOS 6.2, *)
+    public var isAccessibilityCategory: Bool { get }
+
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: ContentSizeCategory, b: ContentSizeCategory) -> Bool
+
     /// The hash value.
     ///
     /// Hash values are not guaranteed to be equal across different executions of
@@ -2097,16 +2108,6 @@ public enum ContentSizeCategory : Hashable, CaseIterable {
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
     public func hash(into hasher: inout Hasher)
-
-    /// Returns a Boolean value indicating whether two values are equal.
-    ///
-    /// Equality is the inverse of inequality. For any values `a` and `b`,
-    /// `a == b` implies that `a != b` is `false`.
-    ///
-    /// - Parameters:
-    ///   - lhs: A value to compare.
-    ///   - rhs: Another value to compare.
-    public static func == (a: ContentSizeCategory, b: ContentSizeCategory) -> Bool
 
     /// A type that can represent a collection of all values of this type.
     public typealias AllCases = [ContentSizeCategory]
@@ -2449,7 +2450,6 @@ public struct DefaultButtonStyle : PrimitiveButtonStyle {
     /// a view hierarchy where this style is the current `ButtonStyle`.
     public func makeBody(configuration: DefaultButtonStyle.Configuration) -> some View
 
-
     /// A `View` representing the body of a `Button`.
     public typealias Body = some View
 }
@@ -2506,7 +2506,6 @@ public struct DefaultToggleStyle : ToggleStyle {
     /// a view hierarchy where this style is the current `ToggleStyle`.
     public func makeBody(configuration: DefaultToggleStyle.Configuration) -> some View
 
-
     /// A `View` representing the body of a `Toggle`.
     public typealias Body = some View
 }
@@ -2537,8 +2536,9 @@ public struct DoubleColumnNavigationViewStyle : NavigationViewStyle {
 }
 
 /// A gesture that invokes an action as a drag event sequence changes.
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct DragGesture {
+@available(iOS 13.0, OSX 10.15, watchOS 6.0, *)
+@available(tvOS, unavailable)
+public struct DragGesture : Gesture {
 
     /// The current state of the event sequence.
     public struct Value : Equatable {
@@ -2588,8 +2588,177 @@ public struct DragGesture {
     public typealias Body = Never
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension DragGesture : Gesture {
+/// A collection of functions that allow you to interact with a drop currently
+/// occurring inside an onDrop modified view.
+///
+/// This collection is the most comprehensive and flexible way to interact
+/// with a drop operation. For simple drop cases, see the `onDrop()` variants
+/// that take a drop action instead of a `DropDelegate`.
+///
+/// - SeeAlso: `ViewModifier.onDrop(...)`
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public protocol DropDelegate {
+
+    /// Called when a drop, which has items conforming to any of the types
+    /// passed to the onDrop() modifier, enters an onDrop target.
+    ///
+    /// The default implementation returns true.
+    func validateDrop(info: DropInfo) -> Bool
+
+    /// Tells the delegate it can request the item provider data from the
+    /// DropInfo incorporating it into the application's data model as
+    /// appropriate. This function is required.
+    ///
+    /// Return `true` if the drop was successful, `false` otherwise.
+    func performDrop(info: DropInfo) -> Bool
+
+    /// Tells the delegate a validated drop has entered the onDrop modified
+    /// view. The default behavior does nothing.
+    func dropEntered(info: DropInfo)
+
+    /// Called as a validated drop moves inside the onDrop modified view.
+    ///
+    /// Return a drop proposal that contains the operation the delegate intends
+    /// to perform at the DropInfo.location, The default implementation returns
+    /// nil, which tells the drop to use that last valid returned value or else
+    /// .copy.
+    func dropUpdated(info: DropInfo) -> DropProposal?
+
+    /// Tells the delegate a validated drop operation has exited the onDrop
+    /// modified view. The default behavior does nothing.
+    func dropExited(info: DropInfo)
+}
+
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension DropDelegate {
+
+    /// Called when a drop, which has items conforming to any of the types
+    /// passed to the onDrop() modifier, enters an onDrop target.
+    ///
+    /// The default implementation returns true.
+    public func validateDrop(info: DropInfo) -> Bool
+
+    /// Tells the delegate a validated drop has entered the onDrop modified
+    /// view. The default behavior does nothing.
+    public func dropEntered(info: DropInfo)
+
+    /// Called as a validated drop moves inside the onDrop modified view.
+    ///
+    /// Return a drop proposal that contains the operation the delegate intends
+    /// to perform at the DropInfo.location, The default implementation returns
+    /// nil, which tells the drop to use that last valid returned value or else
+    /// .copy.
+    public func dropUpdated(info: DropInfo) -> DropProposal?
+
+    /// Tells the delegate a validated drop operation has exited the onDrop
+    /// modified view. The default behavior does nothing.
+    public func dropExited(info: DropInfo)
+}
+
+/// The description of the current state of a drop.
+///
+/// - SeeAlso `DropDelegate`
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public struct DropInfo {
+
+    /// The location of the drag in the coordinate space of the drop view.
+    public var location: CGPoint { get }
+
+    /// Returns whether at least one item conforms to at least one of the
+    /// specified uniform type identifiers.
+    public func hasItemsConforming(to types: [String]) -> Bool
+
+    /// Returns an Array of items that each conform to at least one of the
+    /// specified uniform type identifiers.
+    ///
+    /// This function is only valid during the performDrop() action.
+    public func itemProviders(for types: [String]) -> [NSItemProvider]
+}
+
+/// Operation types that determine how a drag and drop session resolves when
+/// the user drops a drag item.
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public enum DropOperation {
+
+    /// No data should be transferred, thereby canceling the drag.
+    case cancel
+
+    /// Although a move or copy operation is typically legitimate in this
+    /// scenario, the drop activity is not allowed at this time or location.
+    case forbidden
+
+    /// The data represented by the drag items should be copied to the onDrop
+    /// modified view.
+    case copy
+
+    /// The data represented by the drag items should be moved, not copied.
+    case move
+
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: DropOperation, b: DropOperation) -> Bool
+
+    /// The hash value.
+    ///
+    /// Hash values are not guaranteed to be equal across different executions of
+    /// your program. Do not save hash values to use during a future execution.
+    ///
+    /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
+    ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    public var hashValue: Int { get }
+
+    /// Hashes the essential components of this value by feeding them into the
+    /// given hasher.
+    ///
+    /// Implement this method to conform to the `Hashable` protocol. The
+    /// components used for hashing must be the same as the components compared
+    /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
+    /// with each of these components.
+    ///
+    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
+    ///   compile-time error in the future.
+    ///
+    /// - Parameter hasher: The hasher to use when combining the components
+    ///   of this instance.
+    public func hash(into hasher: inout Hasher)
+}
+
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension DropOperation : Equatable {
+}
+
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension DropOperation : Hashable {
+}
+
+/// A configuration for the behavior of a drop.
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public struct DropProposal {
+
+    /// The drop operation that the drop proposes to perform.
+    public let operation: DropOperation
+
+    public init(operation: DropOperation)
 }
 
 /// Represents a stored variable in a `View` type that is dynamically
@@ -2635,7 +2804,6 @@ extension DynamicViewContent {
     ///     relative to the `Collection` driving the view content.
     ///     Passing `nil` means the delete is disabled.
     @inlinable public func onDelete(perform action: ((IndexSet) -> Void)?) -> some DynamicViewContent
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2649,7 +2817,6 @@ extension DynamicViewContent {
     ///     relative to the `Collection` driving the view content.
     ///     Passing `nil` means that move is disabled.
     @inlinable public func onMove(perform action: ((IndexSet, Int) -> Void)?) -> some DynamicViewContent
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2664,12 +2831,11 @@ extension DynamicViewContent {
     ///         The closure takes two argument: the first the offset relative to the `Collection` driving
     ///         the view content, the second an array of `NSItemProvider` to retrieve data from.
     public func onInsert(of acceptedTypeIdentifiers: [String], perform action: @escaping (Int, [NSItemProvider]) -> Void) -> some DynamicViewContent
-
 }
 
 /// Specifies one edge of a rectangle.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public enum Edge : Int8, CaseIterable {
+@frozen public enum Edge : Int8, CaseIterable {
 
     case top
 
@@ -2680,7 +2846,7 @@ public enum Edge : Int8, CaseIterable {
     case trailing
 
     /// An efficient set of `Edge`s.
-    public struct Set : OptionSet {
+    @frozen public struct Set : OptionSet {
 
         /// The element type of the option set.
         ///
@@ -2803,6 +2969,10 @@ public enum Edge : Int8, CaseIterable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+extension Edge : Equatable {
+}
+
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Edge : Hashable {
 }
 
@@ -2811,7 +2981,7 @@ extension Edge : RawRepresentable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EdgeInsets : Equatable {
+@frozen public struct EdgeInsets : Equatable {
 
     public var top: CGFloat
 
@@ -2925,12 +3095,18 @@ public enum EditMode {
 @available(iOS 13.0, tvOS 13.0, *)
 @available(OSX, unavailable)
 @available(watchOS, unavailable)
+extension EditMode : Equatable {
+}
+
+@available(iOS 13.0, tvOS 13.0, *)
+@available(OSX, unavailable)
+@available(watchOS, unavailable)
 extension EditMode : Hashable {
 }
 
 /// An ellipse aligned inside the frame of the view containing it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Ellipse : Shape {
+@frozen public struct Ellipse : Shape {
 
     /// Describes this shape as a path within a rectangular frame of reference.
     ///
@@ -2956,7 +3132,6 @@ extension Ellipse : InsettableShape {
     /// Returns `self` inset by `amount`.
     @inlinable public func inset(by amount: CGFloat) -> some InsettableShape
 
-
     /// The type of the inset shape.
     public typealias InsetShape = some InsettableShape
 }
@@ -2964,7 +3139,7 @@ extension Ellipse : InsettableShape {
 /// A type suitable for use as the `animatableData` property of types
 /// that do not have any animatable properties.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EmptyAnimatableData : VectorArithmetic {
+@frozen public struct EmptyAnimatableData : VectorArithmetic {
 
     @inlinable public init()
 
@@ -3052,7 +3227,7 @@ public struct EmptyAnimatableData : VectorArithmetic {
 
 /// The empty, or identity, modifier.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EmptyModifier {
+@frozen public struct EmptyModifier : ViewModifier {
 
     public static let identity: EmptyModifier
 
@@ -3068,11 +3243,7 @@ public struct EmptyModifier {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension EmptyModifier : ViewModifier {
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EmptyView {
+@frozen public struct EmptyView : View {
 
     @inlinable public init()
 
@@ -3083,14 +3254,10 @@ public struct EmptyView {
     public typealias Body = Never
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension EmptyView : View {
-}
-
 /// A linked View property that reads a value from the view's
 /// environment.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper public struct Environment<Value> : DynamicProperty {
+@frozen @propertyWrapper public struct Environment<Value> : DynamicProperty {
 
     /// Initializes to read the environment property `keyPath`.
     @inlinable public init(_ keyPath: KeyPath<EnvironmentValues, Value>)
@@ -3114,11 +3281,11 @@ public protocol EnvironmentKey {
 /// - Precondition: A model must be provided on an ancestor view by calling
 ///     `environmentObject(_:)`.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper public struct EnvironmentObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
+@frozen @propertyWrapper public struct EnvironmentObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
 
     /// A wrapper of the underlying `ObservableObject` that can create
     /// `Binding`s to its properties using dynamic member lookup.
-    @dynamicMemberLookup public struct Wrapper {
+    @dynamicMemberLookup @frozen public struct Wrapper {
 
         /// Creates a `Binding` to a value semantic property of a
         /// reference type.
@@ -3214,7 +3381,6 @@ extension EnvironmentValues {
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension EnvironmentValues {
 
-    /// The default minimum height of a row in a `List`.
     public var defaultMinListRowHeight: CGFloat
 
     /// The minimum height of a header in a `List`.
@@ -3297,12 +3463,14 @@ extension EnvironmentValues {
     public var verticalSizeClass: UserInterfaceSizeClass?
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension EnvironmentValues {
 
     /// If an assistive technology is enabled
     public var accessibilityEnabled: Bool
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension EnvironmentValues {
 
     /// Whether the system preference for Differentiate without Color is enabled.
@@ -3325,10 +3493,6 @@ extension EnvironmentValues {
     /// In these cases it may be needed for UI drawing to be adjusted to in
     /// order to display optimally when inverted.
     public var accessibilityInvertColors: Bool { get }
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension EnvironmentValues {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3411,7 +3575,7 @@ public protocol EnvironmentalModifier : ViewModifier where Self.Body == Never {
 /// prevents its child updating if its new value is the same as its old
 /// value.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EquatableView<Content> : View where Content : Equatable, Content : View {
+@frozen public struct EquatableView<Content> : View where Content : Equatable, Content : View {
 
     public var content: Content
 
@@ -3425,7 +3589,7 @@ public struct EquatableView<Content> : View where Content : Equatable, Content :
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct EventModifiers : OptionSet {
+@frozen public struct EventModifiers : OptionSet {
 
     /// The corresponding value of the raw type.
     ///
@@ -3499,10 +3663,10 @@ public struct EventModifiers : OptionSet {
 /// A pair of gestures where only can succeed, giving precedence to
 /// the first of the pair.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ExclusiveGesture<First, Second> where First : Gesture, Second : Gesture {
+@frozen public struct ExclusiveGesture<First, Second> : Gesture where First : Gesture, Second : Gesture {
 
     /// The type of value produced by this gesture.
-    public enum Value {
+    @frozen public enum Value {
 
         /// The first gesture's value.
         case first(First.Value)
@@ -3523,10 +3687,6 @@ public struct ExclusiveGesture<First, Second> where First : Gesture, Second : Ge
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension ExclusiveGesture : Gesture {
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ExclusiveGesture.Value : Equatable where First.Value : Equatable, Second.Value : Equatable {
 
     /// Returns a Boolean value indicating whether two values are equal.
@@ -3544,7 +3704,7 @@ extension ExclusiveGesture.Value : Equatable where First.Value : Equatable, Seco
 /// a fetch request. The managed object context used by the fetch request and
 /// its results is provided by @Environment(\.managedObjectContext).
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper public struct FetchRequest<Result> where Result : NSFetchRequestResult {
+@propertyWrapper public struct FetchRequest<Result> : DynamicProperty where Result : NSFetchRequestResult {
 
     /// The current collection of fetched results.
     public var wrappedValue: FetchedResults<Result> { get }
@@ -3572,10 +3732,6 @@ extension ExclusiveGesture.Value : Equatable where First.Value : Equatable, Seco
     ///   - transaction: The transaction used for any changes to the fetched
     ///     results.
     public init(fetchRequest: NSFetchRequest<Result>, transaction: Transaction)
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension FetchRequest : DynamicProperty {
 
     /// Called immediately before the view's body() function is
     /// executed, after updating the values of any dynamic properties
@@ -3656,6 +3812,14 @@ public struct FetchedResults<Result> : RandomAccessCollection where Result : NSF
     /// argument.
     public typealias Index = Int
 
+    /// A type that provides the collection's iteration interface and
+    /// encapsulates its iteration state.
+    ///
+    /// By default, a collection conforms to the `Sequence` protocol by
+    /// supplying `IndexingIterator` as its associated `Iterator`
+    /// type.
+    public typealias Iterator = IndexingIterator<FetchedResults<Result>>
+
     /// A sequence that represents a contiguous subrange of the collection's
     /// elements.
     ///
@@ -3667,19 +3831,11 @@ public struct FetchedResults<Result> : RandomAccessCollection where Result : NSF
     /// A type that represents the indices that are valid for subscripting the
     /// collection, in ascending order.
     public typealias Indices = Range<Int>
-
-    /// A type that provides the collection's iteration interface and
-    /// encapsulates its iteration state.
-    ///
-    /// By default, a collection conforms to the `Sequence` protocol by
-    /// supplying `IndexingIterator` as its associated `Iterator`
-    /// type.
-    public typealias Iterator = IndexingIterator<FetchedResults<Result>>
 }
 
 /// A style for rasterizing vector shapes.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct FillStyle : Equatable {
+@frozen public struct FillStyle : Equatable {
 
     /// A Boolean value that indicates whether to use the even-odd rule when
     /// rendering a shape.
@@ -3719,7 +3875,7 @@ public struct FillStyle : Equatable {
 /// when it is about to be used in a given environment. At that time it is
 /// resolved to a concrete value.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Font : Hashable {
+@frozen public struct Font : Hashable {
 
     /// Hashes the essential components of this value by feeding them into the
     /// given hasher.
@@ -3793,7 +3949,7 @@ extension Font {
     public func bold() -> Font
 
     /// A weight to use for fonts.
-    public struct Weight : Hashable {
+    @frozen public struct Weight : Hashable {
 
         public static let ultraLight: Font.Weight
 
@@ -4075,7 +4231,7 @@ extension ForEach where Data == Range<Int>, ID == Int, Content : View {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ForegroundStyle {
+@frozen public struct ForegroundStyle {
 
     @inlinable public init()
 }
@@ -4116,10 +4272,6 @@ public protocol GeometryEffect : Animatable, ViewModifier where Self.Body == Nev
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension GeometryEffect {
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension GeometryEffect {
 
     /// Returns an effect producing the same geometry transform as
     /// `self` but that will only be applied while rendering its view,
@@ -4151,7 +4303,7 @@ public struct GeometryProxy {
 /// size and coordinate space. Returns a flexible preferred size to its
 /// parent layout.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct GeometryReader<Content> : View where Content : View {
+@frozen public struct GeometryReader<Content> : View where Content : View {
 
     public var content: (GeometryProxy) -> Content
 
@@ -4242,7 +4394,7 @@ extension Gesture {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct GestureMask : OptionSet {
+@frozen public struct GestureMask : OptionSet {
 
     /// The corresponding value of the raw type.
     ///
@@ -4308,7 +4460,7 @@ public struct GestureMask : OptionSet {
 /// Link type to store gesture state that is updated as a gesture
 /// changes and implicitly reset when the gesture becomes inactive.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper public struct GestureState<Value> : DynamicProperty {
+@propertyWrapper @frozen public struct GestureState<Value> : DynamicProperty {
 
     /// Initialize with the initial state value.
     public init(wrappedValue: Value)
@@ -4355,7 +4507,7 @@ extension GestureState where Value : ExpressibleByNilLiteral {
 
 /// The result of calling `Gesture.updating()`.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct GestureStateGesture<Base, State> : Gesture where Base : Gesture {
+@frozen public struct GestureStateGesture<Base, State> : Gesture where Base : Gesture {
 
     /// The type of value produced by this gesture.
     public typealias Value = Base.Value
@@ -4364,7 +4516,7 @@ public struct GestureStateGesture<Base, State> : Gesture where Base : Gesture {
 
     public var state: GestureState<State>
 
-    public var body: (Base.Value, inout State, inout Transaction) -> Void
+    public var body: (GestureStateGesture<Base, State>.Value, inout State, inout Transaction) -> Void
 
     @inlinable public init(base: Base, state: GestureState<State>, body: @escaping (GestureStateGesture<Base, State>.Value, inout State, inout Transaction) -> Void)
 
@@ -4375,10 +4527,10 @@ public struct GestureStateGesture<Base, State> : Gesture where Base : Gesture {
 /// A color gradient. Represented as an array of color stops, each
 /// color having a parametric location value.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Gradient : Equatable {
+@frozen public struct Gradient : Equatable {
 
     /// One color stop in the gradient.
-    public struct Stop : Equatable {
+    @frozen public struct Stop : Equatable {
 
         /// The color for the stop.
         public var color: Color
@@ -4424,7 +4576,7 @@ public struct Gradient : Equatable {
 
 /// An affordance for grouping view content.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Group<Content> {
+@frozen public struct Group<Content> {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4451,7 +4603,7 @@ public struct GroupedListStyle : ListStyle {
 
 /// A view that arranges its children in a vertical line.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct HStack<Content> : View where Content : View {
+@frozen public struct HStack<Content> : View where Content : View {
 
     /// Creates an instance with the given `spacing` and Y axis `alignment`.
     ///
@@ -4471,7 +4623,7 @@ public struct HStack<Content> : View where Content : View {
 
 /// An alignment position along the horizontal axis
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct HorizontalAlignment {
+@frozen public struct HorizontalAlignment : Equatable {
 
     /// Creates an instance with the given ID.
     ///
@@ -4502,8 +4654,24 @@ extension HorizontalAlignment {
     public static let trailing: HorizontalAlignment
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension HorizontalAlignment : Equatable {
+/// An effect applied when the pointer hovers over a view.
+@available(iOS 13.4, *)
+@available(OSX, unavailable)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public struct HoverEffect {
+
+    /// An effect  that attempts to determine the effect automatically.
+    /// This is the default effect.
+    public static var automatic: HoverEffect
+
+    /// An effect  that morphs the pointer into a platter behind the view
+    /// and shows a light source indicating position.
+    public static var highlight: HoverEffect
+
+    /// An effect that slides the pointer under the view and disappears as the
+    /// view scales up and gains a shadow.
+    public static var lift: HoverEffect
 }
 
 /// An environment-dependent image.
@@ -4512,7 +4680,7 @@ extension HorizontalAlignment : Equatable {
 /// when it is about to be used in a given environment. At that time it is
 /// resolved to a concrete value.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Image : Equatable {
+@frozen public struct Image : Equatable {
 
     /// Returns a Boolean value indicating whether two values are equal.
     ///
@@ -4558,10 +4726,13 @@ extension Image {
     ///
     /// This image will be specifically ignored for accessibility purposes.
     public init(decorative name: String, bundle: Bundle? = nil)
+
+    @available(OSX, unavailable)
+    public init(systemName: String)
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Image {
+extension Image : View {
 
     /// The type of view representing the body of this view.
     ///
@@ -4580,7 +4751,7 @@ extension Image {
 extension Image {
 
     /// The orientation of an image.
-    public enum Orientation : UInt8, CaseIterable, Hashable {
+    @frozen public enum Orientation : UInt8, CaseIterable, Hashable {
 
         case up
 
@@ -4796,14 +4967,6 @@ extension Image {
     public func antialiased(_ isAntialiased: Bool) -> Image
 }
 
-@available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-@available(OSX, unavailable)
-extension Image {
-
-    @available(OSX, unavailable)
-    public init(systemName: String)
-}
-
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Image {
 
@@ -4886,11 +5049,11 @@ extension Image {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Image : View {
+extension Image.Orientation : RawRepresentable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Image.Orientation : RawRepresentable {
+extension Image.TemplateRenderingMode : Equatable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4908,7 +5071,15 @@ extension Image.Scale : Hashable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+extension Image.Interpolation : Equatable {
+}
+
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Image.Interpolation : Hashable {
+}
+
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+extension Image.ResizingMode : Equatable {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4918,7 +5089,7 @@ extension Image.ResizingMode : Hashable {
 /// A shape style that fills a shape with a repeated subregion of an
 /// image.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ImagePaint : ShapeStyle {
+@frozen public struct ImagePaint : ShapeStyle {
 
     /// The image to be drawn.
     public var image: Image
@@ -4958,12 +5129,10 @@ extension InsettableShape {
     /// `style`, and then filling with `content`.
     @inlinable public func strokeBorder<S>(_ content: S, style: StrokeStyle, antialiased: Bool = true) -> some View where S : ShapeStyle
 
-
     /// Returns a view that is the result of insetting `self` by
     /// `style.lineWidth / 2`, stroking the resulting shape with
     /// `style`, and then filling with the foreground color.
     @inlinable public func strokeBorder(style: StrokeStyle, antialiased: Bool = true) -> some View
-
 
     /// Returns a view that is the result of filling the `width`-sized
     /// border (aka inner stroke) of `self` with `content`. This is
@@ -4971,13 +5140,11 @@ extension InsettableShape {
     /// resulting shape with `width` as the line-width.
     @inlinable public func strokeBorder<S>(_ content: S, lineWidth: CGFloat = 1, antialiased: Bool = true) -> some View where S : ShapeStyle
 
-
     /// Returns a view that is the result of filling the `width`-sized
     /// border (aka inner stroke) of `self` with the foreground color.
     /// This is equivalent to insetting `self` by `width / 2` and
     /// stroking the resulting shape with `width` as the line-width.
     @inlinable public func strokeBorder(lineWidth: CGFloat = 1, antialiased: Bool = true) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5039,6 +5206,16 @@ public enum LegibilityWeight : Hashable {
     /// Use heavier font weight (force Accessibility Bold).
     case bold
 
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: LegibilityWeight, b: LegibilityWeight) -> Bool
+
     /// The hash value.
     ///
     /// Hash values are not guaranteed to be equal across different executions of
@@ -5062,16 +5239,6 @@ public enum LegibilityWeight : Hashable {
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
     public func hash(into hasher: inout Hasher)
-
-    /// Returns a Boolean value indicating whether two values are equal.
-    ///
-    /// Equality is the inverse of inequality. For any values `a` and `b`,
-    /// `a == b` implies that `a != b` is `false`.
-    ///
-    /// - Parameters:
-    ///   - lhs: A value to compare.
-    ///   - rhs: Another value to compare.
-    public static func == (a: LegibilityWeight, b: LegibilityWeight) -> Bool
 }
 
 /// A linear gradient. The gradient's color function is applied along
@@ -5079,7 +5246,7 @@ public enum LegibilityWeight : Hashable {
 /// unit-space points are mapped into the bounding rectangle of each
 /// shape filled with the gradient.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct LinearGradient : ShapeStyle, View {
+@frozen public struct LinearGradient : ShapeStyle, View {
 
     public init(gradient: Gradient, startPoint: UnitPoint, endPoint: UnitPoint)
 
@@ -5200,7 +5367,8 @@ public protocol ListStyle {
 }
 
 /// The key used to looked up in a .string or .stringdict file.
-public struct LocalizedStringKey : Equatable, ExpressibleByStringInterpolation {
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+@frozen public struct LocalizedStringKey : Equatable, ExpressibleByStringInterpolation {
 
     public init(_ value: String)
 
@@ -5303,8 +5471,9 @@ public struct LocalizedStringKey : Equatable, ExpressibleByStringInterpolation {
 
 /// A gesture that ends once a long-press event sequence has been
 /// recognized.
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct LongPressGesture {
+@available(iOS 13.0, OSX 10.15, watchOS 6.0, *)
+@available(tvOS, unavailable)
+public struct LongPressGesture : Gesture {
 
     /// The duration that must elapse before the gesture ends.
     public var minimumDuration: Double
@@ -5321,13 +5490,10 @@ public struct LongPressGesture {
     public typealias Body = Never
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension LongPressGesture : Gesture {
-}
-
 /// A gesture that tracks how a magnification event sequence changes.
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, *)
+@available(iOS 13.0, OSX 10.15, *)
 @available(watchOS, unavailable)
+@available(tvOS, unavailable)
 public struct MagnificationGesture : Gesture {
 
     /// The minimum delta required before the gesture starts.
@@ -5344,7 +5510,7 @@ public struct MagnificationGesture : Gesture {
 
 /// Represents a value with a view modifier applied to it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ModifiedContent<Content, Modifier> {
+@frozen public struct ModifiedContent<Content, Modifier> {
 
     public var content: Content
 
@@ -5353,6 +5519,7 @@ public struct ModifiedContent<Content, Modifier> {
     @inlinable public init(content: Content, modifier: Modifier)
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
 
     /// Add an accessibility action to an element.
@@ -5420,6 +5587,8 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
 
     public func accessibility(identifier: String) -> ModifiedContent<Content, Modifier>
 
+    public func accessibility(selectionIdentifier: AnyHashable) -> ModifiedContent<Content, Modifier>
+
     public func accessibility(sortPriority: Double) -> ModifiedContent<Content, Modifier>
 
     public func accessibility(activationPoint: CGPoint) -> ModifiedContent<Content, Modifier>
@@ -5427,6 +5596,7 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
     public func accessibility(activationPoint: UnitPoint) -> ModifiedContent<Content, Modifier>
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
 
     /// Convenience function for attaching an AccessibilityScrollAction to a
@@ -5434,6 +5604,7 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
     public func accessibilityScrollAction(_ handler: @escaping (Edge) -> Void) -> ModifiedContent<Content, Modifier>
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
 
     /// Convenience function for attaching an AccessibilityAdjustableAction to a
@@ -5573,7 +5744,6 @@ extension NavigationLink {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public func isDetailLink(_ isDetailLink: Bool) -> some View
-
 }
 
 /// A view for presenting a stack of views representing a visible path in a
@@ -5600,11 +5770,11 @@ public protocol NavigationViewStyle {
 /// A dynamic view property that subscribes to a `ObservableObject` automatically invalidating the view
 /// when it changes.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper public struct ObservedObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
+@propertyWrapper @frozen public struct ObservedObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
 
     /// A wrapper of the underlying `ObservableObject` that can create
     /// `Binding`s to its properties using dynamic member lookup.
-    @dynamicMemberLookup public struct Wrapper {
+    @dynamicMemberLookup @frozen public struct Wrapper {
 
         /// Creates a `Binding` to a value semantic property of a
         /// reference type.
@@ -5626,7 +5796,7 @@ public protocol NavigationViewStyle {
 
 /// A shape with a translation offset applied to it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct OffsetShape<Content> : Shape where Content : Shape {
+@frozen public struct OffsetShape<Content> : Shape where Content : Shape {
 
     public var shape: Content
 
@@ -5644,7 +5814,7 @@ public struct OffsetShape<Content> : Shape where Content : Shape {
     public typealias AnimatableData = AnimatablePair<Content.AnimatableData, CGSize.AnimatableData>
 
     /// The data to be animated.
-    public var animatableData: AnimatablePair<Content.AnimatableData, CGSize.AnimatableData>
+    public var animatableData: OffsetShape<Content>.AnimatableData
 
     /// The type of view representing the body of this view.
     ///
@@ -5653,6 +5823,7 @@ public struct OffsetShape<Content> : Shape where Content : Shape {
     public typealias Body
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension OffsetShape : InsettableShape where Content : InsettableShape {
 
     /// Returns `self` inset by `amount`.
@@ -5664,7 +5835,7 @@ extension OffsetShape : InsettableShape where Content : InsettableShape {
 
 /// Describes an outline of a 2D shape.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Path : Equatable, LosslessStringConvertible {
+@frozen public struct Path : Equatable, LosslessStringConvertible {
 
     /// Initialize with an empty path.
     public init()
@@ -5715,7 +5886,7 @@ public struct Path : Equatable, LosslessStringConvertible {
     public func contains(_ p: CGPoint, eoFill: Bool = false) -> Bool
 
     /// An element of a path.
-    public enum Element : Equatable {
+    @frozen public enum Element : Equatable {
 
         /// Terminates the current subpath (without closing it) and
         /// defines a new current point.
@@ -5914,7 +6085,6 @@ public struct PlainButtonStyle : PrimitiveButtonStyle {
     /// a view hierarchy where this style is the current `ButtonStyle`.
     public func makeBody(configuration: PlainButtonStyle.Configuration) -> some View
 
-
     /// A `View` representing the body of a `Button`.
     public typealias Body = some View
 }
@@ -5972,10 +6142,6 @@ extension PreferenceKey where Self.Value : ExpressibleByNilLiteral {
 
     /// Let nil-expressible values default-initialize to nil.
     public static var defaultValue: Self.Value { get }
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension PreferenceKey {
 }
 
 @available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -6246,7 +6412,7 @@ public struct PrimitiveButtonStyleConfiguration {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ProjectionTransform {
+@frozen public struct ProjectionTransform {
 
     public var m11: CGFloat
 
@@ -6306,7 +6472,7 @@ extension ProjectionTransform {
 /// and end radii. The unit-space center point is mapped into the
 /// bounding rectangle of each shape filled with the gradient.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct RadialGradient : ShapeStyle, View {
+@frozen public struct RadialGradient : ShapeStyle, View {
 
     public init(gradient: Gradient, center: UnitPoint, startRadius: CGFloat, endRadius: CGFloat)
 
@@ -6320,7 +6486,7 @@ public struct RadialGradient : ShapeStyle, View {
 /// A rectangular shape aligned inside the frame of the view containing
 /// it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Rectangle : Shape {
+@frozen public struct Rectangle : Shape {
 
     /// Describes this shape as a path within a rectangular frame of reference.
     ///
@@ -6346,14 +6512,13 @@ extension Rectangle : InsettableShape {
     /// Returns `self` inset by `amount`.
     @inlinable public func inset(by amount: CGFloat) -> some InsettableShape
 
-
     /// The type of the inset shape.
     public typealias InsetShape = some InsettableShape
 }
 
 /// A shape with a rotation transform applied to it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct RotatedShape<Content> : Shape where Content : Shape {
+@frozen public struct RotatedShape<Content> : Shape where Content : Shape {
 
     public var shape: Content
 
@@ -6373,7 +6538,7 @@ public struct RotatedShape<Content> : Shape where Content : Shape {
     public typealias AnimatableData = AnimatablePair<Content.AnimatableData, AnimatablePair<Angle.AnimatableData, UnitPoint.AnimatableData>>
 
     /// The data to be animated.
-    public var animatableData: AnimatablePair<Content.AnimatableData, AnimatablePair<Angle.AnimatableData, UnitPoint.AnimatableData>>
+    public var animatableData: RotatedShape<Content>.AnimatableData
 
     /// The type of view representing the body of this view.
     ///
@@ -6382,6 +6547,7 @@ public struct RotatedShape<Content> : Shape where Content : Shape {
     public typealias Body
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension RotatedShape : InsettableShape where Content : InsettableShape {
 
     /// Returns `self` inset by `amount`.
@@ -6392,7 +6558,8 @@ extension RotatedShape : InsettableShape where Content : InsettableShape {
 }
 
 /// A gesture that tracks how a rotation event sequence changes.
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, *)
+@available(iOS 13.0, OSX 10.15, *)
+@available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct RotationGesture : Gesture {
 
@@ -6463,13 +6630,17 @@ public enum RoundedCornerStyle {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+extension RoundedCornerStyle : Equatable {
+}
+
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension RoundedCornerStyle : Hashable {
 }
 
 /// A rectangular shape with rounded corners, aligned inside the frame
 /// of the view containing it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct RoundedRectangle : Shape {
+@frozen public struct RoundedRectangle : Shape {
 
     public var cornerSize: CGSize
 
@@ -6504,14 +6675,13 @@ extension RoundedRectangle : InsettableShape {
     /// Returns `self` inset by `amount`.
     @inlinable public func inset(by amount: CGFloat) -> some InsettableShape
 
-
     /// The type of the inset shape.
     public typealias InsetShape = some InsettableShape
 }
 
 /// A shape with a scale transform applied to it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ScaledShape<Content> : Shape where Content : Shape {
+@frozen public struct ScaledShape<Content> : Shape where Content : Shape {
 
     public var shape: Content
 
@@ -6531,7 +6701,7 @@ public struct ScaledShape<Content> : Shape where Content : Shape {
     public typealias AnimatableData = AnimatablePair<Content.AnimatableData, AnimatablePair<CGSize.AnimatableData, UnitPoint.AnimatableData>>
 
     /// The data to be animated.
-    public var animatableData: AnimatablePair<Content.AnimatableData, AnimatablePair<CGSize.AnimatableData, UnitPoint.AnimatableData>>
+    public var animatableData: ScaledShape<Content>.AnimatableData
 
     /// The type of view representing the body of this view.
     ///
@@ -6660,10 +6830,10 @@ public struct SegmentedPickerStyle : PickerStyle {
 
 /// A gesture type that sequences two sub-gestures.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct SequenceGesture<First, Second> where First : Gesture, Second : Gesture {
+@frozen public struct SequenceGesture<First, Second> : Gesture where First : Gesture, Second : Gesture {
 
     /// The type of value produced by this gesture.
-    public enum Value {
+    @frozen public enum Value {
 
         /// The first gesture has not ended.
         case first(First.Value)
@@ -6683,9 +6853,6 @@ public struct SequenceGesture<First, Second> where First : Gesture, Second : Ges
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SequenceGesture : Gesture {
-}
-
 extension SequenceGesture.Value : Equatable where First.Value : Equatable, Second.Value : Equatable {
 
     /// Returns a Boolean value indicating whether two values are equal.
@@ -6762,7 +6929,6 @@ extension Shape {
     ///     where drawing ends.
     /// - Returns: A shape built by capturing a portion of this shape's path.
     @inlinable public func trim(from startFraction: CGFloat = 0, to endFraction: CGFloat = 1) -> some Shape
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6888,13 +7054,11 @@ extension Shape {
     /// the shape (e.g. by filling it).
     @inlinable public func size(_ size: CGSize) -> some Shape
 
-
     /// Returns a new version of self representing the same shape, but
     /// that will ask it to create its path from a rect of size
     /// `(width, height)`. This does not affect the layout properties
     /// of any views created from the shape (e.g. by filling it).
     @inlinable public func size(width: CGFloat, height: CGFloat) -> some Shape
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6908,14 +7072,12 @@ extension Shape {
     /// - Returns: A shape filled with the color or gradient you supply.
     @inlinable public func fill<S>(_ content: S, style: FillStyle = FillStyle()) -> some View where S : ShapeStyle
 
-
     /// Fills this shape with the foreground color.
     ///
     /// - Parameter style: The style options that determine how the fill
     ///   renders.
     /// - Returns: A shape filled with the foreground color.
     @inlinable public func fill(style: FillStyle = FillStyle()) -> some View
-
 
     /// Traces the outline of this shape with a color or gradient.
     ///
@@ -6942,7 +7104,6 @@ extension Shape {
     /// - Returns: A stroked shape.
     @inlinable public func stroke<S>(_ content: S, style: StrokeStyle) -> some View where S : ShapeStyle
 
-
     /// Traces the outline of this shape with a color or gradient.
     ///
     /// The following example draws a circle with a purple stroke:
@@ -6954,7 +7115,6 @@ extension Shape {
     ///   - lineWidth: The width of the stroke that outlines this shape.
     /// - Returns: A stroked shape.
     @inlinable public func stroke<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S : ShapeStyle
-
 }
 
 /// A shape acts as view by filling itself with the foreground color and
@@ -6973,12 +7133,10 @@ extension Shape {
     /// contents of `style` to define the stroke characteristics.
     @inlinable public func stroke(style: StrokeStyle) -> some Shape
 
-
     /// Returns a new shape that is a stroked copy of `self` with
     /// line-width defined by `lineWidth` and all other properties of
     /// `StrokeStyle` having their default values.
     @inlinable public func stroke(lineWidth: CGFloat = 1) -> some Shape
-
 }
 
 /// A way to turn a shape into a view.
@@ -6992,7 +7150,6 @@ extension ShapeStyle {
     /// Return a new paint value matching `self` except using `rect` to
     /// map unit-space coordinates to absolute coordinates.
     @inlinable public func `in`(_ rect: CGRect) -> some ShapeStyle
-
 }
 
 /// Default View.body implementation to fill a Rectangle with `self`.
@@ -7009,10 +7166,10 @@ extension ShapeStyle where Self : View, Self.Body == _ShapeView<Rectangle, Self>
 /// of children, representing the phase that most accurately describes
 /// the entire group.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct SimultaneousGesture<First, Second> where First : Gesture, Second : Gesture {
+@frozen public struct SimultaneousGesture<First, Second> : Gesture where First : Gesture, Second : Gesture {
 
     /// The type of value produced by this gesture.
-    public struct Value {
+    @frozen public struct Value {
 
         public var first: First.Value?
 
@@ -7028,10 +7185,6 @@ public struct SimultaneousGesture<First, Second> where First : Gesture, Second :
 
     /// The type of gesture representing the body of `Self`.
     public typealias Body = Never
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SimultaneousGesture : Gesture {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7215,7 +7368,7 @@ extension Slider where Label == EmptyView, ValueLabel == EmptyView {
 /// A flexible space that expands along the major axis of its containing stack
 /// layout, or on both axes if not contained in a stack.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Spacer {
+@frozen public struct Spacer {
 
     /// The minimum length this spacer can be shrunk to, along the axis or axes
     /// of expansion.
@@ -7250,7 +7403,7 @@ public struct StackNavigationViewStyle : NavigationViewStyle {
 /// value of type `Value`, allowing the view to read and update its
 /// value.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper public struct State<Value> : DynamicProperty {
+@frozen @propertyWrapper public struct State<Value> : DynamicProperty {
 
     /// Initialize with the provided initial value.
     public init(wrappedValue value: Value)
@@ -7365,7 +7518,7 @@ extension Stepper where Label == Text {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct StrokeStyle : Equatable {
+@frozen public struct StrokeStyle : Equatable {
 
     public var lineWidth: CGFloat
 
@@ -7404,7 +7557,7 @@ extension StrokeStyle : Animatable {
 
 /// A view that subscribes to a `Publisher` with an `Action`
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct SubscriptionView<PublisherType, Content> where PublisherType : Publisher, Content : View, PublisherType.Failure == Never {
+@frozen public struct SubscriptionView<PublisherType, Content> : View where PublisherType : Publisher, Content : View, PublisherType.Failure == Never {
 
     /// The content view.
     public var content: Content
@@ -7424,12 +7577,9 @@ public struct SubscriptionView<PublisherType, Content> where PublisherType : Pub
     public typealias Body = Never
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SubscriptionView : View {
-}
-
 /// A `ToggleStyle` represented by a trailing switch.
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, OSX 10.15, watchOS 6.0, *)
+@available(tvOS, unavailable)
 public struct SwitchToggleStyle : ToggleStyle {
 
     public init()
@@ -7442,7 +7592,6 @@ public struct SwitchToggleStyle : ToggleStyle {
     /// This method will be called for each instance of `Toggle` created within
     /// a view hierarchy where this style is the current `ToggleStyle`.
     public func makeBody(configuration: SwitchToggleStyle.Configuration) -> some View
-
 
     /// A `View` representing the body of a `Toggle`.
     public typealias Body = some View
@@ -7482,8 +7631,9 @@ extension TabView where SelectionValue == Int {
 
 /// A gesture that ends once a specified number of tap event sequences
 /// have been recognized.
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct TapGesture {
+@available(iOS 13.0, OSX 10.15, watchOS 6.0, *)
+@available(tvOS, unavailable)
+public struct TapGesture : Gesture {
 
     /// The required number of tap events.
     public var count: Int
@@ -7497,13 +7647,9 @@ public struct TapGesture {
     public typealias Body = Never
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension TapGesture : Gesture {
-}
-
 /// A view that displays one or more lines of read-only text.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Text : Equatable {
+@frozen public struct Text : Equatable {
 
     /// Creates an instance that displays `content` verbatim.
     @inlinable public init(verbatim content: String)
@@ -7619,9 +7765,9 @@ extension Text {
     /// - Returns: Text that uses the font weight you specify.
     public func fontWeight(_ weight: Font.Weight?) -> Text
 
-    /// Applies a bold font weight to this text.
+    /// Make the font weight of this text heavier.
     ///
-    /// - Returns: Bold text.
+    /// - Returns: Heavier text.
     public func bold() -> Text
 
     /// Applies italics to this text.
@@ -7693,7 +7839,7 @@ extension Text.TruncationMode : Hashable {
 /// Preferred size: Child's preferred size
 /// An alignment in the horizontal axis.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public enum TextAlignment : Hashable, CaseIterable {
+@frozen public enum TextAlignment : Hashable, CaseIterable {
 
     case leading
 
@@ -7832,6 +7978,7 @@ extension TextField where Label == Text {
 }
 
 /// A specification for the appearance and interaction of a `TextField`.
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 public protocol TextFieldStyle {
 }
 
@@ -7940,7 +8087,7 @@ public struct ToggleStyleConfiguration {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct Transaction {
+@frozen public struct Transaction {
 
     @inlinable public init()
 }
@@ -7963,13 +8110,9 @@ extension Transaction {
     public var isContinuous: Bool
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Transaction {
-}
-
 /// A shape with an affine transform applied to it.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct TransformedShape<Content> : Shape where Content : Shape {
+@frozen public struct TransformedShape<Content> : Shape where Content : Shape {
 
     public var shape: Content
 
@@ -7987,7 +8130,7 @@ public struct TransformedShape<Content> : Shape where Content : Shape {
     public typealias AnimatableData = Content.AnimatableData
 
     /// The data to be animated.
-    public var animatableData: Content.AnimatableData
+    public var animatableData: TransformedShape<Content>.AnimatableData
 
     /// The type of view representing the body of this view.
     ///
@@ -7998,7 +8141,7 @@ public struct TransformedShape<Content> : Shape where Content : Shape {
 
 /// A View created from a swift tuple of View values.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct TupleView<T> {
+@frozen public struct TupleView<T> : View {
 
     public var value: T
 
@@ -8009,10 +8152,6 @@ public struct TupleView<T> {
     /// When you create a custom view, Swift infers this type from your
     /// implementation of the required `body` property.
     public typealias Body = Never
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension TupleView : View {
 }
 
 @available(iOS 13.0, tvOS 13.0, *)
@@ -8037,6 +8176,12 @@ open class UIHostingController<Content> : UIViewController where Content : View 
     @objc override dynamic open var prefersStatusBarHidden: Bool { get }
 
     @objc override dynamic open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { get }
+
+    @objc override dynamic open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator)
+
+    @objc override dynamic open func willMove(toParent parent: UIViewController?)
+
+    @objc override dynamic open func didMove(toParent parent: UIViewController?)
 
     @objc override dynamic public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
 }
@@ -8184,7 +8329,7 @@ public struct UIViewRepresentableContext<Representable> where Representable : UI
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct UnitPoint : Hashable {
+@frozen public struct UnitPoint : Hashable {
 
     public var x: CGFloat
 
@@ -8214,16 +8359,6 @@ public struct UnitPoint : Hashable {
 
     public static let bottomTrailing: UnitPoint
 
-    /// Returns a Boolean value indicating whether two values are equal.
-    ///
-    /// Equality is the inverse of inequality. For any values `a` and `b`,
-    /// `a == b` implies that `a != b` is `false`.
-    ///
-    /// - Parameters:
-    ///   - lhs: A value to compare.
-    ///   - rhs: Another value to compare.
-    public static func == (a: UnitPoint, b: UnitPoint) -> Bool
-
     /// The hash value.
     ///
     /// Hash values are not guaranteed to be equal across different executions of
@@ -8247,8 +8382,19 @@ public struct UnitPoint : Hashable {
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
     public func hash(into hasher: inout Hasher)
+
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: UnitPoint, b: UnitPoint) -> Bool
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension UnitPoint : Animatable {
 
     /// The type defining the data to be animated.
@@ -8324,7 +8470,7 @@ extension UserInterfaceSizeClass : Hashable {
 
 /// A view that arranges its children in a vertical line.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct VStack<Content> : View where Content : View {
+@frozen public struct VStack<Content> : View where Content : View {
 
     /// Creates an instance with the given `spacing` and Y axis `alignment`.
     ///
@@ -8358,7 +8504,7 @@ public protocol VectorArithmetic : AdditiveArithmetic {
 
 /// An alignment position along the horizontal axis
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct VerticalAlignment {
+@frozen public struct VerticalAlignment : Equatable {
 
     /// Creates an instance with the given ID.
     ///
@@ -8395,10 +8541,6 @@ extension VerticalAlignment {
     public static let lastTextBaseline: VerticalAlignment
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension VerticalAlignment : Equatable {
-}
-
 /// A piece of user interface.
 ///
 /// You create custom views by declaring types that conform to the `View`
@@ -8426,7 +8568,6 @@ extension View {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public func datePickerStyle<S>(_ style: S) -> some View where S : DatePickerStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8446,7 +8587,6 @@ extension View {
     ///     - content: A closure returning the content of the sheet.
     public func sheet<Item, Content>(item: Binding<Item?>, onDismiss: (() -> Void)? = nil, @ViewBuilder content: @escaping (Item) -> Content) -> some View where Item : Identifiable, Content : View
 
-
     /// Presents a sheet.
     ///
     /// - Parameters:
@@ -8454,16 +8594,15 @@ extension View {
     ///     - onDismiss: A closure executed when the sheet dismisses.
     ///     - content: A closure returning the content of the sheet.
     public func sheet<Content>(isPresented: Binding<Bool>, onDismiss: (() -> Void)? = nil, @ViewBuilder content: @escaping () -> Content) -> some View where Content : View
-
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, OSX 10.15, watchOS 6.0, *)
+@available(tvOS, unavailable)
 extension View {
 
     /// Returns a version of `self` that will invoke `action` after
     /// recognizing a longPress gesture.
     public func onLongPressGesture(minimumDuration: Double = 0.5, maximumDistance: CGFloat = 10, pressing: ((Bool) -> Void)? = nil, perform action: @escaping () -> Void) -> some View
-
 }
 
 extension View {
@@ -8473,7 +8612,6 @@ extension View {
     @available(iOS 13.0, OSX 10.15, tvOS 13.0, *)
     @available(watchOS, unavailable)
     public func disableAutocorrection(_ disable: Bool?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8482,7 +8620,6 @@ extension View {
     /// Provides a closure that vends the drag representation to be used for a
     /// particular `DynamicContent`.
     @inlinable public func itemProvider(_ action: (() -> NSItemProvider?)?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8491,7 +8628,6 @@ extension View {
     /// Adds a condition for whether the view hierarchy for `self` can
     /// be deleted.
     @inlinable public func deleteDisabled(_ isDisabled: Bool) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8500,7 +8636,26 @@ extension View {
     /// Adds a condition for whether the view hierarchy for `self` can
     /// be moved.
     @inlinable public func moveDisabled(_ isDisabled: Bool) -> some View
+}
 
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension View {
+
+    /// Activates this view as the source of a drag and drop operation.
+    ///
+    /// Applying the `onDrag(_:)` modifier adds the appropriate gestures for
+    /// drag and drop to this view. When a drag operation begins,
+    /// a rendering of this view is generated and used as the preview image.
+    ///
+    /// - Parameter data: A closure that returns a single `NSItemProvider` that
+    ///   represents the draggable data from this view.
+    /// - Returns: A view that activates this view as the source of a drag
+    ///   and drop operation, beginning with user gesture input.
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public func onDrag(_ data: @escaping () -> NSItemProvider) -> some View
 }
 
 extension View {
@@ -8517,7 +8672,6 @@ extension View {
 
     /// Sets the style for `Button` within the environment of `self`.
     public func buttonStyle<S>(_ style: S) -> some View where S : PrimitiveButtonStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8533,7 +8687,6 @@ extension View {
     /// - Returns: A view that triggers `action` when `publisher` emits an
     ///   event.
     @inlinable public func onReceive<P>(_ publisher: P, perform action: @escaping (P.Output) -> Void) -> some View where P : Publisher, P.Failure == Never
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8548,7 +8701,6 @@ extension View {
 extension View {
 
     @inlinable public func allowsHitTesting(_ enabled: Bool) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8561,14 +8713,12 @@ extension View {
     /// - Returns: A view that triggers `action` when this view appears.
     @inlinable public func onAppear(perform action: (() -> Void)? = nil) -> some View
 
-
     /// Adds an action to perform when this view disappears.
     ///
     /// - Parameter action: The action to perform. If `action` is `nil`, the
     ///   call has no effect.
     /// - Returns: A view that triggers `action` when this view disappears.
     @inlinable public func onDisappear(perform action: (() -> Void)? = nil) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8600,14 +8750,12 @@ extension View {
     @available(tvOS, unavailable)
     public func contextMenu<MenuItems>(@ViewBuilder menuItems: () -> MenuItems) -> some View where MenuItems : View
 
-
     /// Attaches a `ContextMenu` and its children to `self`.
     ///
     /// This modifier allows for the contextual menu to be conditionally
     /// available by passing `nil` as the value for `contextMenu`.
     @available(tvOS, unavailable)
     public func contextMenu<MenuItems>(_ contextMenu: ContextMenu<MenuItems>?) -> some View where MenuItems : View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8617,16 +8765,13 @@ extension View {
     /// than gestures defined by `self`.
     public func gesture<T>(_ gesture: T, including mask: GestureMask = .all) -> some View where T : Gesture
 
-
     /// Attaches `gesture` to `self` such that it has higher precedence
     /// than gestures defined by `self`.
     public func highPriorityGesture<T>(_ gesture: T, including mask: GestureMask = .all) -> some View where T : Gesture
 
-
     /// Attaches `gesture` to self such that it will be processed
     /// simultaneously with gestures defined by `self`.
     public func simultaneousGesture<T>(_ gesture: T, including mask: GestureMask = .all) -> some View where T : Gesture
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8634,21 +8779,18 @@ extension View {
 
     /// Sets the style for `Button` within the environment of `self`.
     public func buttonStyle<S>(_ style: S) -> some View where S : ButtonStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func transformAnchorPreference<A, K>(key _: K.Type = K.self, value: Anchor<A>.Source, transform: @escaping (inout K.Value, Anchor<A>) -> Void) -> some View where K : PreferenceKey
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func background<Background>(_ background: Background, alignment: Alignment = .center) -> some View where Background : View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8680,7 +8822,6 @@ extension View {
     /// - Returns: A view that layers `overlay` in front of this view.
     @inlinable public func overlay<Overlay>(_ overlay: Overlay, alignment: Alignment = .center) -> some View where Overlay : View
 
-
     /// Adds a border to this view with the specified style and width.
     ///
     /// By default, the border appears inside the bounds of this view. In this
@@ -8704,7 +8845,6 @@ extension View {
     /// - Returns: A view that adds a border with the specified style and width
     ///   to this view.
     @inlinable public func border<S>(_ content: S, width: CGFloat = 1) -> some View where S : ShapeStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8732,7 +8872,6 @@ extension View {
     ///   `aspectRatio`, using `contentMode` as its scaling algorithm.
     @inlinable public func aspectRatio(_ aspectRatio: CGFloat? = nil, contentMode: ContentMode) -> some View
 
-
     /// Constrains this view's dimensions to the aspect ratio of the given size.
     ///
     /// If this view is resizable, the resulting view uses `aspectRatio` as its
@@ -8754,7 +8893,6 @@ extension View {
     ///   `aspectRatio`, using `contentMode` as its scaling algorithm.
     @inlinable public func aspectRatio(_ aspectRatio: CGSize, contentMode: ContentMode) -> some View
 
-
     /// Scales this view to fit its parent.
     ///
     /// This view's aspect ratio is maintained as the view scales. This
@@ -8770,7 +8908,6 @@ extension View {
     ///   maintaining this view's aspect ratio.
     @inlinable public func scaledToFit() -> some View
 
-
     /// Scales this view to fill its parent.
     ///
     /// This view's aspect ratio is maintained as the view scales. This
@@ -8785,7 +8922,6 @@ extension View {
     /// - Returns: A view that scales this view to fit its parent,
     ///   maintaining this view's aspect ratio.
     @inlinable public func scaledToFill() -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8818,7 +8954,6 @@ extension View {
     ///   dimensions specified by `horizontal` and `vertical`.
     @inlinable public func fixedSize(horizontal: Bool, vertical: Bool) -> some View
 
-
     /// Fixes this view at its ideal size.
     ///
     /// This example shows the effect of `fixedSize()` on a text view that
@@ -8840,7 +8975,6 @@ extension View {
     /// - Returns: A view that fixes this view at its ideal size in the
     ///   dimensions given in `fixedDimensions`.
     @inlinable public func fixedSize() -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8848,7 +8982,6 @@ extension View {
 
     /// Set the foreground color within `self`.
     @inlinable public func foregroundColor(_ color: Color?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8856,7 +8989,6 @@ extension View {
 
     /// Sets the style for `Picker` within the environment of `self`.
     public func pickerStyle<S>(_ style: S) -> some View where S : PickerStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8867,7 +8999,6 @@ extension View {
     /// - Parameter insets: The edges to inset.
     /// - Returns: A view that pads this view using edge the insets you specify.
     @inlinable public func padding(_ insets: EdgeInsets) -> some View
-
 
     /// Pads this view using the edge insets you specify.
     ///
@@ -8885,13 +9016,11 @@ extension View {
     /// - Returns: A view that pads this view using edge the insets you specify.
     @inlinable public func padding(_ edges: Edge.Set = .all, _ length: CGFloat? = nil) -> some View
 
-
     /// Pads this view along all edge insets by the amount you specify.
     ///
     /// - Parameter length: The amount to inset this view on each edge.
     /// - Returns: A view that pads this view by the amount you specify.
     @inlinable public func padding(_ length: CGFloat) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8913,7 +9042,6 @@ extension View {
     /// - Returns: A view that offsets this view by `size`.
     @inlinable public func offset(_ offset: CGSize) -> some View
 
-
     /// Offsets this view by the specified horizontal and vertical distances.
     ///
     /// The original dimensions of the view are considered to be unchanged by
@@ -8930,7 +9058,6 @@ extension View {
     ///   - y: The vertical distance to offset this view.
     /// - Returns: A view that offsets this view by `x` and `y`.
     @inlinable public func offset(x: CGFloat = 0, y: CGFloat = 0) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8941,12 +9068,10 @@ extension View {
     /// `computeValue`.
     @inlinable public func alignmentGuide(_ g: HorizontalAlignment, computeValue: @escaping (ViewDimensions) -> CGFloat) -> some View
 
-
     /// Returns a view modified so that its value for the given `guide` is the
     /// result of passing the `ViewDimensions` of the underlying view to
     /// `computeValue`.
     @inlinable public func alignmentGuide(_ g: VerticalAlignment, computeValue: @escaping (ViewDimensions) -> CGFloat) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8960,7 +9085,6 @@ extension View {
     /// - Returns: A view that fixes the center of this view at `position`.
     @inlinable public func position(_ position: CGPoint) -> some View
 
-
     /// Fixes the center of this view at the specified coordinates in its
     /// parent's coordinate space.
     ///
@@ -8970,7 +9094,6 @@ extension View {
     /// - Returns: A view that fixes the center of this view at
     ///   `x` and `y`.
     @inlinable public func position(x: CGFloat = 0, y: CGFloat = 0) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8990,7 +9113,6 @@ extension View {
     ///   size out of the safe area on the edges specified by `edges`, proposes
     ///   that area to this view, and centers this view.
     @inlinable public func edgesIgnoringSafeArea(_ edges: Edge.Set) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8999,7 +9121,6 @@ extension View {
     /// Returns a view wrapping `self` that sets a `value` for an environment
     /// `keyPath`.
     @inlinable public func environment<V>(_ keyPath: WritableKeyPath<EnvironmentValues, V>, _ value: V) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9007,14 +9128,12 @@ extension View {
 
     /// Sets the Z index for an item.
     @inlinable public func zIndex(_ value: Double) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func transformEffect(_ transform: CGAffineTransform) -> some View
-
 }
 
 extension View {
@@ -9034,7 +9153,6 @@ extension View {
     @available(OSX, unavailable)
     public func actionSheet<T>(item: Binding<T?>, content: (T) -> ActionSheet) -> some View where T : Identifiable
 
-
     /// Presents an action sheet.
     ///
     /// - Parameters:
@@ -9044,7 +9162,6 @@ extension View {
     @available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     @available(OSX, unavailable)
     public func actionSheet(isPresented: Binding<Bool>, content: () -> ActionSheet) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9059,7 +9176,6 @@ extension View {
     ///   the accent color is the system default.
     @available(OSX, unavailable)
     @inlinable public func accentColor(_ accentColor: Color?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9083,14 +9199,12 @@ extension View {
     /// - Returns: A view that controls whether users can interact with this
     ///   view.
     @inlinable public func disabled(_ disabled: Bool) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9098,12 +9212,9 @@ extension View {
 
     @inlinable public func scaleEffect(_ scale: CGSize, anchor: UnitPoint = .center) -> some View
 
-
     @inlinable public func scaleEffect(_ s: CGFloat, anchor: UnitPoint = .center) -> some View
 
-
     @inlinable public func scaleEffect(x: CGFloat = 0.0, y: CGFloat = 0.0, anchor: UnitPoint = .center) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9118,7 +9229,6 @@ extension View {
     ///     permits transparency in the blur output. Set to `true` to create
     ///     an opaque blur, or set to `false` to permit transparency.
     @inlinable public func blur(radius: CGFloat, opaque: Bool = false) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9130,7 +9240,6 @@ extension View {
     ///     brightening) that represents the intensity of the brightness effect.
     /// - Returns: A view that brightens this view by the specified amount.
     @inlinable public func brightness(_ amount: Double) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9144,7 +9253,6 @@ extension View {
     ///
     /// - Returns: A view that inverts its colors.
     @inlinable public func colorInvert() -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9159,7 +9267,6 @@ extension View {
     /// - Parameter color: The color to bias this view toward.
     /// - Returns: A view with a color multiplication effect.
     @inlinable public func colorMultiply(_ color: Color) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9174,7 +9281,6 @@ extension View {
     ///     values invert colors in addition to applying contrast.
     /// - Returns: A view that applies color contrast to this view.
     @inlinable public func contrast(_ amount: Double) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9189,7 +9295,6 @@ extension View {
     ///   colorful.
     /// - Returns: A view that adds a grayscale effect to this view.
     @inlinable public func grayscale(_ amount: Double) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9204,7 +9309,6 @@ extension View {
     ///   view.
     /// - Returns: A view that applies a hue rotation effect to this view.
     @inlinable public func hueRotation(_ angle: Angle) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9212,7 +9316,6 @@ extension View {
 
     @available(OSX, unavailable)
     @inlinable public func preferredColorScheme(_ colorScheme: ColorScheme?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9227,7 +9330,6 @@ extension View {
     ///
     /// Returns: A view that applies a luminance to alpha effect to this view.
     @inlinable public func luminanceToAlpha() -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9241,7 +9343,6 @@ extension View {
     /// - Parameter amount: The amount of saturation to apply to this view.
     /// - Returns: A view that adjusts the saturation of this view.
     @inlinable public func saturation(_ amount: Double) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9249,7 +9350,6 @@ extension View {
 
     /// Associates a transition with `self`.
     @inlinable public func transition(_ t: AnyTransition) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9268,7 +9368,6 @@ extension View {
     ///     (fully opaque).
     /// - Returns: A view that sets the transparency of this view.
     @inlinable public func opacity(_ opacity: Double) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9284,7 +9383,6 @@ extension View {
     /// - Returns: A view that applies `animation` to this view whenever `value`
     ///   changes.
     @inlinable public func animation<V>(_ animation: Animation?, value: V) -> some View where V : Equatable
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9295,7 +9393,6 @@ extension View {
     ///
     /// - SeeAlso: `List`, `Picker`
     @inlinable public func tag<V>(_ tag: V) -> some View where V : Hashable
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9306,7 +9403,6 @@ extension View {
     /// - Parameter blendMode: The blend mode for compositing this view.
     /// - Returns: A view that applies `blendMode` to this view.
     @inlinable public func blendMode(_ blendMode: BlendMode) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9314,7 +9410,6 @@ extension View {
 
     /// Sets the view to be placed behind `self` when placed in a `List`
     @inlinable public func listRowBackground<V>(_ view: V?) -> some View where V : View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9334,7 +9429,6 @@ extension View {
     /// - Returns: A view that composites this view's contents into an offscreen
     ///   image before display.
     public func drawingGroup(opaque: Bool = false, colorMode: ColorRenderingMode = .nonLinear) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9348,7 +9442,6 @@ extension View {
     ///
     /// - Returns: A view that wraps this view in a compositing group.
     @inlinable public func compositingGroup() -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9394,25 +9487,21 @@ extension View {
     ///     "Apple Watch Series 4 - 44mm"
     @inlinable public func previewDevice(_ value: PreviewDevice?) -> some View
 
-
     /// Overrides the size of the container for the preview.
     ///
     /// Default is `.device`.
     @inlinable public func previewLayout(_ value: PreviewLayout) -> some View
 
-
     /// Provides a user visible name shown in the editor.
     ///
     /// Default is `nil`.
     @inlinable public func previewDisplayName(_ value: String?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func anchorPreference<A, K>(key _: K.Type = K.self, value: Anchor<A>.Source, transform: @escaping (Anchor<A>) -> K.Value) -> some View where K : PreferenceKey
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9440,7 +9529,6 @@ extension View {
     ///   define the shape's rasterization.
     @inlinable public func clipShape<S>(_ shape: S, style: FillStyle = FillStyle()) -> some View where S : Shape
 
-
     /// Clips this view to its bounding rectangular frame.
     ///
     /// By default, a view's bounding frame is used only for layout, so any
@@ -9452,7 +9540,6 @@ extension View {
     ///   smoothing is applied to the edges of the clipping rectangle.
     /// - Returns: A view that clips this view to its bounding frame.
     @inlinable public func clipped(antialiased: Bool = false) -> some View
-
 
     /// Clips this view to its bounding frame, with the specified corner radius.
     ///
@@ -9470,7 +9557,6 @@ extension View {
     ///   smoothing is applied to the edges of the clipping rectangle.
     /// - Returns: A view that clips this view to its bounding frame.
     @inlinable public func cornerRadius(_ radius: CGFloat, antialiased: Bool = true) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9487,7 +9573,6 @@ extension View {
     ///     this view.
     /// - Returns: A view that adds a shadow to this view.
     @inlinable public func shadow(color: Color = Color(.sRGBLinear, white: 0, opacity: 0.33), radius: CGFloat, x: CGFloat = 0, y: CGFloat = 0) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9495,7 +9580,6 @@ extension View {
 
     /// Sets the style for `Toggle` within the environment of `self`
     public func toggleStyle<S>(_ style: S) -> some View where S : ToggleStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9507,33 +9591,33 @@ extension View {
     /// - Returns: A view that sets this view's color scheme.
     @inlinable public func colorScheme(_ colorScheme: ColorScheme) -> some View
 
-
     /// Set the image scale within `self`.
     @available(OSX, unavailable)
     @inlinable public func imageScale(_ scale: Image.Scale) -> some View
-
 
     /// Sets the default font for text in this view.
     ///
     /// - Parameter font: The default font to use in this view.
     /// - Returns: A view with the default font set to the value you supply.
     @inlinable public func font(_ font: Font?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
-    /// Positions this view within an invisible frame with the specified size.
+    /// Positions this view within an invisible frame having the specified
+    /// width and/or height.
     ///
     /// Use this method to specify a fixed size for a view's width,
     /// height, or both. If you only specify one of the dimensions, the
     /// resulting view assumes this view's sizing behavior in the other
     /// dimension.
     ///
-    /// For example, the first ellipse in the following code is rendered in a
-    /// fixed 200 by 100 frame. The second ellipse has only its height fixed,
-    /// at 100; its width still expands to fill its parent's dimensions.
+    /// For example, the first ellipse in the following code is laid out in a
+    /// fixed 200 by 100 frame. Since a shape always occupies the space offered
+    /// to it, the first ellipse will be 200x100 points. The second ellipse is
+    /// laid out in a frame with only a fixed height, so it occupies that
+    /// height, and whatever width is offered to its parent.
     ///
     ///     VStack {
     ///         Ellipse()
@@ -9544,12 +9628,15 @@ extension View {
     ///         .frame(height: 100)
     ///     }
     ///
-    /// If this view is smaller than the resulting frame in either dimension,
     /// `alignment` specifies this view's alignment within the frame.
     ///
     ///     Text("Hello world!")
-    ///     .frame(width: 200, height: 200, alignment: topLeading)
+    ///     .frame(width: 200, height: 30, alignment: topLeading)
     ///     .border(Color.gray)
+    ///
+    /// In the example above, the text will be positioned at the top,
+    /// leading corner of the frame.  If the text is taller than the frame,
+    /// its bounds may extend beyond the bottom of the frame's bounds.
     ///
     /// - Parameters:
     ///   - width: A fixed width for the resulting view. If `width` is `nil`,
@@ -9563,21 +9650,19 @@ extension View {
     ///   the parameters that are non-`nil`.
     @inlinable public func frame(width: CGFloat? = nil, height: CGFloat? = nil, alignment: Alignment = .center) -> some View
 
-
     /// This function should never be used.
     ///
     /// It is merely a hack to catch the case where the user writes .frame(),
     /// which is nonsensical.
     @available(*, deprecated, message: "Please pass one or more parameters.")
     @inlinable public func frame() -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
-    /// Positions this view within an invisible frame with the specified width
-    /// and height constraints.
+    /// Positions this view within an invisible frame having the specified
+    /// width and/or height constraints.
     ///
     /// Always specify at least one size characteristic when calling this
     /// method. Pass `nil` or leave out a characteristic to indicate that
@@ -9586,13 +9671,14 @@ extension View {
     ///
     /// The size proposed to this view is the size proposed to the frame,
     /// limited by any constraints specified, and with any ideal dimensions
-    /// specified replacing corresponding nil dimensions in the proposal.
+    /// specified replacing corresponding unpecified dimensions in the
+    /// proposal.
     ///
     /// If you no minimum or maximum constraint is specified in a given
     /// dimension, the frame adopts the sizing behavior of its child in that
     /// dimension. If both constraints are specified in a dimension, the frame
     /// unconditionally adopts the size proposed for it, clamped to the
-    /// constraints.  In detail, the size of the frame in either dimension is:
+    /// constraints.  Otherwise, the size of the frame in either dimension is:
     ///
     /// - If a minimum constraint is specified and the size proposed for the
     ///   frame by the parent is less than the size of this view, the proposed
@@ -9615,7 +9701,15 @@ extension View {
     /// - Returns: A view with flexible dimensions given by the call's non-`nil`
     ///   parameters.
     @inlinable public func frame(minWidth: CGFloat? = nil, idealWidth: CGFloat? = nil, maxWidth: CGFloat? = nil, minHeight: CGFloat? = nil, idealHeight: CGFloat? = nil, maxHeight: CGFloat? = nil, alignment: Alignment = .center) -> some View
+}
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, *)
+@available(watchOS, unavailable)
+extension View {
+
+    /// Sets the tab item to be used for this content.
+    @available(watchOS, unavailable)
+    public func tabItem<V>(@ViewBuilder _ label: () -> V) -> some View where V : View
 }
 
 @available(iOS 13.0, OSX 10.15, *)
@@ -9642,7 +9736,6 @@ extension View {
     @available(watchOS, unavailable)
     public func popover<Item, Content>(item: Binding<Item?>, attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: Edge = .top, @ViewBuilder content: @escaping (Item) -> Content) -> some View where Item : Identifiable, Content : View
 
-
     /// Presents a popover.
     ///
     /// - Parameters:
@@ -9655,7 +9748,39 @@ extension View {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public func popover<Content>(isPresented: Binding<Bool>, attachmentAnchor: PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: Edge = .top, @ViewBuilder content: @escaping () -> Content) -> some View where Content : View
+}
 
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension View {
+
+    /// Adds an action to perform when the pointer enters or exits this view's
+    /// frame.
+    ///
+    /// - Parameter action: The action to perform whenever the pointer enters or
+    ///   exits this view's frame. If the pointer is in the view's frame,
+    ///   the `action` closure passes `true` as a parameter; otherwise, `false`.
+    ///
+    /// - Returns: A view that triggers `action` when the pointer enters or
+    ///   exits this view's frame.
+    @inlinable public func onHover(perform action: @escaping (Bool) -> Void) -> some View
+}
+
+@available(iOS 13.4, *)
+@available(OSX, unavailable)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension View {
+
+    /// Applies a pointer hover effect to the view.
+    ///
+    /// - Note: the system may fall-back to a more appropriate effect.
+    @available(iOS 13.4, *)
+    @available(OSX, unavailable)
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public func hoverEffect(_ effect: HoverEffect = .automatic) -> some View
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9668,7 +9793,6 @@ extension View {
     ///
     /// Returns: A view that hides this view.
     @inlinable public func hidden() -> some View
-
 }
 
 extension View {
@@ -9681,7 +9805,6 @@ extension View {
     @available(OSX, unavailable)
     @available(watchOS, unavailable)
     public func keyboardType(_ type: UIKeyboardType) -> some View
-
 }
 
 extension View {
@@ -9694,7 +9817,6 @@ extension View {
     @available(OSX, unavailable)
     @available(watchOS, unavailable)
     public func autocapitalization(_ style: UITextAutocapitalizationType) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9710,7 +9832,6 @@ extension View {
     /// - Returns: A view that triggers `action` when the value for `key`
     ///   changes.
     @inlinable public func onPreferenceChange<K>(_ key: K.Type = K.self, perform action: @escaping (K.Value) -> Void) -> some View where K : PreferenceKey, K.Value : Equatable
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, *)
@@ -9720,7 +9841,6 @@ extension View {
     /// Sets the style for `NavigationView` within the environment of `self`
     @available(watchOS, unavailable)
     public func navigationViewStyle<S>(_ style: S) -> some View where S : NavigationViewStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9728,7 +9848,6 @@ extension View {
 
     /// Sets the style for `List` within the environment of `self`.
     public func listStyle<S>(_ style: S) -> some View where S : ListStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9737,7 +9856,6 @@ extension View {
     /// Returns a view that applies `callback(&value)` to the value of
     /// preference `Key` that's seen by its ancestors.
     @inlinable public func transformPreference<K>(_ key: K.Type = K.self, _ callback: @escaping (inout K.Value) -> Void) -> some View where K : PreferenceKey
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9752,13 +9870,11 @@ extension View {
     /// - Returns: A view that conditionally flips its contents horizontally
     /// when the layout direction is right-to-left.
     @inlinable public func flipsForRightToLeftLayoutDirection(_ enabled: Bool) -> some View
-
 }
 
 extension View {
 
     @inlinable public func textContentType(_ textContentType: UITextContentType?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9769,7 +9885,6 @@ extension View {
     /// While the labels are not visually laid out alongside the controls, they
     /// are still used for disclosable purposes, such as accessibility.
     public func labelsHidden() -> some View
-
 }
 
 @available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -9787,7 +9902,6 @@ extension View {
     @available(OSX, unavailable)
     public func navigationBarHidden(_ hidden: Bool) -> some View
 
-
     /// Configures the title in the navigation bar for this view.
     ///
     /// This modifier only takes effect when this view is inside of and visible
@@ -9798,7 +9912,6 @@ extension View {
     ///       bar.
     @available(OSX, unavailable)
     public func navigationBarTitle(_ title: Text) -> some View
-
 
     /// Configures the title in the navigation bar for this view.
     ///
@@ -9811,7 +9924,6 @@ extension View {
     @available(OSX, unavailable)
     public func navigationBarTitle(_ titleKey: LocalizedStringKey) -> some View
 
-
     /// Configures the title in the navigation bar for this view.
     ///
     /// This modifier only takes effect when this view is inside of and visible
@@ -9821,7 +9933,6 @@ extension View {
     ///     - title: A title for this view to display in the navigation bar.
     @available(OSX, unavailable)
     public func navigationBarTitle<S>(_ title: S) -> some View where S : StringProtocol
-
 
     /// Configures the title of the navigation bar for this view.
     ///
@@ -9837,7 +9948,6 @@ extension View {
     @available(watchOS, unavailable)
     public func navigationBarTitle(_ title: Text, displayMode: NavigationBarItem.TitleDisplayMode) -> some View
 
-
     /// Configures the title of the navigation bar for this view.
     ///
     /// This modifier only takes effect when this view is inside of and visible
@@ -9852,7 +9962,6 @@ extension View {
     @available(watchOS, unavailable)
     public func navigationBarTitle(_ titleKey: LocalizedStringKey, displayMode: NavigationBarItem.TitleDisplayMode) -> some View
 
-
     /// Configures the navigation bar items for this view.
     ///
     /// This modifier only takes effect when this view is inside of and visible
@@ -9865,7 +9974,6 @@ extension View {
     @available(watchOS, unavailable)
     public func navigationBarItems<L, T>(leading: L, trailing: T) -> some View where L : View, T : View
 
-
     /// Configures the navigation bar items for this view.
     ///
     /// This modifier only takes effect when this view is inside of and visible
@@ -9876,7 +9984,6 @@ extension View {
     @available(OSX, unavailable)
     @available(watchOS, unavailable)
     public func navigationBarItems<L>(leading: L) -> some View where L : View
-
 
     /// Configures the navigation bar items for this view.
     ///
@@ -9889,7 +9996,6 @@ extension View {
     @available(watchOS, unavailable)
     public func navigationBarItems<T>(trailing: T) -> some View where T : View
 
-
     /// Hides the navigation bar back button for this view.
     ///
     /// This modifier only takes effect when this view is inside of and visible
@@ -9900,7 +10006,6 @@ extension View {
     ///       the back button.
     @available(OSX, unavailable)
     public func navigationBarBackButtonHidden(_ hidesBackButton: Bool) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9913,7 +10018,6 @@ extension View {
     /// - Returns: A view that aligns the lines of multiline `Text` instances
     ///   it contains.
     @inlinable public func multilineTextAlignment(_ alignment: TextAlignment) -> some View
-
 
     /// Sets the truncation mode for lines of text that are too long to fit in
     /// the available space.
@@ -9928,13 +10032,11 @@ extension View {
     ///   depending on the mode you select.
     @inlinable public func truncationMode(_ mode: Text.TruncationMode) -> some View
 
-
     /// Sets the amount of space between lines of text in this view.
     ///
     /// - Parameter lineSpacing: The amount of space between the bottom of one
     ///   line and the top of the next line.
     @inlinable public func lineSpacing(_ lineSpacing: CGFloat) -> some View
-
 
     /// Sets whether text in this view can compress the space between characters
     /// when necessary to fit text in a line.
@@ -9944,7 +10046,6 @@ extension View {
     /// - Returns: A view that can compress the space between characters when
     ///   necessary to fit text in a line.
     @inlinable public func allowsTightening(_ flag: Bool) -> some View
-
 
     /// Sets the maximum number of lines that text can occupy in this view.
     ///
@@ -9960,7 +10061,6 @@ extension View {
     /// - Note: a non-nil `number` less than 1 will be treated as 1.
     @inlinable public func lineLimit(_ number: Int?) -> some View
 
-
     /// Sets the minimum amount that text in this view scales down to fit in the
     /// available space.
     ///
@@ -9973,16 +10073,15 @@ extension View {
     ///   specify the minimum amount of text scaling that this view permits.
     /// - Returns: A view that limits the amount of text downscaling.
     @inlinable public func minimumScaleFactor(_ factor: CGFloat) -> some View
-
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, OSX 10.15, watchOS 6.0, *)
+@available(tvOS, unavailable)
 extension View {
 
     /// Returns a version of `self` that will invoke `action` after
     /// recognizing a tap gesture.
     public func onTapGesture(count: Int = 1, perform action: @escaping () -> Void) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9990,7 +10089,6 @@ extension View {
 
     /// Sets the inset to be applied to `self` in a `List`.
     @inlinable public func listRowInsets(_ insets: EdgeInsets?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10000,7 +10098,6 @@ extension View {
     /// value `id`. When `id` changes the identity of the view (for
     /// example, its state) is reset.
     @inlinable public func id<ID>(_ id: ID) -> some View where ID : Hashable
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10009,14 +10106,12 @@ extension View {
     /// Returns a view that reads the value of preference `Key` from
     /// `self`, uses that to produce another view which is displayed as
     /// an overlay on `self`.
-    @inlinable public func overlayPreferenceValue<Key, T>(_ key: Key.Type = Key.self, _ transform: @escaping (Key.Value) -> T) -> some View where Key : PreferenceKey, T : View
-
+    @inlinable public func overlayPreferenceValue<Key, T>(_ key: Key.Type = Key.self, @ViewBuilder _ transform: @escaping (Key.Value) -> T) -> some View where Key : PreferenceKey, T : View
 
     /// Returns a view that reads the value of preference `Key` from
     /// `self`, uses that to produce another view which is displayed as
     /// as the background to `self`.
-    @inlinable public func backgroundPreferenceValue<Key, T>(_ key: Key.Type = Key.self, _ transform: @escaping (Key.Value) -> T) -> some View where Key : PreferenceKey, T : View
-
+    @inlinable public func backgroundPreferenceValue<Key, T>(_ key: Key.Type = Key.self, @ViewBuilder _ transform: @escaping (Key.Value) -> T) -> some View where Key : PreferenceKey, T : View
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10039,6 +10134,10 @@ extension View {
     /// This is not user-visible and is good for testing.
     public func accessibility(identifier: String) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
 
+    /// Set a selection identifier for the current accessibility element.
+    /// Used by picker to determine what node to use for the accessibility value
+    public func accessibility(selectionIdentifier: AnyHashable) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
+
     /// Set the sort priority value used to order the current accessibility
     /// element relative to other elements at it's level.
     /// Higher numbers are sorted first. The default sort priority is zero.
@@ -10053,21 +10152,10 @@ extension View {
     public func accessibility(activationPoint: UnitPoint) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
 }
 
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, *)
-@available(watchOS, unavailable)
-extension View {
-
-    /// Sets the tab item to be used for this content.
-    @available(watchOS, unavailable)
-    public func tabItem<V>(@ViewBuilder _ label: () -> V) -> some View where V : View
-
-}
-
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func rotation3DEffect(_ angle: Angle, axis: (x: CGFloat, y: CGFloat, z: CGFloat), anchor: UnitPoint = .center, anchorZ: CGFloat = 0, perspective: CGFloat = 1) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10077,9 +10165,9 @@ extension View {
     /// environment key described by `keyPath` by applying a transform
     /// function.
     @inlinable public func transformEnvironment<V>(_ keyPath: WritableKeyPath<EnvironmentValues, V>, transform: @escaping (inout V) -> Void) -> some View
-
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     /// Convenience function for attaching an AccessibilityScrollAction to a
@@ -10091,7 +10179,6 @@ extension View {
 extension View {
 
     @inlinable public func coordinateSpace<T>(name: T) -> some View where T : Hashable
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10102,7 +10189,6 @@ extension View {
     /// shape is interpreted using the even-odd winding number rule or
     /// not.
     @inlinable public func contentShape<S>(_ shape: S, eoFill: Bool = false) -> some View where S : Shape
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10111,7 +10197,6 @@ extension View {
     /// Returns a view producing `value` as the value of preference
     /// `Key` seen by its ancestors.
     @inlinable public func preference<K>(key _: K.Type = K.self, value: K.Value) -> some View where K : PreferenceKey
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10130,7 +10215,6 @@ extension View {
     ///   to all transactions used within the view.
     @inlinable public func transaction(_ transform: @escaping (inout Transaction) -> Void) -> some View
 
-
     /// Applies the given animation to all animatable values within this view.
     ///
     /// Use this modifier on leaf views rather than container views. The
@@ -10142,14 +10226,12 @@ extension View {
     /// - Returns: A view that wraps this view and applies `animation`
     ///   to all animatable values used within the view.
     @inlinable public func animation(_ animation: Animation?) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     public func accessibilityElement(children: AccessibilityChildBehavior = .ignore) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10168,23 +10250,22 @@ extension View {
     /// minimum space required for all its lower-priority children, and
     /// so on for each lower priority value.
     @inlinable public func layoutPriority(_ value: Double) -> some View
-
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     /// Sets the style for `TextField` within the environment of `self`.
     public func textFieldStyle<S>(_ style: S) -> some View where S : TextFieldStyle
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func mask<Mask>(_ mask: Mask) -> some View where Mask : View
-
 }
 
+@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     /// Convenience function for attaching an AccessibilityAdjustableAction to a
@@ -10192,11 +10273,85 @@ extension View {
     public func accessibilityAdjustableAction(_ handler: @escaping (AccessibilityAdjustmentDirection) -> Void) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
 }
 
+@available(iOS 13.4, OSX 10.15, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension View {
+
+    /// Defines the destination for a drag and drop operation, using the same
+    /// size and position as this view, handling dropped content with the given
+    /// closure.
+    ///
+    /// - Parameters:
+    ///   - supportedTypes: The uniform type identifiers that describe the
+    ///     types of content this view can accept through drag and drop.
+    ///     If the drag and drop operation doesn't contain any of the supported
+    ///     types, then this drop destination doesn't activate and `isTargeted`
+    ///     doesn't update.
+    ///   - isTargeted: A binding that updates when a drag and drop operation
+    ///     enters or exits the drop target area. The binding's value is `true`
+    ///     when the cursor is inside the area, and `false` when the cursor is
+    ///     outside.
+    ///   - action: A closure that takes the dropped content and responds
+    ///     appropriately. The parameter to `action` contains the dropped
+    ///     items, with types specified by `supportedTypes`. Return `true`
+    ///     if the drop operation was successful; otherwise, return `false`.
+    /// - Returns: A view that provides a drop destination for a drag
+    ///   operation of the specified types.
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public func onDrop(of supportedTypes: [String], isTargeted: Binding<Bool>?, perform action: @escaping ([NSItemProvider]) -> Bool) -> some View
+
+    /// Defines the destination for a drag and drop operation with the same size
+    /// and position as this view, handling dropped content and the drop
+    /// location with the given closure.
+    ///
+    /// - Parameters:
+    ///   - supportedTypes: The uniform type identifiers that describe the
+    ///     types of content this view can accept through drag and drop.
+    ///     If the drag and drop operation doesn't contain any of the supported
+    ///     types, then this drop destination doesn't activate and `isTargeted`
+    ///     doesn't update.
+    ///   - isTargeted: A binding that updates when a drag and drop operation
+    ///     enters or exits the drop target area. The binding's value is `true`
+    ///     when the cursor is inside the area, and `false` when the cursor is
+    ///     outside.
+    ///   - action: A closure that takes the dropped content and responds
+    ///     appropriately. The first parameter to `action` contains the dropped
+    ///     items, with types specified by `supportedTypes`. The second
+    ///     parameter contains the drop location in this view's coordinate
+    ///     space. Return `true` if the drop operation was successful;
+    ///     otherwise, return `false`.
+    /// - Returns: A view that provides a drop destination for a drag
+    ///   operation of the specified types.
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public func onDrop(of supportedTypes: [String], isTargeted: Binding<Bool>?, perform action: @escaping ([NSItemProvider], CGPoint) -> Bool) -> some View
+
+    /// Defines the destination for a drag and drop operation with the same size
+    /// and position as this view, with behavior controlled by the given
+    /// delegate.
+    ///
+    /// - Parameters:
+    ///   - supportedTypes: The uniform type identifiers that describe the
+    ///     types of content this view can accept through drag and drop.
+    ///     If the drag and drop operation doesn't contain any of the supported
+    ///     types, then this drop destination doesn't activate and `isTargeted`
+    ///     doesn't update.
+    ///   - delegate: A type that conforms to the `DropDelegate` protocol. You
+    ///     have comprehensive control over drop behavior when you use a
+    ///     delegate.
+    /// - Returns: A view that provides a drop destination for a drag
+    ///   operation of the specified types.
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public func onDrop(of supportedTypes: [String], delegate: DropDelegate) -> some View
+}
+
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     @inlinable public func projectionEffect(_ transform: ProjectionTransform) -> some View
-
 }
 
 @available(iOS 13.0, watchOS 6.0, *)
@@ -10209,7 +10364,6 @@ extension View {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public func statusBar(hidden: Bool) -> some View
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10222,7 +10376,6 @@ extension View {
     /// - Parameter bindable: the object to store and make available to
     ///     the view's subhiearchy.
     @inlinable public func environmentObject<B>(_ bindable: B) -> some View where B : ObservableObject
-
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10241,14 +10394,12 @@ extension View {
     ///     - content: A closure returning the `Alert` to present.
     public func alert<Item>(item: Binding<Item?>, content: (Item) -> Alert) -> some View where Item : Identifiable
 
-
     /// Presents an alert.
     ///
     /// - Parameters:
     ///     - isPresented: A `Binding` to whether the `Alert` should be shown.
     ///     - content: A closure returning the `Alert` to present.
     public func alert(isPresented: Binding<Bool>, content: () -> Alert) -> some View
-
 }
 
 /// The `ViewBuilder` type is a custom parameter attribute that constructs views from multi-statement
@@ -10438,11 +10589,9 @@ extension ViewModifier {
     /// within the modifier.
     @inlinable public func transaction(_ transform: @escaping (inout Transaction) -> Void) -> some ViewModifier
 
-
     /// Returns a new version of the modifier that will apply
     /// `animation` to all animatable values within the modifier.
     @inlinable public func animation(_ animation: Animation?) -> some ViewModifier
-
 }
 
 /// A system style of date picker that displays each component as columns
@@ -10472,7 +10621,7 @@ public struct WheelPickerStyle : PickerStyle {
 
 /// A view that overlays its children, aligning them in both axes.
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-public struct ZStack<Content> : View where Content : View {
+@frozen public struct ZStack<Content> : View where Content : View {
 
     @inlinable public init(alignment: Alignment = .center, @ViewBuilder content: () -> Content)
 
@@ -10494,45 +10643,6 @@ public func withAnimation<Result>(_ animation: Animation? = .default, _ body: ()
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 public func withTransaction<Result>(_ transaction: Transaction, _ body: () throws -> Result) rethrows -> Result
 
-extension Int {
-}
-
-extension Int8 {
-}
-
-extension Int16 {
-}
-
-extension Int32 {
-}
-
-extension Int64 {
-}
-
-extension UInt {
-}
-
-extension UInt8 {
-}
-
-extension UInt16 {
-}
-
-extension UInt32 {
-}
-
-extension UInt64 {
-}
-
-extension Float {
-}
-
-extension Double {
-}
-
-extension CGFloat {
-}
-
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Never {
 
@@ -10553,7 +10663,7 @@ extension CGPoint {
 }
 
 @available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Never {
+extension Never : Gesture {
 
     /// The type of value produced by this gesture.
     public typealias Value = Never
@@ -10655,9 +10765,5 @@ extension CGFloat : VectorArithmetic {
 
     /// Returns the dot-product of `self` with itself.
     public var magnitudeSquared: Double { get }
-}
-
-@available(iOS 13.0, OSX 10.15, tvOS 13.0, watchOS 6.0, *)
-extension Never : Gesture {
 }
 
