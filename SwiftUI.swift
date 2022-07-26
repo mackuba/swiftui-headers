@@ -693,7 +693,7 @@ extension AccessibilityQuickActionStyle where Self == AccessibilityQuickActionOu
     /// when the accessibility quick action is active.
     ///
     /// Use the ``View/contentShape(_:_:eoFill:)`` modifier to
-    /// provide a shape if necessary.
+    /// provide a shape for ``ContentShapeKinds/focusEffect`` if necessary.
     ///
     /// The following example shows how to add an ``View/accessibilityQuickAction(style:content:)``
     /// to play and pause music.
@@ -702,7 +702,7 @@ extension AccessibilityQuickActionStyle where Self == AccessibilityQuickActionOu
     ///
     ///     var body: some View {
     ///         PlayButton(isPlaying: $isPlaying)
-    ///             .contentShape(.interaction, Circle())
+    ///             .contentShape(.focusEffect, Circle())
     ///             .accessibilityQuickAction(style: .outline) {
     ///                 Button(isPlaying ? "Pause" : "Play") {
     ///                     isPlaying.toggle()
@@ -3295,7 +3295,7 @@ extension AnyGradient {
     /// once and storing them in a cache.
     /// - The layout container reads many ``LayoutValueKey`` values from
     /// subviews. It might be more efficient to do that once and store the
-    /// results in the cache, rather than rereading the subivews' values before
+    /// results in the cache, rather than rereading the subviews' values before
     /// each layout call.
     /// - You want to maintain working storage, like temporary Swift arrays,
     /// across calls into the layout, to minimize the number of allocation
@@ -4452,7 +4452,7 @@ public enum AsyncImagePhase {
     public var image: Image? { get }
 
     /// The error that occurred when attempting to load an image, if any.
-    public var error: Error? { get }
+    public var error: (Error)? { get }
 }
 
 /// The default form style.
@@ -4501,7 +4501,7 @@ public struct AutomaticLabeledContentStyle : LabeledContentStyle {
     public init()
 
     /// Creates a view that represents the body of labeled content.
-    public func body(configuration: AutomaticLabeledContentStyle.Configuration) -> some View
+    public func makeBody(configuration: AutomaticLabeledContentStyle.Configuration) -> some View
 
 
     /// A view that represents the appearance and behavior of labeled content.
@@ -7340,9 +7340,9 @@ public struct ContentTransition : Equatable {
     /// The identity content transition, which indicates that content changes
     /// shouldn't animate.
     ///
-    /// You can pass this value to a ``View/contentTransition(_:)`` modifier to selectively disable
-    /// animations that would otherwise be applied by a
-    /// ``withAnimation(_:_:)`` block.
+    /// You can pass this value to a ``View/contentTransition(_:)``
+    /// modifier to selectively disable animations that would otherwise
+    /// be applied by a ``withAnimation(_:_:)`` block.
     public static let identity: ContentTransition
 
     /// A content transition that indicates content fades from transparent
@@ -7610,6 +7610,125 @@ extension CustomPresentationDetent {
 /// in a customizable toolbar.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public protocol CustomizableToolbarContent : ToolbarContent where Self.Body : CustomizableToolbarContent {
+}
+
+extension CustomizableToolbarContent {
+
+    /// Configures the customization priority of customizable toolbar content.
+    ///
+    /// Customizable toolbar items support different kinds of customization:
+    /// * A user can add an an item that is not in the toolbar.
+    /// * A user can remove an item that is in the toolbar.
+    /// * A user can move an item within the toolbar.
+    ///
+    /// Based on the priority of the toolbar items, different edits will
+    /// be supported.
+    ///
+    /// Use this modifier to adjust the kinds of customization a user can
+    /// perform on default priority toolbar items. In the following example, the
+    /// customizable toolbar item supports all of the different kinds of
+    /// toolbar customizations and starts in the toolbar.
+    ///
+    ///     ContentView()
+    ///         .toolbar(id: "main") {
+    ///             ToolbarItem(id: "new") {
+    ///                 // new button here
+    ///             }
+    ///         }
+    ///
+    /// You can create an item that can not be removed from the toolbar
+    /// or moved within the toolbar  by passing a value of
+    /// ``ToolbarCustomizationPriority/high`` to this modifier.
+    ///
+    ///     ContentView()
+    ///         .toolbar(id: "main") {
+    ///             ToolbarItem(id: "new") {
+    ///                 // new button here
+    ///             }
+    ///             .customizationPriority(.high)
+    ///         }
+    ///
+    /// In iOS, you can create an item that starts in the overflow menu of the
+    /// toolbar, but can be added to the toolbar itself by passing a value
+    /// of ``ToolbarCustomizationPriority/medium``.
+    ///
+    ///     ContentView()
+    ///         .toolbar(id: "main") {
+    ///             ToolbarItem(id: "new") {
+    ///                 // new button here
+    ///             }
+    ///             .customizationPriority(.medium)
+    ///         }
+    ///
+    /// You can create an item that does not start in the toolbar but can be
+    /// customized into the toolbar by the user by passing a value of
+    /// ``ToolbarCustomizationPriority/low``.
+    ///
+    ///     ContentView()
+    ///         .toolbar(id: "main") {
+    ///             ToolbarItem(id: "new") {
+    ///                 // new button here
+    ///             }
+    ///             .customizationPriority(.low)
+    ///         }
+    ///
+    /// - Parameter priority: The customization priority of the customizable
+    ///   toolbar content.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func customizationPriority(_ priority: ToolbarCustomizationPriority) -> some CustomizableToolbarContent
+
+}
+
+extension CustomizableToolbarContent {
+
+    /// Configures the supported edits of this default priority
+    /// customizable toolbar content.
+    ///
+    /// Customizable toolbar items support different kinds of customization:
+    /// * A user can add an an item that is not in the toolbar.
+    /// * A user can remove an item that is in the toolbar.
+    /// * A user can move an item within the toolbar.
+    ///
+    /// Based on the priority of the toolbar items, different edits will
+    /// be supported. For example, a high priority item will not support being
+    /// moved or removed.
+    ///
+    /// Use this modifier to adjust the kinds of customization a user can
+    /// perform on default priority toolbar items. In the following example, the
+    /// customizable toolbar item supports all of the different kinds of
+    /// toolbar customizations.
+    ///
+    ///     ContentView()
+    ///         .toolbar(id: "main") {
+    ///             ToolbarItem(id: "new") {
+    ///                 // new button here
+    ///             }
+    ///         }
+    ///
+    /// You can create an item that can not be removed by passing a value
+    /// of ``EditOperations/move`` to this modifier.
+    ///
+    ///     ContentView()
+    ///         .toolbar(id: "main") {
+    ///             ToolbarItem(id: "new") {
+    ///                 // new button here
+    ///             }
+    ///             .defaultCustomizationEdits(.move)
+    ///         }
+    ///
+    /// - Parameter edits: The supported edits of default priority
+    ///   customizable toolbar content.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func defaultCustomizationEdits(_ edits: EditOperations<CustomizableToolbarEdits>) -> some CustomizableToolbarContent
+
+}
+
+/// A type that is used to define the edits available to a customizable toolbar.
+///
+/// You don't use this type directly. SwiftUI uses this type to provide edit
+/// operations appropriate for customizable toolbars.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+public struct CustomizableToolbarEdits {
 }
 
 /// The default button style, based on the button's context.
@@ -8408,6 +8527,48 @@ public protocol DynamicViewContent : View {
     var data: Self.Data { get }
 }
 
+extension DynamicViewContent {
+
+    /// Sets the insert action for the dynamic view.
+    ///
+    ///     struct Profile: Identifiable {
+    ///         let givenName: String
+    ///         let familyName: String
+    ///         let id = UUID()
+    ///     }
+    ///
+    ///     @State private var profiles: [Profile] = [
+    ///         Person(givenName: "Juan", familyName: "Chavez"),
+    ///         Person(givenName: "Mei", familyName: "Chen"),
+    ///         Person(givenName: "Tom", familyName: "Clark"),
+    ///         Person(givenName: "Gita", familyName: "Kumar")
+    ///     ]
+    ///
+    ///     var body: some View {
+    ///         List {
+    ///             ForEach(profiles) { profile in
+    ///                 Text(profile.givenName)
+    ///             }
+    ///             .dropDestination(for: Profile.self) { receivedProfiles, offset in
+    ///                 profiles.insert(contentsOf: receivedProfiles, at: offset)
+    ///             }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - payloadType: Type of the models that are dropped.
+    ///   - action: A closure that SwiftUI invokes when elements are added to
+    ///     the view. The closure takes two arguments: The first argument is the
+    ///     offset relative to the dynamic view's underlying collection of data.
+    ///     The second argument is an array of `Transferable` items that
+    ///     represents the data that you want to insert.
+    ///
+    /// - Returns: A view that calls `action` when elements are inserted into
+    ///   the original view.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+    public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T], Int) -> Void) -> some DynamicViewContent where T : Transferable
+
+}
+
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension DynamicViewContent {
 
@@ -8741,6 +8902,20 @@ extension EditOperations where Data : MutableCollection, Data : RangeReplaceable
 
     /// All the edit operations available on this collection
     public static var all: EditOperations<Data> { get }
+}
+
+extension EditOperations where Data == CustomizableToolbarEdits {
+
+    /// A customizable toolbar item supports being moved within the
+    /// customizable toolbar.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public static var move: EditOperations<CustomizableToolbarEdits> { get }
+
+    /// A customizable toolbar item supports all edit operations available
+    /// to a customizable toolbar. This includes being moving within the
+    /// toolbar and being removed from the toolbar entirely.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public static var all: EditOperations<CustomizableToolbarEdits> { get }
 }
 
 /// An opaque wrapper view that adds editing capabilities to a row in a list.
@@ -11502,6 +11677,48 @@ extension FillStyle : Sendable {
     /// The unwrapped value is `nil` when no focused view hierarchy has
     /// published a corresponding binding.
     public var projectedValue: Binding<Value?> { get }
+}
+
+/// A property wrapper type for an observable object supplied by the focused
+/// view or one of its ancestors.
+///
+/// Focused objects invalidate the current view whenever the observable object
+/// changes. If multiple views publish a focused object using the same key, the
+/// wrapped property will reflect the object that's closest to the focused view.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@frozen @propertyWrapper public struct FocusedObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
+
+    /// A wrapper around the underlying focused object that can create bindings
+    /// to its properties using dynamic member lookup.
+    @dynamicMemberLookup @frozen public struct Wrapper {
+
+        /// Returns a binding to the value of a given key path.
+        ///
+        /// - Parameter keyPath: A key path to a specific value on the
+        ///   wrapped object.
+        /// - Returns: A new binding.
+        public subscript<T>(dynamicMember keyPath: ReferenceWritableKeyPath<ObjectType, T>) -> Binding<T> { get }
+    }
+
+    /// The underlying value referenced by the focused object.
+    ///
+    /// This property provides primary access to the value's data. However, you
+    /// don't access `wrappedValue` directly. Instead, you use the property
+    /// variable created with the ``FocusedObject`` attribute.
+    ///
+    /// When a mutable value changes, the new value is immediately available.
+    /// However, a view displaying the value is updated asynchronously and may
+    /// not show the new value immediately.
+    @inlinable @MainActor public var wrappedValue: ObjectType? { get }
+
+    /// A projection of the focused object that creates bindings to its
+    /// properties using dynamic member lookup.
+    ///
+    /// Use the projected value to pass a focused object down a view hierarchy.
+    @MainActor public var projectedValue: FocusedObject<ObjectType>.Wrapper? { get }
+
+    /// Creates a focused object.
+    public init()
 }
 
 /// A property wrapper for observing values from the focused view or one of its
@@ -15644,38 +15861,6 @@ extension GraphicsContext.GradientOptions : Sendable {
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension Grid : Animatable where Content == EmptyView {
-
-    /// The type defining the data to animate.
-    public typealias AnimatableData = EmptyAnimatableData
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension Grid : Layout where Content == EmptyView {
-
-    /// Cached values associated with the layout instance.
-    ///
-    /// If you create a cache for your custom layout, you can use
-    /// a type alias to define this type as your data storage type.
-    /// Alternatively, you can refer to the data storage type directly in all
-    /// the places where you work with the cache.
-    ///
-    /// See ``makeCache(subviews:)-23agy`` for more information.
-    public typealias Cache = _GridLayout.Cache
-
-    /// Creates a grid with the given spacing, alignment, and child
-    /// views.
-    ///
-    /// - Parameters:
-    ///   - alignment: The guide for aligning the child views.
-    ///   - horizontalSpacing: The horizontal distance between each
-    ///     subview, or `nil` to choose the default distance between views.
-    ///   - verticalSpacing: The vertical distance between each subview,
-    ///     or `nil` to choose the default distance between views.
-    public init(alignment: Alignment = .center, horizontalSpacing: CGFloat? = nil, verticalSpacing: CGFloat? = nil, spacing: CGFloat? = nil)
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Grid : View {
 }
 
@@ -16126,37 +16311,6 @@ public struct GroupedFormStyle : FormStyle {
     /// When you create a custom view, Swift infers this type from your
     /// implementation of the required ``View/body-swift.property`` property.
     public typealias Body = Never
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension HStack : Animatable where Content == EmptyView {
-
-    /// The type defining the data to animate.
-    public typealias AnimatableData = EmptyAnimatableData
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension HStack : Layout where Content == EmptyView {
-
-    /// Cached values associated with the layout instance.
-    ///
-    /// If you create a cache for your custom layout, you can use
-    /// a type alias to define this type as your data storage type.
-    /// Alternatively, you can refer to the data storage type directly in all
-    /// the places where you work with the cache.
-    ///
-    /// See ``makeCache(subviews:)-23agy`` for more information.
-    public typealias Cache
-
-    /// Creates an instance with the given spacing and horizontal alignment.
-    ///
-    /// - Parameters:
-    ///   - alignment: The guide for aligning the subviews in this stack. This
-    ///     guide has the same vertical screen coordinate for every child view.
-    ///   - spacing: The distance between adjacent subviews, or `nil` if you
-    ///     want the stack to choose a default distance for each pair of
-    ///     subviews.
-    public init(alignment: VerticalAlignment = .center, spacing: CGFloat? = nil)
 }
 
 /// A shape style that maps to one of the numbered content styles.
@@ -18503,6 +18657,10 @@ public protocol LabeledContentStyle {
     associatedtype Body : View
 
     /// Creates a view that represents the body of labeled content.
+    @ViewBuilder func makeBody(configuration: Self.Configuration) -> Self.Body
+
+    /// Creates a view that represents the body of labeled content.
+    /// Do not implement this, this will be removed in the future.
     @ViewBuilder func body(configuration: Self.Configuration) -> Self.Body
 
     /// The properties of a labeled content instance.
@@ -18515,6 +18673,17 @@ extension LabeledContentStyle where Self == AutomaticLabeledContentStyle {
     /// A labeled content style that resolves its appearance automatically based
     /// on the current context.
     public static var automatic: AutomaticLabeledContentStyle { get }
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension LabeledContentStyle {
+
+    /// Creates a view that represents the body of labeled content.
+    public func makeBody(configuration: Self.Configuration) -> Self.Body
+
+    /// Creates a view that represents the body of labeled content.
+    /// Do not implement this, this will be removed in the future.
+    public func body(configuration: Self.Configuration) -> Self.Body
 }
 
 /// The properties of a labeled content instance.
@@ -18790,7 +18959,7 @@ public protocol Layout : Animatable {
     /// once and storing them in a cache.
     /// - The layout container reads many ``LayoutValueKey`` values from
     /// subviews. It might be more efficient to do that once and store the
-    /// results in the cache, rather than rereading the subivews' values before
+    /// results in the cache, rather than rereading the subviews' values before
     /// each layout call.
     /// - You want to maintain working storage, like temporary Swift arrays,
     /// across calls into the layout, to minimize the number of allocation
@@ -21622,11 +21791,6 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
     /// label that you add with the accessibilityLabel() modifier. Provide labels in descending order
     /// of importance. Voice Control and Full Keyboard Access use the input labels.
     public func accessibilityInputLabels(_ inputLabels: [Text]) -> ModifiedContent<Content, Modifier>
-
-    /// Uses the string you specify to identify the view.
-    ///
-    /// Use this value for testing. It isn't visible to the user.
-    public func accessibilityIdentifier(_ identifier: String) -> ModifiedContent<Content, Modifier>
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -21827,6 +21991,15 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
 
     /// Specifies whether to hide this view from system accessibility features.
     public func accessibilityHidden(_ hidden: Bool) -> ModifiedContent<Content, Modifier>
+}
+
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
+
+    /// Uses the string you specify to identify the view.
+    ///
+    /// Use this value for testing. It isn't visible to the user.
+    public func accessibilityIdentifier(_ identifier: String) -> ModifiedContent<Content, Modifier>
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -24470,6 +24643,59 @@ extension Picker {
 
     /// Creates a picker that displays a custom label.
     ///
+    /// If the wrapped values of the collection passed to `sources` are not all
+    /// the same, some styles will render the selection in a mixed state. The
+    /// specific presentation will depend on the style.  For example, a Picker
+    /// with a menu style will use dashes instead of checkmarks to indicate the
+    /// selected values.
+    ///
+    /// In the following example, a picker in a document inspector controls the
+    /// thickness of borders for the currently-selected shapes, which can be of
+    /// any number.
+    ///
+    ///     enum Thickness: String, CaseIterable, Identifiable {
+    ///         case thin
+    ///         case regular
+    ///         case thick
+    ///
+    ///         var id: String { rawValue }
+    ///     }
+    ///
+    ///     struct Border {
+    ///         var color: Color
+    ///         var thickness: Thickness
+    ///     }
+    ///
+    ///     @State var selectedObjectBorders = [
+    ///         Border(color: .black, thickness: .thin),
+    ///         Border(color: .red, thickness: .thick)
+    ///     ]
+    ///
+    ///     Picker(
+    ///         sources: $selectedObjectBorders,
+    ///         selection: \.thickness
+    ///     ) {
+    ///         ForEach(Thickness.allCases) { thickness in
+    ///             Text(thickness.rawValue)
+    ///         }
+    ///     } label: {
+    ///         Text("Border Thickness")
+    ///     }
+    ///
+    /// - Parameters:
+    ///     - sources: A collection of values used as the source for displaying
+    ///       the Picker's selection.
+    ///     - selection: The key path of the values that determines the
+    ///       currently-selected options. When a user selects an option from the
+    ///       picker, the values at the key path of all items in the `sources`
+    ///       collection are updated with the selected option.
+    ///     - content: A view that contains the set of options.
+    ///     - label: A view that describes the purpose of selecting an option.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public init<C>(sources: C, selection: KeyPath<C.Element, Binding<SelectionValue>>, @ViewBuilder content: () -> Content, @ViewBuilder label: () -> Label) where C : RandomAccessCollection
+
+    /// Creates a picker that displays a custom label.
+    ///
     /// - Parameters:
     ///     - selection: A binding to a property that determines the
     ///       currently-selected option.
@@ -24515,7 +24741,7 @@ extension Picker where Label == Text {
     ///         case regular
     ///         case thick
     ///
-    ///         var id: String { rawValue }
+    ///         var id: Self { self }
     ///     }
     ///
     ///     struct Border {
@@ -24549,8 +24775,68 @@ extension Picker where Label == Text {
     /// This initializer creates a ``Text`` view on your behalf, and treats the
     /// localized key similar to ``Text/init(_:tableName:bundle:comment:)``. See
     /// ``Text`` for more information about localizing strings.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Picker.init(_:sources:selection:content).")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Picker.init(_:sources:selection:content).")
     public init<C>(_ titleKey: LocalizedStringKey, selection: C, @ViewBuilder content: () -> Content) where C : Collection, C.Element == Binding<SelectionValue>
+
+    /// Creates a picker that generates its label from a localized string key.
+    ///
+    /// If the wrapped values of the collection passed to `sources` are not all  
+    /// the same, some styles will render the selection in a mixed state. The
+    /// specific presentation will depend on the style.  For example, a Picker
+    /// with a menu style will use dashes instead of checkmarks to indicate the
+    /// selected values.
+    ///
+    /// In the following example, a picker in a document inspector controls the
+    /// thickness of borders for the currently-selected shapes, which can be of
+    /// any number.
+    ///
+    ///     enum Thickness: String, CaseIterable, Identifiable {
+    ///         case thin
+    ///         case regular
+    ///         case thick
+    ///
+    ///         var id: String { rawValue }
+    ///     }
+    ///
+    ///     struct Border {
+    ///         var color: Color
+    ///         var thickness: Thickness
+    ///     }
+    ///
+    ///     @State var selectedObjectBorders = [
+    ///         Border(color: .black, thickness: .thin),
+    ///         Border(color: .red, thickness: .thick)
+    ///     ]
+    ///
+    ///     Picker(
+    ///         "Border Thickness",
+    ///         sources: $selectedObjectBorders,
+    ///         selection: \.thickness
+    ///     ) {
+    ///         ForEach(Thickness.allCases) { thickness in
+    ///             Text(thickness.rawValue)
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///     - titleKey: A localized string key that describes the purpose of
+    ///       selecting an option.
+    ///     - sources: A collection of values used as the source for displaying
+    ///       the Picker's selection.
+    ///     - selection: The key path of the values that determines the
+    ///       currently-selected options. When a user selects an option from the
+    ///       picker, the values at the key path of all items in the `sources`
+    ///       collection are updated with the selected option.
+    ///     - content: A view that contains the set of options.
+    ///
+    /// This initializer creates a ``Text`` view on your behalf, and treats the
+    /// localized key similar to ``Text/init(_:tableName:bundle:comment:)``. See
+    /// ``Text`` for more information about localizing strings.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public init<C>(_ titleKey: LocalizedStringKey, sources: C, selection: KeyPath<C.Element, Binding<SelectionValue>>, @ViewBuilder content: () -> Content) where C : RandomAccessCollection
 
     /// Creates a picker that generates its label from a string.
     ///
@@ -24586,7 +24872,7 @@ extension Picker where Label == Text {
     ///         case regular
     ///         case thick
     ///
-    ///         var id: String { rawValue }
+    ///         var id: Self { self }
     ///     }
     ///
     ///     struct Border {
@@ -24619,8 +24905,71 @@ extension Picker where Label == Text {
     /// This initializer creates a ``Text`` view on your behalf, and treats the
     /// title similar to ``Text/init(_:)-9d1g4``. See ``Text`` for more
     /// information about localizing strings.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    ///
+    /// To initialize a picker with a localized string key, use
+    /// ``init(_:selection:content:)-8otfr`` instead.
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Picker.init(_:sources:selection:content).")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Picker.init(_:sources:selection:content).")
     public init<C, S>(_ title: S, selection: C, @ViewBuilder content: () -> Content) where C : RandomAccessCollection, S : StringProtocol, C.Element == Binding<SelectionValue>
+
+    /// Creates a picker bound to a collection of bindings that generates its
+    /// label from a string.
+    ///
+    /// If the wrapped values of the collection passed to `sources` are not all
+    /// the same, some styles will render the selection in a mixed state. The
+    /// specific presentation will depend on the style.  For example, a Picker
+    /// with a menu style will use dashes instead of checkmarks to indicate the
+    /// selected values.
+    ///
+    /// In the following example, a picker in a document inspector controls the
+    /// thickness of borders for the currently-selected shapes, which can be of
+    /// any number.
+    ///
+    ///     enum Thickness: String, CaseIterable, Identifiable {
+    ///         case thin
+    ///         case regular
+    ///         case thick
+    ///
+    ///         var id: String { rawValue }
+    ///     }
+    ///
+    ///     struct Border {
+    ///         var color: Color
+    ///         var thickness: Thickness
+    ///     }
+    ///
+    ///     @State var selectedObjectBorders = [
+    ///         Border(color: .black, thickness: .thin),
+    ///         Border(color: .red, thickness: .thick)
+    ///     ]
+    ///
+    ///     Picker(
+    ///         "Border Thickness",
+    ///         sources: $selectedObjectBorders,
+    ///         selection: \.thickness
+    ///     ) {
+    ///         ForEach(Thickness.allCases) { thickness in
+    ///             Text(thickness.rawValue)
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///     - title: A string that describes the purpose of selecting an option.
+    ///     - sources: A collection of values used as the source for displaying
+    ///       the Picker's selection.
+    ///     - selection: The key path of the values that determines the
+    ///       currently-selected options. When a user selects an option from the
+    ///       picker, the values at the key path of all items in the `sources`
+    ///       collection are updated with the selected option.
+    ///     - content: A view that contains the set of options.
+    ///
+    /// This initializer creates a ``Text`` view on your behalf, and treats the
+    /// title similar to ``Text/init(_:)-9d1g4``. See ``Text`` for more
+    /// information about localizing strings.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public init<C, S>(_ title: S, sources: C, selection: KeyPath<C.Element, Binding<SelectionValue>>, @ViewBuilder content: () -> Content) where C : RandomAccessCollection, S : StringProtocol
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -36834,8 +37183,40 @@ public struct Toggle<Label> : View where Label : View {
     ///   - isOn: A collection of bindings that determines whether the toggle
     ///     is on, mixed or off.
     ///   - label: A view that describes the purpose of the toggle.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(sources:isOn:label:).")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Toggle.init(sources:isOn:label:).")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(sources:isOn:label:).")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Toggle.init(sources:isOn:label:).")
     public init<C>(isOn: C, @ViewBuilder label: () -> Label) where C : RandomAccessCollection, C.Element == Binding<Bool>
+
+    /// Creates a toggle representing a collection of values with a custom label.
+    ///
+    /// The example below shows how you can create a single toggle representing
+    /// the state of multiple alarms:
+    ///
+    ///     struct Alarm: Hashable, Identifiable {
+    ///       var id = UUID()
+    ///       var isOn = false
+    ///       var name = ""
+    ///     }
+    ///
+    ///     @State var alarms = [
+    ///         Alarm(isOn: true, name: "Morning"),
+    ///         Alarm(isOn: false, name: "Evening")
+    ///     ]
+    ///
+    ///     Toggle(sources: $alarms, isOn: \.isOn) {
+    ///         Text("Enable all alarms")
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - sources: A collection of values used as the source for rendering the
+    ///     Toggle's state.
+    ///   - isOn: The key path of the values that determines whether the toggle
+    ///     is on, mixed or off.
+    ///   - label: A view that describes the purpose of the toggle.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public init<C>(sources: C, isOn: KeyPath<C.Element, Binding<Bool>>, @ViewBuilder label: () -> Label) where C : RandomAccessCollection
 
     /// The content and behavior of the view.
     ///
@@ -36954,8 +37335,47 @@ extension Toggle where Label == Text {
     ///     the purpose of the toggle.
     ///   - isOn: A collection of bindings that determines whether the toggle
     ///     is on, mixed or off.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Toggle.init(_:sources:isOn).")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Toggle.init(_:sources:isOn).")
     public init<C>(_ titleKey: LocalizedStringKey, isOn: C) where C : RandomAccessCollection, C.Element == Binding<Bool>
+
+    /// Creates a toggle representing a collection of values that generates its
+    /// label from a localized string key.
+    ///
+    /// This initializer creates a ``Text`` view on your behalf, and treats the
+    /// localized key similar to ``Text/init(_:tableName:bundle:comment:)``. See
+    /// `Text` for more information about localizing strings.
+    ///
+    /// To initialize a toggle with a string variable, use
+    /// ``Toggle/init(_:isOn:)-3oiei`` instead.
+    ///
+    /// The example below shows how you can create a single toggle representing
+    /// the state of multiple alarms:
+    ///
+    ///     struct Alarm: Hashable, Identifiable {
+    ///       var id = UUID()
+    ///       var isOn = false
+    ///       var name = ""
+    ///     }
+    ///
+    ///     @State var alarms = [
+    ///         Alarm(isOn: true, name: "Morning"),
+    ///         Alarm(isOn: false, name: "Evening")
+    ///     ]
+    ///
+    ///     Toggle("Enable all alarms", sources: $alarms, isOn: \.isOn)
+    ///
+    /// - Parameters:
+    ///   - titleKey: The key for the toggle's localized title, that describes
+    ///     the purpose of the toggle.
+    ///   - sources: A collection of values used as the source for rendering the
+    ///     Toggle's state.
+    ///   - isOn: The key path of the values that determines whether the toggle
+    ///     is on, mixed or off.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public init<C>(_ titleKey: LocalizedStringKey, sources: C, isOn: KeyPath<C.Element, Binding<Bool>>) where C : RandomAccessCollection
 
     /// Creates a toggle representing a collection of values
     /// that generates its label from a string.
@@ -36987,8 +37407,46 @@ extension Toggle where Label == Text {
     ///   - title: A string that describes the purpose of the toggle.
     ///   - isOn: A collection of bindings that determines whether the toggle
     ///     is on, mixed or off.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Toggle.init(_:sources:isOn).")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Toggle.init(_:sources:isOn).")
     public init<S, C>(_ title: S, isOn: C) where S : StringProtocol, C : RandomAccessCollection, C.Element == Binding<Bool>
+
+    /// Creates a toggle representing a collection of values that generates its
+    /// label from a string.
+    ///
+    /// This initializer creates a ``Text`` view on your behalf, and treats the
+    /// title similar to ``Text/init(_:)-9d1g4``. See `Text` for more
+    /// information about localizing strings.
+    ///
+    /// To initialize a toggle with a localized string key, use
+    /// ``Toggle/init(_:isOn:)-78gj1`` instead.
+    ///
+    /// The example below shows how you can create a single toggle representing
+    /// the state of multiple alarms:
+    ///
+    ///     struct Alarm: Hashable, Identifiable {
+    ///       var id = UUID()
+    ///       var isOn = false
+    ///       var name = ""
+    ///     }
+    ///
+    ///     @State var alarms = [
+    ///         Alarm(isOn: true, name: "Morning"),
+    ///         Alarm(isOn: false, name: "Evening")
+    ///     ]
+    ///
+    ///     Toggle("Enable all alarms", sources: $alarms, isOn: \.isOn)
+    ///
+    /// - Parameters:
+    ///   - title: A string that describes the purpose of the toggle.
+    ///   - sources: A collection of values used as the source for rendering
+    ///     the Toggle's state.
+    ///   - isOn: The key path of the values that determines whether the toggle
+    ///     is on, mixed or off.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public init<S, C>(_ title: S, sources: C, isOn: KeyPath<C.Element, Binding<Bool>>) where S : StringProtocol, C : RandomAccessCollection
 }
 
 /// The appearance and behavior of a toggle.
@@ -37602,6 +38060,49 @@ extension ToolbarContentBuilder {
 
 }
 
+/// The priority of customizable toolbar content.
+///
+/// Customizable toolbar content support different types of behaviors
+/// based on its priority. For example, high priority items can not be removed
+/// from the toolbar or moved within the toolbar.
+///
+/// Use this type in conjunction with the
+/// ``CustomizableToolbarContent/customizationPriority(_:)`` modifier.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+public struct ToolbarCustomizationPriority {
+
+    /// The high priority.
+    ///
+    /// Items with this priority can not be moved within the toolbar
+    /// or removed from the toolbar and will be placed before any
+    /// other customizable items. These are the most important
+    /// items that users need for the app to function.
+    public static var high: ToolbarCustomizationPriority { get }
+
+    /// The default priority.
+    ///
+    /// Items with this priority start in the toolbar and can be
+    /// moved or removed from the toolbar by the user.
+    public static var `default`: ToolbarCustomizationPriority { get }
+
+    /// The medium priority.
+    ///
+    /// In iOS, items with this priority  can be moved or removed from the
+    /// toolbar itself, but will always be present in the overflow menu.
+    ///
+    /// In macOS, items with this priority are equivalent to items with the
+    /// default priority.
+    public static var medium: ToolbarCustomizationPriority { get }
+
+    /// The low priority.
+    ///
+    /// Items with this priority don't start in the toolbar. Instead, they
+    /// start in the customization popover in iOS and the
+    /// customization palette in macOS. The user can add them to the toolbar
+    /// if they so desire.
+    public static var low: ToolbarCustomizationPriority { get }
+}
+
 /// A model that represents an item which can be placed in the toolbar
 /// or navigation bar.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -37843,24 +38344,41 @@ public struct ToolbarRole {
     public static var navigationStack: ToolbarRole { get }
 }
 
-/// The title actions of a toolbar.
+@available(iOS, introduced: 16.0, deprecated: 16.0, renamed: "ToolbarTitleMenu")
+@available(macOS, introduced: 13.0, deprecated: 13.0, renamed: "ToolbarTitleMenu")
+@available(tvOS, introduced: 16.0, deprecated: 16.0, renamed: "ToolbarTitleMenu")
+@available(watchOS, introduced: 9.0, deprecated: 9.0, renamed: "ToolbarTitleMenu")
+public struct ToolbarTitleActions<Actions> : ToolbarContent, CustomizableToolbarContent where Actions : View {
+
+    /// Creates a toolbar title menu where actions are inferred from your
+    /// apps commands.
+    public init() where Actions == EmptyView
+
+    /// Creates a toolbar title menu.
+    public init(@ViewBuilder actions: () -> Actions)
+
+    /// The type of content representing the body of this toolbar content.
+    public typealias Body = Never
+}
+
+/// The title menu of a toolbar.
 ///
-/// Title actions represent common functionality that can be done on the
-/// content represented by your app's toolbar or navigation title. These
-/// actions may be populated from your app's commands like
+/// A title menu represents common functionality that can be done on the
+/// content represented by your app's toolbar or navigation title. This
+/// menu may be populated from your app's commands like
 /// ``CommandGroupPlacement/saveItem`` or
 /// ``CommandGroupPlacement/printItem``.
 ///
 ///     ContentView()
 ///         .toolbar {
-///             ToolbarTitleActions()
+///             ToolbarTitleMenu()
 ///         }
 ///
 /// You can provide your own set of actions to override this behavior.
 ///
 ///     ContentView()
 ///         .toolbar {
-///             ToolbarTitleActions {
+///             ToolbarTitleMenu {
 ///                 DuplicateButton()
 ///                 PrintButton()
 ///             }
@@ -37869,16 +38387,16 @@ public struct ToolbarRole {
 /// In iOS and iPadOS, this will construct a menu that can be presented by
 /// tapping the navigation title in the app's navigation bar.
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
-public struct ToolbarTitleActions<Actions> : ToolbarContent, CustomizableToolbarContent where Actions : View {
+public struct ToolbarTitleMenu<Content> : ToolbarContent, CustomizableToolbarContent where Content : View {
 
-    /// Creates title actions for the toolbar where the actions are inferred
-    /// from your apps commands.
-    public init() where Actions == EmptyView
+    /// Creates a toolbar title menu where actions are inferred from your
+    /// apps commands.
+    public init() where Content == EmptyView
 
-    /// Creates title actions for the toolbar.
+    /// Creates a toolbar title menu.
     ///
-    /// - Parameter actions: The actions of the toolbar title.
-    public init(@ViewBuilder actions: () -> Actions)
+    /// - Parameter content: The content of the toolbar title menu.
+    public init(@ViewBuilder content: () -> Content)
 
     /// The type of content representing the body of this toolbar content.
     public typealias Body = Never
@@ -38243,37 +38761,6 @@ extension UnitPoint : Sendable {
     /// When you create a custom view, Swift infers this type from your
     /// implementation of the required ``View/body-swift.property`` property.
     public typealias Body = Never
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension VStack : Animatable where Content == EmptyView {
-
-    /// The type defining the data to animate.
-    public typealias AnimatableData = EmptyAnimatableData
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension VStack : Layout where Content == EmptyView {
-
-    /// Cached values associated with the layout instance.
-    ///
-    /// If you create a cache for your custom layout, you can use
-    /// a type alias to define this type as your data storage type.
-    /// Alternatively, you can refer to the data storage type directly in all
-    /// the places where you work with the cache.
-    ///
-    /// See ``makeCache(subviews:)-23agy`` for more information.
-    public typealias Cache
-
-    /// Creates an instance with the given spacing and horizontal alignment.
-    ///
-    /// - Parameters:
-    ///   - alignment: The guide for aligning the subviews in this stack. This
-    ///     guide has the same vertical screen coordinate for every child view.
-    ///   - spacing: The distance between adjacent subviews, or `nil` if you
-    ///     want the stack to choose a default distance for each pair of
-    ///     subviews.
-    public init(alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil)
 }
 
 /// A type that can serve as the animatable data of an animatable type.
@@ -39314,6 +39801,12 @@ extension View {
     /// You can add more than one navigation destination modifier to the stack
     /// if it needs to present more than one kind of data.
     ///
+    /// Do not put a navigation destination modifier inside a "lazy" container,
+    /// like ``List`` or ``LazyVStack``. These containers create child views
+    /// only when needed to render on screen. Add the navigation destination
+    /// modifier outside these containers so that the navigation stack can
+    /// always see the destination.
+    ///
     /// - Parameters:
     ///   - data: The type of data that this destination matches.
     ///   - destination: A view builder that defines a view to display
@@ -39321,6 +39814,45 @@ extension View {
     ///     type `data`. The closure takes one argument, which is the value
     ///     of the data to present.
     public func navigationDestination<D, C>(for data: D.Type, @ViewBuilder destination: @escaping (D) -> C) -> some View where D : Hashable, C : View
+
+
+    /// Associates a destination view with a binding that can be used to push
+    /// the view onto a ``NavigationStack``.
+    ///
+    /// In general, favor binding a path to a navigation stack for programmatic
+    /// navigation. Add this view modifer to a view inside a ``NavigationStack``
+    /// to programmatically push a single view onto the stack. This is useful
+    /// for building components that can push an associated view. For example,
+    /// you can present a `ColorDetail` view for a particular color:
+    ///
+    ///     @State private var showDetails = false
+    ///     var favoriteColor: Color
+    ///
+    ///     NavigationStack {
+    ///         VStack {
+    ///             Circle()
+    ///                 .fill(favoriteColor)
+    ///             Button("Show details") {
+    ///                 showDetails = true
+    ///             }
+    ///         }
+    ///         .navigationDestination(isPresented: $showDetails) {
+    ///             ColorDetail(color: favoriteColor)
+    ///         }
+    ///         .navigationTitle("My Favorite Color")
+    ///     }
+    ///
+    /// Do not put a navigation destination modifier inside a "lazy" container,
+    /// like ``List`` or ``LazyVStack``. These containers create child views
+    /// only when needed to render on screen. Add the navigation destination
+    /// modifier outside these containers so that the navigation stack can
+    /// always see the destination.
+    ///
+    /// - Parameters:
+    ///   - isPresented: A binding to a Boolean value that indicates whether
+    ///     `destination` is currently presented.
+    ///   - destination: A view to present.
+    public func navigationDestination<V>(isPresented: Binding<Bool>, @ViewBuilder destination: () -> V) -> some View where V : View
 
 }
 
@@ -40932,11 +41464,6 @@ extension View {
     ///
     /// - Parameter inputLabels: An array of Text elements to use as input labels.
     public func accessibilityInputLabels(_ inputLabels: [Text]) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
-
-    /// Uses the string you specify to identify the view.
-    ///
-    /// Use this value for testing. It isn't visible to the user.
-    public func accessibilityIdentifier(_ identifier: String) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -45780,6 +46307,66 @@ extension View {
 
 }
 
+extension View {
+
+    /// Configures the search scopes for this view.
+    ///
+    /// You can suggest search terms during a search operation by providing a
+    /// collection of view to this modifier. The interface presents the
+    /// suggestion views as a list of choices when someone activates the
+    /// search interface. Associate a string with each suggestion
+    /// view by adding the ``View/searchCompletion(_:)-2uaf3`` modifier to
+    /// the view. For example, you can suggest fruit types by displaying their
+    /// emoji, and provide the corresponding search string as a search
+    /// completion in each case:
+    ///
+    ///     ProductList()
+    ///         .searchable(text: $text) {
+    ///             Text("🍎").searchCompletion("apple")
+    ///             Text("🍐").searchCompletion("pear")
+    ///             Text("🍌").searchCompletion("banana")
+    ///         }
+    ///
+    /// When someone chooses a suggestion, SwiftUI replaces the text in the
+    /// search field with the search completion string. If you omit the search
+    /// completion modifier for a particular suggestion view, SwiftUI displays
+    /// the suggestion, but the suggestion view doesn't react to taps or clicks.
+    ///
+    /// > Important: In tvOS, searchable modifiers only support suggestion views
+    /// of type ``Text``, like in the above example. Other platforms can use any
+    /// view for the suggestions, including custom views.
+    ///
+    /// You can update the suggestions that you provide as conditions change.
+    ///
+    /// For example, you can specify an array of suggestions that you store
+    /// in a model:
+    ///
+    ///     ProductList()
+    ///         .searchable(text: $text) {
+    ///             ForEach(model.suggestedSearches) { suggestion in
+    ///                 Label(suggestion.title,  image: suggestion.image)
+    ///                     .searchCompletion(suggestion.text)
+    ///             }
+    ///         }
+    ///
+    /// If the model's `suggestedSearches` begins as an empty array, the
+    /// interface doesn't display any suggestions to start. You can then provide
+    /// logic that updates the array based on some condition. For example, you
+    /// might update the completions based on the current search text. Note that
+    /// certain events or actions, like when someone moves a macOS window, might
+    /// dismiss the suggestion view.
+    ///
+    /// For more information about using search modifiers, see
+    /// <doc:Adding-Search-to-Your-App>.
+    ///
+    /// - Parameters:
+    ///   - suggestions: A view builder that produces content that
+    ///     populates a list of suggestions.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func searchSuggestions<S>(@ViewBuilder _ suggestions: () -> S) -> some View where S : View
+
+}
+
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension View {
 
@@ -45891,6 +46478,53 @@ extension View {
 
     /// Adds a condition for whether the view's view hierarchy is movable.
     @inlinable public func moveDisabled(_ isDisabled: Bool) -> some View
+
+}
+
+@available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
+@available(tvOS, unavailable)
+extension View {
+
+    /// Specifies the background style for scrollable views within this view.
+    ///
+    /// The following example replaces the standard system background of the
+    /// List with a red color:
+    ///
+    ///     List {
+    ///         Text("One")
+    ///         Text("Two")
+    ///         Text("Three")
+    ///     }
+    ///     .scrollContentBackground(.red)
+    ///
+    /// The background is for the *content*, not the scrollable view itself, so
+    /// any provided background view will scroll along with the contents.
+    ///
+    /// - Parameters:
+    ///    - style: the style to use for the background. If the value is `nil`,
+    ///      the system uses the default style to fill the background.
+    public func scrollContentBackground<S>(_ style: S?) -> some View where S : ShapeStyle
+
+
+    /// Specifies the visibility of the background for scrollable views within
+    /// this view.
+    ///
+    /// The following example hides the standard system background of the List.
+    ///
+    ///     List {
+    ///         Text("One")
+    ///         Text("Two")
+    ///         Text("Three")
+    ///     }
+    ///     .scrollContentBackground(.hidden)
+    ///
+    /// > Note: SwiftUI stores the visibility and background as separate
+    /// properties and consults them both when deciding what to do. Currently an
+    /// explicit `.hidden` will take priorirty over a custom background.
+    ///
+    /// - Parameters:
+    ///    - visibility: the visibility to use for the background.
+    public func scrollContentBackground(_ visibility: Visibility) -> some View
 
 }
 
@@ -48279,6 +48913,15 @@ extension View {
 
 }
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+extension View {
+
+    /// Uses the string you specify to identify the view.
+    ///
+    /// Use this value for testing. It isn't visible to the user.
+    public func accessibilityIdentifier(_ identifier: String) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
+}
+
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 14.0, *)
 extension View {
 
@@ -50216,23 +50859,23 @@ extension View {
 
 extension View {
 
-    /// Configure the title actions of a toolbar.
+    /// Configure the title menu of a toolbar.
     ///
-    /// Title actions represent common functionality that can be done on the
-    /// content represented by your app's toolbar or navigation title. These
-    /// actions may be populated from your app's commands like
+    /// A title menu represent common functionality that can be done on the
+    /// content represented by your app's toolbar or navigation title. This
+    /// menu may be populated from your app's commands like
     /// ``CommandGroupPlacement/saveItem`` or
     /// ``CommandGroupPlacement/printItem``.
     ///
     ///     ContentView()
     ///         .toolbar {
-    ///             ToolbarTitleActions()
+    ///             ToolbarTitleMenu()
     ///         }
     ///
     /// You can provide your own set of actions to override this behavior.
     ///
     ///     ContentView()
-    ///         .toolbarTitleActions {
+    ///         .toolbarTitleMenu {
     ///             DuplicateButton()
     ///             PrintButton()
     ///         }
@@ -50240,8 +50883,20 @@ extension View {
     /// In iOS and iPadOS, this will construct a menu that can be presented by
     /// tapping the navigation title in the app's navigation bar.
     ///
-    /// - Parameter actions: The actions associated to the navigation title.
+    /// - Parameter content: The content associated to the toolbar title menu.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func toolbarTitleMenu<C>(@ViewBuilder content: () -> C) -> some View where C : View
+
+}
+
+extension View {
+
+    /// Configure the title actions of a toolbar.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(iOS, introduced: 16.0, deprecated: 16.0, renamed: "toolbarTitleMenu")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, renamed: "toolbarTitleMenu")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, renamed: "toolbarTitleMenu")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, renamed: "toolbarTitleMenu")
     public func toolbarTitleActions<A>(@ViewBuilder actions: () -> A) -> some View where A : View
 
 }
@@ -51115,86 +51770,6 @@ extension View {
 
 extension View {
 
-    /// Configures the navigation title with associated actions and a title.
-    ///
-    /// In iOS, iPadOS, this populates a title menu with no header,
-    /// and menu items from its content. The associated title will override
-    /// any specified navigation title.
-    ///
-    /// Refer to the <doc:Configure-Your-Apps-Navigation-Titles> article
-    /// for more information on navigation title modifiers.
-    ///
-    /// - Parameter title: The title to display.
-    /// - Parameter actions: The actions associated to the navigation title.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    public func navigationTitle<A>(_ title: Text, @ViewBuilder actions: () -> A) -> some View where A : View
-
-
-    /// Configures the navigation title with associated actions and a title.
-    ///
-    /// In iOS, iPadOS, this populates a title menu with no header,
-    /// and menu items from its content. The associated title will override
-    /// any specified navigation title.
-    ///
-    /// Refer to the <doc:Configure-Your-Apps-Navigation-Titles> article
-    /// for more information on navigation title modifiers.
-    ///
-    /// - Parameter titleKey: The title to display.
-    /// - Parameter actions: The actions associated to the navigation title.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    public func navigationTitle<A>(_ titleKey: LocalizedStringKey, @ViewBuilder actions: () -> A) -> some View where A : View
-
-
-    /// Configures the navigation title with associated actions and a title.
-    ///
-    /// In iOS, iPadOS, this populates a title menu with no header,
-    /// and menu items from its content. The associated title will override
-    /// any specified navigation title.
-    ///
-    /// Refer to the <doc:Configure-Your-Apps-Navigation-Titles> article
-    /// for more information on navigation title modifiers.
-    ///
-    /// - Parameter title: The title to display.
-    /// - Parameter actions: The actions associated to the navigation title.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    public func navigationTitle<A, S>(_ title: S, @ViewBuilder actions: () -> A) -> some View where A : View, S : StringProtocol
-
-}
-
-extension View {
-
-    /// Configures the navigation title with associated actions and an editable
-    /// title.
-    ///
-    /// In iOS, iPadOS, this populates a title menu with no header,
-    /// and menu items from its content. The associated title will override
-    /// any specified navigation title.
-    ///
-    /// Refer to the <doc:Configure-Your-Apps-Navigation-Titles> article
-    /// for more information on navigation title modifiers.
-    ///
-    /// - Parameter title: The editable title associated to the navigation
-    ///   title.
-    /// - Parameter actions: The actions associated to the navigation title.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use ToolbarTitleActions in a toolbar modifier or the toolbarTitleActions modifier.")
-    public func navigationTitle<A>(_ title: Binding<String>, @ViewBuilder actions: () -> A) -> some View where A : View
-
-}
-
-extension View {
-
     /// Configures the semantic role for the content populating the toolbar.
     ///
     /// Use this modifier to configure the semantic role for content
@@ -51811,6 +52386,100 @@ extension View {
     /// will be derrived from one of the accessibility elements
     /// decendents or from the center of the accessibility frame.
     public func accessibilityActivationPoint(_ activationPoint: UnitPoint) -> ModifiedContent<Self, AccessibilityAttachmentModifier>
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension View {
+
+    /// Creates a new view that exposes the provided object to other views whose
+    /// whose state depends on the focused view hierarchy.
+    ///
+    /// Use this method instead of ``View/focusedSceneObject(_:)`` when your
+    /// scene includes multiple focusable views with their own associated data,
+    /// and you need an app- or scene-scoped element like a command or toolbar
+    /// item that operates on the data associated with whichever view currently
+    /// has focus. Each focusable view can supply its own object:
+    ///
+    ///     struct MessageView: View {
+    ///         @StateObject private var message = Message(...)
+    ///
+    ///         var body: some View {
+    ///             TextField(...)
+    ///                 .focusedObject(message)
+    ///         }
+    ///     }
+    ///
+    /// Interested views can then use the ``FocusedObject`` property wrapper to
+    /// observe and update the focused view's object. In this example, an app
+    /// command updates the focused view's data, and is automatically disabled
+    /// when focus is in an unrelated part of the scene:
+    ///
+    ///     struct MessageCommands: Commands {
+    ///         @FocusedObject private var message: Message?
+    ///
+    ///         var body: some Commands {
+    ///             CommandGroup(after: .pasteboard) {
+    ///                 Button("Add Duck to Message") {
+    ///                     message?.text.append(" 🦆")
+    ///                 }
+    ///                 .keyboardShortcut("d")
+    ///                 .disabled(message == nil)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - object: The observable object to associate with focus.
+    /// - Returns: A view that supplies an observable object when in focus.
+    @inlinable public func focusedObject<T>(_ object: T) -> some View where T : ObservableObject
+
+
+    /// Creates a new view that exposes the provided object to other views whose
+    /// whose state depends on the active scene.
+    ///
+    /// Use this method instead of ``View/focusedObject(_:)`` for observable
+    /// objects that must be visible regardless of where focus is located in the
+    /// active scene. This is sometimes needed for things like main menu and
+    /// discoverability HUD commands that observe and update data from the
+    /// active scene but aren't concerned with what the user is actually focused
+    /// on. The scene's root view can supply the scene's state object:
+    ///
+    ///     struct RootView: View {
+    ///         @StateObject private var sceneData = SceneData()
+    ///
+    ///         var body: some View {
+    ///             NavigationSplitView {
+    ///                 ...
+    ///             }
+    ///             .focusedSceneObject(sceneData)
+    ///         }
+    ///     }
+    ///
+    /// Interested views can then use the ``FocusedObject`` property wrapper to
+    /// observe and update the active scene's state object. In this example, an
+    /// app command updates the active scene's data, and is enabled as long as
+    /// any scene is active.
+    ///
+    ///     struct MessageCommands: Commands {
+    ///         @FocusedObject private var sceneData: SceneData?
+    ///
+    ///         var body: some Commands {
+    ///             CommandGroup(after: .newItem) {
+    ///                 Button("New Message") {
+    ///                     sceneData?.addMessage()
+    ///                 }
+    ///                 .keyboardShortcut("n", modifiers: [.option, .command])
+    ///                 .disabled(sceneData == nil)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - object: The observable object to associate with the scene.
+    /// - Returns: A view that supplies an observable object while the scene
+    ///   is active.
+    @inlinable public func focusedSceneObject<T>(_ object: T) -> some View where T : ObservableObject
+
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
