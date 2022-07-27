@@ -28,23 +28,23 @@ import os.signpost
 /// For example, to provide accessibility for a view that represents a chart,
 /// you would first declare your chart descriptor representable type:
 ///
-///    struct MyChartDescriptorRepresentable: AXChartDescriptorRepresentable {
-///        func makeChartDescriptor() -> AXChartDescriptor {
-///            // build and return your AXChartDescriptor here
-///        }
+///     struct MyChartDescriptorRepresentable: AXChartDescriptorRepresentable {
+///         func makeChartDescriptor() -> AXChartDescriptor {
+///             // Build and return your `AXChartDescriptor` here.
+///         }
 ///
-///        func updateChartDescriptor(_ descriptor: AXChartDescriptor) {
-///            // update your chart descriptor with any new values
-///        }
-///    }
+///         func updateChartDescriptor(_ descriptor: AXChartDescriptor) {
+///             // Update your chart descriptor with any new values.
+///         }
+///     }
 ///
 /// Then, provide an instance of your `AXChartDescriptorRepresentable` type to
 /// your view using the `accessibilityChartDescriptor` modifier:
 ///
-///    var body: some View {
-///        MyChartView()
-///            .accessibilityChartDescriptor(MyChartDescriptorRepresentable())
-///    }
+///     var body: some View {
+///         MyChartView()
+///             .accessibilityChartDescriptor(MyChartDescriptorRepresentable())
+///     }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public protocol AXChartDescriptorRepresentable {
 
@@ -3739,6 +3739,22 @@ extension AnyTransition {
     public static func move(edge: Edge) -> AnyTransition
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+extension AnyTransition {
+
+    /// Creates a transition that when added to a view will animate the
+    /// view's insertion by moving it in from the specified edge while
+    /// fading it in, and animate its removal by moving it out towards
+    /// the opposite edge and fading it out.
+    ///
+    /// - Parameters:
+    ///   - edge: the edge from which the view will be animated in.
+    ///
+    /// - Returns: A transition that animates a view by moving and
+    ///   fading it.
+    public static func push(from edge: Edge) -> AnyTransition
+}
+
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension AnyTransition {
 
@@ -4360,7 +4376,7 @@ public enum AsyncImagePhase {
     public var image: Image? { get }
 
     /// The error that occurred when attempting to load an image, if any.
-    public var error: (Error)? { get }
+    public var error: Error? { get }
 }
 
 /// The default control group style.
@@ -6096,7 +6112,15 @@ extension Circle : InsettableShape {
 extension Circle : Sendable {
 }
 
-/// A progress view that visually indicates its progress using a circular gauge.
+/// A progress view that visually indicates its progress using a circular
+/// gauge.
+///
+/// On watchOS, and in widgets and complications, a circular progress view will
+/// appear as an `accessoryCircularCapacity` styled gauge. If the progress
+/// view is indeterminate, the gauge will be empty.
+///
+/// In cases where no determinate circular progress view style is available,
+/// an indeterminate style will be used.
 ///
 /// You can also use ``ProgressViewStyle/circular`` to construct this style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -6660,6 +6684,27 @@ extension Color {
     ///     Rectangle().fill(.blue.gradient)
     ///
     public var gradient: AnyGradient { get }
+}
+
+extension Color : Transferable {
+
+    /// One group of colors–constant colors–created with explicitly specified
+    /// component values are transferred as is.
+    ///
+    /// Another group of colors–standard colors, like `Color.mint`,
+    /// and semantic colors, like `Color.accentColor`–are rendered on screen
+    /// differently depending on the current ``SwiftUI/Environment``. For transferring,
+    /// they are resolved against the default environment and might produce
+    /// a slightly different result at the destination if the source of drag
+    /// or copy uses a non-default environment.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public static var transferRepresentation: some TransferRepresentation { get }
+
+    /// The type of the representation used to import and export the item.
+    ///
+    /// Swift infers this type from the return value of the
+    /// ``transferRepresentation`` property.
+    public typealias Representation = some TransferRepresentation
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7930,6 +7975,18 @@ public struct ContentTransition : Equatable {
     /// system uses an opacity transition instead.
     public static let interpolate: ContentTransition
 
+    /// Creates a content transition intended to be used with `Text`
+    /// views displaying numeric text. In certain environments changes
+    /// to the text will enable a nonstandard transition tailored to
+    /// numeric characters that count up or down.
+    ///
+    /// - Parameters:
+    ///   - countsDown: true if the numbers represented by the text
+    ///     are counting downwards.
+    ///
+    /// - Returns: a new content transition.
+    public static func numericText(countsDown: Bool = false) -> ContentTransition
+
     /// Returns a Boolean value indicating whether two values are equal.
     ///
     /// Equality is the inverse of inequality. For any values `a` and `b`,
@@ -8369,62 +8426,80 @@ public protocol CustomizableToolbarContent : ToolbarContent where Self.Body : Cu
 
 extension CustomizableToolbarContent {
 
-    /// Configures the supported edits of this default priority
-    /// customizable toolbar content.
+    /// Configures the way customizable toolbar items with the default
+    /// behavior behave.
     ///
-    /// Customizable toolbar items support different kinds of customization:
+    /// Default customizable items support a variety of edits by the user.
     /// * A user can add an an item that is not in the toolbar.
     /// * A user can remove an item that is in the toolbar.
     /// * A user can move an item within the toolbar.
     ///
-    /// Based on the priority of the toolbar items, different edits will
-    /// be supported. For example, a high priority item will not support being
-    /// moved or removed.
-    ///
-    /// Use this modifier to adjust the kinds of customization a user can
-    /// perform on default priority toolbar items. In the following example, the
-    /// customizable toolbar item supports all of the different kinds of
-    /// toolbar customizations.
+    /// By default, all default customizable items will be initially
+    /// present in the toolbar. Provide a value of
+    /// ``Visibility/hidden`` to this modifier to specify that items should
+    /// initially be hidden from the user, and require them to add those items
+    /// to the toolbar if desired.
     ///
     ///     ContentView()
     ///         .toolbar(id: "main") {
     ///             ToolbarItem(id: "new") {
     ///                 // new button here
     ///             }
+    ///             .defaultCustomization(.hidden)
     ///         }
     ///
-    /// You can create an item that can not be removed by passing a value
-    /// of ``EditOperations/move`` to this modifier.
+    /// You can ensure that the user can always use an item with default
+    /// customizability, even if it's removed from the customizable toolbar. To
+    /// do this, provide the ``ToolbarCustomizationOptions/alwaysAvailable``
+    /// option. Unlike a customizable item with a customization behavior of
+    /// ``ToolbarCustomizationBehavior/none`` which always remain in the toolbar
+    /// itself, these items will remain in the overflow if the user removes them
+    /// from the toolbar.
+    ///
+    /// Provide a value of ``ToolbarCustomizationOptions/alwaysAvailable`` to
+    /// the options parameter of this modifier to receive this behavior.
     ///
     ///     ContentView()
     ///         .toolbar(id: "main") {
     ///             ToolbarItem(id: "new") {
     ///                 // new button here
     ///             }
-    ///             .defaultCustomizationEdits(.move)
+    ///             .defaultCustomization(options: .alwaysAvailable)
     ///         }
     ///
-    /// - Parameter edits: The supported edits of default priority
-    ///   customizable toolbar content.
+    /// - Parameters:
+    ///   - defaultVisibility: The default visibility of toolbar content
+    ///     with the default customization behavior.
+    ///   - options: The customization options to configure the behavior
+    ///     of toolbar content with the default customization behavior.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func defaultCustomizationEdits(_ edits: EditOperations<CustomizableToolbarEdits>) -> some CustomizableToolbarContent
+    public func defaultCustomization(_ defaultVisibility: Visibility = .automatic, options: ToolbarCustomizationOptions = []) -> some CustomizableToolbarContent
+
+
+    /// Configures customizable toolbar content with the default visibility
+    /// and options.
+    ///
+    /// Use the ``CustomizableToolbarContent/defaultCustomization(_:options:)``
+    /// modifier providing either a `defaultVisibility` or `options` instead.
+    @available(*, deprecated, message: "Please provide either a visibility or customization options")
+    public func defaultCustomization() -> some CustomizableToolbarContent
 
 }
 
 extension CustomizableToolbarContent {
 
-    /// Configures the customization priority of customizable toolbar content.
+    /// Configures the customization behavior of customizable toolbar content.
     ///
     /// Customizable toolbar items support different kinds of customization:
     /// * A user can add an an item that is not in the toolbar.
     /// * A user can remove an item that is in the toolbar.
     /// * A user can move an item within the toolbar.
     ///
-    /// Based on the priority of the toolbar items, different edits will
-    /// be supported.
+    /// Based on the customization behavior of the toolbar items, different
+    /// edits will be supported.
     ///
-    /// Use this modifier to adjust the kinds of customization a user can
-    /// perform on default priority toolbar items. In the following example, the
+    /// Use this modifier to the customization behavior a user can
+    /// perform on your toolbar items. In the following example, the
     /// customizable toolbar item supports all of the different kinds of
     /// toolbar customizations and starts in the toolbar.
     ///
@@ -8437,53 +8512,33 @@ extension CustomizableToolbarContent {
     ///
     /// You can create an item that can not be removed from the toolbar
     /// or moved within the toolbar  by passing a value of
-    /// ``ToolbarCustomizationPriority/high`` to this modifier.
+    /// ``ToolbarCustomizationBehavior/disabled`` to this modifier.
     ///
     ///     ContentView()
     ///         .toolbar(id: "main") {
     ///             ToolbarItem(id: "new") {
     ///                 // new button here
     ///             }
-    ///             .customizationPriority(.high)
+    ///             .customizationBehavior(.disabled)
     ///         }
     ///
-    /// In iOS, you can create an item that starts in the overflow menu of the
-    /// toolbar, but can be added to the toolbar itself by passing a value
-    /// of ``ToolbarCustomizationPriority/medium``.
+    /// You can create an item that can not be removed from the toolbar, but
+    /// can be moved by passing a value of
+    /// ``ToolbarCustomizationBehavior/reorderable``.
     ///
     ///     ContentView()
     ///         .toolbar(id: "main") {
     ///             ToolbarItem(id: "new") {
     ///                 // new button here
     ///             }
-    ///             .customizationPriority(.medium)
+    ///             .customizationBehavior(.reorderable)
     ///         }
     ///
-    /// You can create an item that does not start in the toolbar but can be
-    /// customized into the toolbar by the user by passing a value of
-    /// ``ToolbarCustomizationPriority/low``.
-    ///
-    ///     ContentView()
-    ///         .toolbar(id: "main") {
-    ///             ToolbarItem(id: "new") {
-    ///                 // new button here
-    ///             }
-    ///             .customizationPriority(.low)
-    ///         }
-    ///
-    /// - Parameter priority: The customization priority of the customizable
+    /// - Parameter behavior: The customization behavior of the customizable
     ///   toolbar content.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func customizationPriority(_ priority: ToolbarCustomizationPriority) -> some CustomizableToolbarContent
+    public func customizationBehavior(_ behavior: ToolbarCustomizationBehavior) -> some CustomizableToolbarContent
 
-}
-
-/// A type that is used to define the edits available to a customizable toolbar.
-///
-/// You don't use this type directly. SwiftUI uses this type to provide edit
-/// operations appropriate for customizable toolbars.
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-public struct CustomizableToolbarEdits {
 }
 
 /// A control for selecting an absolute date.
@@ -10765,6 +10820,70 @@ extension EdgeInsets : Animatable {
 extension EdgeInsets : Sendable {
 }
 
+/// A set of edit actions on a collection of data that a view can offer
+/// to a user.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+public struct EditActions<Data> : OptionSet {
+
+    /// The raw value.
+    public let rawValue: Int
+
+    /// Creates a new set from a raw value.
+    ///
+    /// - Parameter rawValue: The raw value with which to create the
+    /// collection edits.
+    public init(rawValue: Int)
+
+    /// All the edit actions available on this collection.
+    public static var all: EditActions<Data> { get }
+
+    /// The type of the elements of an array literal.
+    public typealias ArrayLiteralElement = EditActions<Data>
+
+    /// The element type of the option set.
+    ///
+    /// To inherit all the default implementations from the `OptionSet` protocol,
+    /// the `Element` type must be `Self`, the default.
+    public typealias Element = EditActions<Data>
+
+    /// The raw type that can be used to represent all values of the conforming
+    /// type.
+    ///
+    /// Every distinct value of the conforming type has a corresponding unique
+    /// value of the `RawValue` type, but there may be values of the `RawValue`
+    /// type that don't have a corresponding value of the conforming type.
+    public typealias RawValue = Int
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension EditActions where Data : RangeReplaceableCollection {
+
+    /// An edit action that allows the user to delete one or more elements
+    /// of a collection.
+    public static var delete: EditActions<Data> { get }
+
+    /// All the edit actions available on this collection.
+    public static var all: EditActions<Data> { get }
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension EditActions where Data : MutableCollection {
+
+    /// An edit action that allows the user to move elements of a
+    /// collection.
+    public static var move: EditActions<Data> { get }
+
+    /// All the edit actions available on this collection.
+    public static var all: EditActions<Data> { get }
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension EditActions where Data : MutableCollection, Data : RangeReplaceableCollection {
+
+    /// All the edit actions available on this collection.
+    public static var all: EditActions<Data> { get }
+}
+
 /// A button that toggles the edit mode environment value.
 ///
 /// An edit button toggles the environment's ``EnvironmentValues/editMode``
@@ -10960,84 +11079,6 @@ extension EditMode : Equatable {
 @available(macOS, unavailable)
 @available(watchOS, unavailable)
 extension EditMode : Hashable {
-}
-
-/// A set of edit operations on a collection of data that a view can offer
-/// to a user.
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-public struct EditOperations<Data> : OptionSet {
-
-    /// The raw value.
-    public let rawValue: Int
-
-    /// Creates a new set from a raw value.
-    ///
-    /// - Parameter rawValue: The raw value with which to create the
-    /// collection edits.
-    public init(rawValue: Int)
-
-    /// All the edit operations available on this collection.
-    public static var all: EditOperations<Data> { get }
-
-    /// The type of the elements of an array literal.
-    public typealias ArrayLiteralElement = EditOperations<Data>
-
-    /// The element type of the option set.
-    ///
-    /// To inherit all the default implementations from the `OptionSet` protocol,
-    /// the `Element` type must be `Self`, the default.
-    public typealias Element = EditOperations<Data>
-
-    /// The raw type that can be used to represent all values of the conforming
-    /// type.
-    ///
-    /// Every distinct value of the conforming type has a corresponding unique
-    /// value of the `RawValue` type, but there may be values of the `RawValue`
-    /// type that don't have a corresponding value of the conforming type.
-    public typealias RawValue = Int
-}
-
-extension EditOperations where Data == CustomizableToolbarEdits {
-
-    /// A customizable toolbar item supports being moved within the
-    /// customizable toolbar.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public static var move: EditOperations<CustomizableToolbarEdits> { get }
-
-    /// A customizable toolbar item supports all edit operations available
-    /// to a customizable toolbar. This includes being moving within the
-    /// toolbar and being removed from the toolbar entirely.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public static var all: EditOperations<CustomizableToolbarEdits> { get }
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension EditOperations where Data : RangeReplaceableCollection {
-
-    /// An edit operation that allows the user to delete one or more elements
-    /// of a collection.
-    public static var delete: EditOperations<Data> { get }
-
-    /// All the edit operations available on this collection
-    public static var all: EditOperations<Data> { get }
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension EditOperations where Data : MutableCollection {
-
-    /// An edit operation that allows the user to move elements of a
-    /// collection.
-    public static var move: EditOperations<Data> { get }
-
-    /// All the edit operations available on this collection
-    public static var all: EditOperations<Data> { get }
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension EditOperations where Data : MutableCollection, Data : RangeReplaceableCollection {
-
-    /// All the edit operations available on this collection
-    public static var all: EditOperations<Data> { get }
 }
 
 /// An opaque wrapper view that adds editing capabilities to a row in a list.
@@ -11953,6 +11994,48 @@ extension EnvironmentValues {
     /// If there is no focusable ancestor, the value is `false`.
     @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
     public var isFocused: Bool { get }
+}
+
+@available(iOS 16.0, macOS 13.0, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension EnvironmentValues {
+
+    /// An action that presents a window.
+    ///
+    /// If the targeted scene accepts data, then the value passed to the action
+    /// will be provided to the scene's content closure.
+    ///
+    /// Use the ``EnvironmentValues/openWindow`` environment value to get the
+    /// instance of this structure for a given ``Environment``. Then call the
+    /// instance to present a window. You call the instance directly because it
+    /// defines a ``OpenWindowAction/callAsFunction(id:)`` method that Swift
+    /// calls when you call the instance.
+    ///
+    /// For example, you can define a button that opens the specified note
+    /// value in a new window.
+    ///
+    ///     @main
+    ///     struct Notes: App {
+    ///         var body: some Scene {
+    ///             WindowGroup(for: Note.ID.self) { $noteID in
+    ///                 // ...
+    ///             }
+    ///         }
+    ///     }
+    ///
+    ///     struct NewNoteWindow: View {
+    ///         var note: Note
+    ///         @Environment(\.openWindow) private var openWindow
+    ///
+    ///         var body: some View {
+    ///             Button("Open Note In New Window") {
+    ///                 openWindow(value: note.id)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    public var openWindow: OpenWindowAction { get }
 }
 
 extension EnvironmentValues {
@@ -14895,27 +14978,27 @@ extension ForEach {
     /// identity. If the `id` of a data element changes, the content view
     /// generated from that data element loses any current state and animations.
     ///
-    /// When placed inside a `List` the edit operations (like delete or move)
+    /// When placed inside a `List` the edit actions (like delete or move)
     /// can be automatically synthesized by specifying an appropriate
-    /// `EditOperations`.
+    /// `EditActions`.
     ///
     /// The following example shows a list of recipes whose elements can be
     /// deleted and reordered:
     ///
     ///     List {
-    ///         ForEach($recipes, edits: [.delete, .move]) { $recipe in
+    ///         ForEach($recipes, editActions: [.delete, .move]) { $recipe in
     ///             RecipeCell($recipe)
     ///         }
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// The following example shows a list of recipes whose elements can be
     /// deleted only if they satisfy a condition:
     ///
     ///     List {
-    ///         ForEach($recipes, edits: .delete) { $recipe in
+    ///         ForEach($recipes, editActions: .delete) { $recipe in
     ///             RecipeCell($recipe)
     ///                 .deleteDisabled(recipe.isFromMom)
     ///         }
@@ -14924,7 +15007,7 @@ extension ForEach {
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation.
+    /// modifiers will override any synthesized actions.
     /// Use this modifier if you need fine-grain control on how mutations are
     /// applied to the data driving the `ForEach`. For example, if you need to
     /// execute side effects or call into your existing model code.
@@ -14932,9 +15015,9 @@ extension ForEach {
     /// - Parameters:
     ///   - data: The identified data that the ``ForEach`` instance uses to
     ///     create views dynamically and can be edited by the user.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - content: The view builder that creates views dynamically.
-    public init<C, R>(_ data: Binding<C>, edits: EditOperations<C>, @ViewBuilder content: @escaping (Binding<C.Element>) -> R) where Data == IndexedIdentifierCollection<C, ID>, ID == C.Element.ID, Content == EditableCollectionContent<R, C>, C : MutableCollection, C : RandomAccessCollection, R : View, C.Element : Identifiable, C.Index : Hashable
+    public init<C, R>(_ data: Binding<C>, editActions: EditActions<C>, @ViewBuilder content: @escaping (Binding<C.Element>) -> R) where Data == IndexedIdentifierCollection<C, ID>, ID == C.Element.ID, Content == EditableCollectionContent<R, C>, C : MutableCollection, C : RandomAccessCollection, R : View, C.Element : Identifiable, C.Index : Hashable
 
     /// Creates an instance that uniquely identifies and creates views across
     /// updates based on the identity of the underlying data.
@@ -14944,27 +15027,27 @@ extension ForEach {
     /// identity. If the `id` of a data element changes, the content view
     /// generated from that data element loses any current state and animations.
     ///
-    /// When placed inside a `List` the edit operations (like delete or move)
+    /// When placed inside a `List` the edit actions (like delete or move)
     /// can be automatically synthesized by specifying an appropriate
-    /// `EditOperations`.
+    /// `EditActions`.
     ///
     /// The following example shows a list of recipes whose elements can be
     /// deleted and reordered:
     ///
     ///     List {
-    ///         ForEach($recipes, edits: [.delete, .move]) { $recipe in
+    ///         ForEach($recipes, editActions: [.delete, .move]) { $recipe in
     ///             RecipeCell($recipe)
     ///         }
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// The following example shows a list of recipes whose elements can be
     /// deleted only if they satisfy a condition:
     ///
     ///     List {
-    ///         ForEach($recipes, edits: .delete) { $recipe in
+    ///         ForEach($recipes, editActions: .delete) { $recipe in
     ///             RecipeCell($recipe)
     ///                 .deleteDisabled(recipe.isFromMom)
     ///         }
@@ -14973,7 +15056,7 @@ extension ForEach {
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation.
+    /// modifiers will override any synthesized actions.
     /// Use this modifier if you need fine-grain control on how mutations are
     /// applied to the data driving the `ForEach`. For example, if you need to
     /// execute side effects or call into your existing model code.
@@ -14982,9 +15065,9 @@ extension ForEach {
     ///   - data: The identified data that the ``ForEach`` instance uses to
     ///     create views dynamically and can be edited by the user.
     ///   - id: The key path to the provided data's identifier.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - content: The view builder that creates views dynamically.
-    public init<C, R>(_ data: Binding<C>, id: KeyPath<C.Element, ID>, edits: EditOperations<C>, @ViewBuilder content: @escaping (Binding<C.Element>) -> R) where Data == IndexedIdentifierCollection<C, ID>, Content == EditableCollectionContent<R, C>, C : MutableCollection, C : RandomAccessCollection, R : View, C.Index : Hashable
+    public init<C, R>(_ data: Binding<C>, id: KeyPath<C.Element, ID>, editActions: EditActions<C>, @ViewBuilder content: @escaping (Binding<C.Element>) -> R) where Data == IndexedIdentifierCollection<C, ID>, Content == EditableCollectionContent<R, C>, C : MutableCollection, C : RandomAccessCollection, R : View, C.Index : Hashable
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18343,6 +18426,469 @@ public struct GridItem {
     public init(_ size: GridItem.Size = .flexible(), spacing: CGFloat? = nil, alignment: Alignment? = nil)
 }
 
+/// A layout that arranges other views in a two dimensional layout.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@frozen public struct GridLayout {
+
+    /// The alignment of children.
+    public var alignment: Alignment
+
+    /// The horizontal distance between adjacent children, or nil if
+    /// the stack should choose a default distance for each pair of
+    /// children.
+    public var horizontalSpacing: CGFloat?
+
+    /// The vertical distance between adjacent children, or nil if
+    /// the stack should choose a default distance for each pair of
+    /// children.
+    public var verticalSpacing: CGFloat?
+
+    /// Creates a grid with the specified spacing, alignment, and child
+    /// views.
+    ///
+    /// - Parameters:
+    ///   - alignment: The guide for aligning the child views within the
+    ///     space allocated for a given cell. The default is
+    ///     ``Alignment/center``.
+    ///   - horizontalSpacing: The horizontal distance between each cell, given
+    ///     in points. The value is `nil` by default, which results in a
+    ///     default distance between cells that's appropriate for the platform.
+    ///   - verticalSpacing: The vertical distance between each cell, given
+    ///     in points. The value is `nil` by default, which results in a
+    ///     default distance between cells that's appropriate for the platform.
+    @inlinable public init(alignment: Alignment = .center, horizontalSpacing: CGFloat? = nil, verticalSpacing: CGFloat? = nil)
+
+    public typealias Body = Never
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension GridLayout : Layout {
+
+    /// Creates and initializes a cache for a layout instance.
+    ///
+    /// You can optionally use a cache to preserve calculated values across
+    /// calls to a layout container's methods. Many layout types don't need
+    /// a cache, because SwiftUI automatically reuses both the results of
+    /// calls into the layout and the values that the layout reads from its
+    /// subviews. Rely on the protocol's default implementation of this method
+    /// if you don't need a cache.
+    ///
+    /// However you might find a cache useful when:
+    ///
+    /// - The layout container repeats complex, intermediate calculations
+    /// across calls like ``sizeThatFits(proposal:subviews:cache:)``,
+    /// ``placeSubviews(in:proposal:subviews:cache:)``, and
+    /// ``explicitAlignment(of:in:proposal:subviews:cache:)-8ofeu``.
+    /// You might be able to improve performance by calculating values
+    /// once and storing them in a cache.
+    /// - The layout container reads many ``LayoutValueKey`` values from
+    /// subviews. It might be more efficient to do that once and store the
+    /// results in the cache, rather than rereading the subviews' values before
+    /// each layout call.
+    /// - You want to maintain working storage, like temporary Swift arrays,
+    /// across calls into the layout, to minimize the number of allocation
+    /// events.
+    ///
+    /// Only implement a cache if profiling shows that it improves performance.
+    ///
+    /// ### Initialize a cache
+    ///
+    /// Implement the `makeCache(subviews:)` method to create a cache.
+    /// You can add computed values to the cache right away, using information
+    /// from the `subviews` input parameter, or you can do that later. The
+    /// methods of the ``Layout`` protocol that can access the cache
+    /// take the cache as an in-out parameter, which enables you to modify
+    /// the cache anywhere that you can read it.
+    ///
+    /// You can use any storage type that makes sense for your layout
+    /// algorithm, but be sure that you only store data that you derive
+    /// from the layout and its subviews (lazily, if possible). For this to
+    /// work correctly, SwiftUI needs to be able to call this method to
+    /// recreate the cache without changing the layout result.
+    ///
+    /// When you return a cache from this method, you implicitly define a type
+    /// for your cache. Be sure to either make the type of the `cache`
+    /// parameters on your other ``Layout`` protocol methods match, or use
+    /// a type alias to define the ``Cache`` associated type.
+    ///
+    /// ### Update the cache
+    ///
+    /// If the layout container or any of its subviews change, SwiftUI
+    /// calls the ``updateCache(_:subviews:)-9hkj9`` method so you can
+    /// modify or invalidate the contents of the
+    /// cache. The default implementation of that method calls the
+    /// `makeCache(subviews:)` method to recreate the cache, but you can
+    /// provide your own implementation of the update method to take an
+    /// incremental approach, if appropriate.
+    ///
+    /// - Parameters:
+    ///   - subviews: A collection of proxy instances that represent the
+    ///     views that the container arranges. You can use the proxies in the
+    ///     collection to get information about the subviews as you
+    ///     calculate values to store in the cache.
+    ///
+    /// - Returns: Storage for calculated data that you share among
+    ///   the methods of your custom layout container.
+    public func makeCache(subviews: GridLayout.Subviews) -> GridLayout.Cache
+
+    /// Updates the layout's cache when something changes.
+    ///
+    /// If your custom layout container creates a cache by implementing the
+    /// ``makeCache(subviews:)-23agy`` method, SwiftUI calls the update method
+    /// when your layout or its subviews change, giving you an opportunity
+    /// to modify or invalidate the contents of the cache.
+    /// The method's default implementation recreates the
+    /// cache by calling the ``makeCache(subviews:)-23agy`` method,
+    /// but you can provide your own implementation to take an
+    /// incremental approach, if appropriate.
+    ///
+    /// - Parameters:
+    ///   - cache: Storage for calculated data that you share among
+    ///     the methods of your custom layout container.
+    ///   - subviews: A collection of proxy instances that represent the
+    ///     views arranged by the container. You can use the proxies in the
+    ///     collection to get information about the subviews as you
+    ///     calculate values to store in the cache.
+    public func updateCache(_ cache: inout GridLayout.Cache, subviews: GridLayout.Subviews)
+
+    /// Returns the preferred spacing values of the composite view.
+    ///
+    /// Implement this method to provide custom spacing preferences
+    /// for a layout container. The value you return affects
+    /// the spacing around the container, but it doesn't affect how the
+    /// container arranges subviews relative to one another inside the
+    /// container.
+    ///
+    /// Create a custom ``ViewSpacing`` instance for your container by
+    /// initializing one with default values, and then merging that with
+    /// spacing instances of certain subviews. For example, if you define
+    /// a basic vertical stack that places subviews in a column, you could
+    /// use the spacing preferences of the subview edges that make
+    /// contact with the container's edges:
+    ///
+    ///     extension BasicVStack {
+    ///         func spacing(subviews: Subviews, cache: inout ()) -> ViewSpacing {
+    ///             var spacing = ViewSpacing()
+    ///
+    ///             for index in subviews.indices {
+    ///                 var edges: Edge.Set = [.leading, .trailing]
+    ///                 if index == 0 { edges.formUnion(.top) }
+    ///                 if index == subviews.count - 1 { edges.formUnion(.bottom) }
+    ///                 spacing.formUnion(subviews[index].spacing, edges: edges)
+    ///             }
+    ///
+    ///             return spacing
+    ///         }
+    ///     }
+    ///
+    /// In the above example, the first and last subviews contribute to the
+    /// spacing above and below the container, respectively, while all subviews
+    /// affect the spacing on the leading and trailing edges.
+    ///
+    /// If you don't implement this method, the protocol provides a default
+    /// implementation, namely ``Layout/spacing(subviews:cache:)-1z0gt``,
+    /// that merges the spacing preferences across all subviews on all edges.
+    ///
+    /// - Parameters:
+    ///   - subviews: A collection of proxy instances that represent the
+    ///     views that the container arranges. You can use the proxies in the
+    ///     collection to get information about the subviews as you determine
+    ///     how much spacing the container prefers around it.
+    ///   - cache: Optional storage for calculated data that you can share among
+    ///     the methods of your custom layout container. See
+    ///     ``makeCache(subviews:)-23agy`` for details.
+    ///
+    /// - Returns: A ``ViewSpacing`` instance that describes the preferred
+    ///   spacing around the container view.
+    public func spacing(subviews: GridLayout.Subviews, cache: inout GridLayout.Cache) -> ViewSpacing
+
+    /// Returns the size of the composite view, given a proposed size
+    /// and the view's subviews.
+    ///
+    /// Implement this method to tell your custom layout container's parent
+    /// view how much space the container needs for a set of subviews, given
+    /// a size proposal. The parent might call this method more than once
+    /// during a layout pass with different proposed sizes to test the
+    /// flexibility of the container, using proposals like:
+    ///
+    /// * The ``ProposedViewSize/zero`` proposal; respond with the
+    ///   layout's minimum size.
+    /// * The ``ProposedViewSize/infinity`` proposal; respond with the
+    ///   layout's maximum size.
+    /// * The ``ProposedViewSize/unspecified`` proposal; respond with the
+    ///   layout's ideal size.
+    ///
+    /// The parent might also choose to test flexibility in one dimension at a
+    /// time. For example, a horizontal stack might propose a fixed height and
+    /// an infinite width, and then the same height with a zero width.
+    ///
+    /// The following example calculates the size for a basic vertical stack
+    /// that places views in a column, with no spacing between the views:
+    ///
+    ///     private struct BasicVStack: Layout {
+    ///         func sizeThatFits(
+    ///             proposal: ProposedViewSize,
+    ///             subviews: Subviews,
+    ///             cache: inout ()
+    ///         ) -> CGSize {
+    ///             subviews.reduce(CGSize.zero) { result, subview in
+    ///                 let size = subview.sizeThatFits(.unspecified)
+    ///                 return CGSize(
+    ///                     width: max(result.width, size.width),
+    ///                     height: result.height + size.height)
+    ///             }
+    ///         }
+    ///
+    ///         // This layout also needs a placeSubviews() implementation.
+    ///     }
+    ///
+    /// The implementation asks each subview for its ideal size by calling the
+    /// ``LayoutSubview/sizeThatFits(_:)`` method with an
+    /// ``ProposedViewSize/unspecified`` proposed size.
+    /// It then reduces these values into a single size that represents
+    /// the maximum subview width and the sum of subview heights.
+    /// Because this example isn't flexible, it ignores its size proposal
+    /// input and always returns the same value for a given set of subviews.
+    ///
+    /// SwiftUI views choose their own size, so the layout engine always
+    /// uses a value that you return from this method as the actual size of the
+    /// composite view. That size factors into the construction of the `bounds`
+    /// input to the ``placeSubviews(in:proposal:subviews:cache:)`` method.
+    ///
+    /// - Parameters:
+    ///   - proposal: A size proposal for the container. The container's parent
+    ///     view that calls this method might call the method more than once
+    ///     with different proposals to learn more about the container's
+    ///     flexibility before deciding which proposal to use for placement.
+    ///   - subviews: A collection of proxies that represent the
+    ///     views that the container arranges. You can use the proxies in the
+    ///     collection to get information about the subviews as you determine
+    ///     how much space the container needs to display them.
+    ///   - cache: Optional storage for calculated data that you can share among
+    ///     the methods of your custom layout container. See
+    ///     ``makeCache(subviews:)-23agy`` for details.
+    ///
+    /// - Returns: A size that indicates how much space the container
+    ///   needs to arrange its subviews.
+    public func sizeThatFits(proposal: ProposedViewSize, subviews: GridLayout.Subviews, cache: inout GridLayout.Cache) -> CGSize
+
+    /// Assigns positions to each of the layout's subviews.
+    ///
+    /// SwiftUI calls your implementation of this method to tell your
+    /// custom layout container to place its subviews. From this method, call
+    /// the ``LayoutSubview/place(at:anchor:proposal:)`` method on each
+    /// element in `subviews` to tell the subviews where to appear in the
+    /// user interface.
+    ///
+    /// For example, you can create a basic vertical stack that places views
+    /// in a column, with views horizontally aligned on their leading edge:
+    ///
+    ///     struct BasicVStack: Layout {
+    ///         func placeSubviews(
+    ///             in bounds: CGRect,
+    ///             proposal: ProposedViewSize,
+    ///             subviews: Subviews,
+    ///             cache: inout ()
+    ///         ) {
+    ///             var point = bounds.origin
+    ///             for subview in subviews {
+    ///                 subview.place(at: point, anchor: .topLeading, proposal: .unspecified)
+    ///                 point.y += subview.dimensions(in: .unspecified).height
+    ///             }
+    ///         }
+    ///
+    ///         // This layout also needs a sizeThatFits() implementation.
+    ///     }
+    ///
+    /// The example creates a placement point that starts at the origin of the
+    /// specified `bounds` input and uses that to place the first subview. It
+    /// then moves the point in the y dimension by the subview's height,
+    /// which it reads using the ``LayoutSubview/dimensions(in:)`` method.
+    /// This prepares the point for the next iteration of the loop. All
+    /// subview operations use an ``ProposedViewSize/unspecified`` size
+    /// proposal to indicate that subviews should use and report their ideal
+    /// size.
+    ///
+    /// A more complex layout container might add space between subviews
+    /// according to their ``LayoutSubview/spacing`` preferences, or a
+    /// fixed space based on input configuration. For example, you can extend
+    /// the basic vertical stack's placement method to calculate the
+    /// preferred distances between adjacent subviews and store the results in
+    /// an array:
+    ///
+    ///     let spacing: [CGFloat] = subviews.indices.dropLast().map { index in
+    ///         subviews[index].spacing.distance(
+    ///             to: subviews[index + 1].spacing,
+    ///             along: .vertical)
+    ///     }
+    ///
+    /// The spacing's ``ViewSpacing/distance(to:along:)`` method considers the
+    /// preferences of adjacent views on the edge where they meet. It returns
+    /// the smallest distance that satisfies both views' preferences for the
+    /// given edge. For example, if one view prefers at least `2` points on its
+    /// bottom edge, and the next view prefers at least `8` points on its top
+    /// edge, the distance method returns `8`, because that's the smallest
+    /// value that satisfies both preferences.
+    ///
+    /// Update the placement calculations to use the spacing values:
+    ///
+    ///     var point = bounds.origin
+    ///     for (index, subview) in subviews.enumerated() {
+    ///         if index > 0 { point.y += spacing[index - 1] } // Add spacing.
+    ///         subview.place(at: point, anchor: .topLeading, proposal: .unspecified)
+    ///         point.y += subview.dimensions(in: .unspecified).height
+    ///     }
+    ///
+    /// Be sure that you use computations during placement that are consistent
+    /// with those in your implementation of other protocol methods for a given
+    /// set of inputs. For example, if you add spacing during placement,
+    /// make sure your implementation of
+    /// ``sizeThatFits(proposal:subviews:cache:)`` accounts for the extra space.
+    /// Similarly, if the sizing method returns different values for different
+    /// size proposals, make sure the placement method responds to its
+    /// `proposal` input in the same way.
+    ///
+    /// - Parameters:
+    ///   - bounds: The region that the container view's parent allocates to the
+    ///     container view, specified in the parent's coordinate space.
+    ///     Place all the container's subviews within the region.
+    ///     The size of this region matches a size that your container
+    ///     previously returned from a call to the
+    ///     ``sizeThatFits(proposal:subviews:cache:)`` method.
+    ///   - proposal: The size proposal from which the container generated the
+    ///     size that the parent used to create the `bounds` parameter.
+    ///     The parent might propose more than one size before calling the
+    ///     placement method, but it always uses one of the proposals and the
+    ///     corresponding returned size when placing the container.
+    ///   - subviews: A collection of proxies that represent the
+    ///     views that the container arranges. Use the proxies in the collection
+    ///     to get information about the subviews and to tell the subviews
+    ///     where to appear.
+    ///   - cache: Optional storage for calculated data that you can share among
+    ///     the methods of your custom layout container. See
+    ///     ``makeCache(subviews:)-23agy`` for details.
+    public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: GridLayout.Subviews, cache: inout GridLayout.Cache)
+
+    /// Returns the position of the specified horizontal alignment guide along
+    /// the x axis.
+    ///
+    /// Implement this method to return a value for the specified alignment
+    /// guide of a custom layout container. The value you return affects
+    /// the placement of the container as a whole, but it doesn't affect how the
+    /// container arranges subviews relative to one another.
+    ///
+    /// You can use this method to put an alignment guide in a nonstandard
+    /// position. For example, you can indent the container's leading edge
+    /// alignment guide by 10 points:
+    ///
+    ///     extension BasicVStack {
+    ///         func explicitAlignment(
+    ///             of guide: HorizontalAlignment,
+    ///             in bounds: CGRect,
+    ///             proposal: ProposedViewSize,
+    ///             subviews: Subviews,
+    ///             cache: inout ()
+    ///         ) -> CGFloat? {
+    ///             if guide == .leading {
+    ///                 return bounds.minX + 10
+    ///             }
+    ///             return nil
+    ///         }
+    ///     }
+    ///
+    /// The above example returns `nil` for other guides to indicate that they
+    /// don't have an explicit value. A guide without an explicit value behaves
+    /// as it would for any other view. If you don't implement the
+    /// method, the protocol's default implementation merges the
+    /// subviews' guides.
+    ///
+    /// - Parameters:
+    ///   - guide: The ``HorizontalAlignment`` guide that the method calculates
+    ///     the position of.
+    ///   - bounds: The region that the container view's parent allocates to the
+    ///     container view, specified in the parent's coordinate space.
+    ///   - proposal: A proposed size for the container.
+    ///   - subviews: A collection of proxy instances that represent the
+    ///     views arranged by the container. You can use the proxies in the
+    ///     collection to get information about the subviews as you determine
+    ///     where to place the guide.
+    ///   - cache: Optional storage for calculated data that you can share among
+    ///     the methods of your custom layout container. See
+    ///     ``makeCache(subviews:)-23agy`` for details.
+    ///
+    /// - Returns: The guide's position relative to the `bounds`.
+    ///   Return `nil` to indicate that the guide doesn't have an explicit
+    ///   value.
+    public func explicitAlignment(of guide: HorizontalAlignment, in bounds: CGRect, proposal: ProposedViewSize, subviews: GridLayout.Subviews, cache: inout GridLayout.Cache) -> CGFloat?
+
+    /// Returns the position of the specified vertical alignment guide along
+    /// the y axis.
+    ///
+    /// Implement this method to return a value for the specified alignment
+    /// guide of a custom layout container. The value you return affects
+    /// the placement of the container as a whole, but it doesn't affect how the
+    /// container arranges subviews relative to one another.
+    ///
+    /// You can use this method to put an alignment guide in a nonstandard
+    /// position. For example, you can raise the container's bottom edge
+    /// alignment guide by 10 points:
+    ///
+    ///     extension BasicVStack {
+    ///         func explicitAlignment(
+    ///             of guide: VerticalAlignment,
+    ///             in bounds: CGRect,
+    ///             proposal: ProposedViewSize,
+    ///             subviews: Subviews,
+    ///             cache: inout ()
+    ///         ) -> CGFloat? {
+    ///             if guide == .bottom {
+    ///                 return bounds.minY - 10
+    ///             }
+    ///             return nil
+    ///         }
+    ///     }
+    ///
+    /// The above example returns `nil` for other guides to indicate that they
+    /// don't have an explicit value. A guide without an explicit value behaves
+    /// as it would for any other view. If you don't implement the
+    /// method, the protocol's default implementation merges the
+    /// subviews' guides.
+    ///
+    /// - Parameters:
+    ///   - guide: The ``VerticalAlignment`` guide that the method calculates
+    ///     the position of.
+    ///   - bounds: The region that the container view's parent allocates to the
+    ///     container view, specified in the parent's coordinate space.
+    ///   - proposal: A proposed size for the container.
+    ///   - subviews: A collection of proxy instances that represent the
+    ///     views arranged by the container. You can use the proxies in the
+    ///     collection to get information about the subviews as you determine
+    ///     where to place the guide.
+    ///   - cache: Optional storage for calculated data that you can share among
+    ///     the methods of your custom layout container. See
+    ///     ``makeCache(subviews:)-23agy`` for details.
+    ///
+    /// - Returns: The guide's position relative to the `bounds`.
+    ///   Return `nil` to indicate that the guide doesn't have an explicit
+    ///   value.
+    public func explicitAlignment(of guide: VerticalAlignment, in bounds: CGRect, proposal: ProposedViewSize, subviews: GridLayout.Subviews, cache: inout GridLayout.Cache) -> CGFloat?
+
+    /// The type defining the data to animate.
+    public typealias AnimatableData = EmptyAnimatableData
+}
+
+extension GridLayout {
+
+    /// A stateful grid layout algorithm.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public struct Cache {
+    }
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension GridLayout : Sendable {
+}
+
 /// A horizontal row in a two dimensional grid container.
 ///
 /// Use one or more `GridRow` instances to define the rows of a ``Grid``
@@ -18959,6 +19505,46 @@ public struct GroupedListStyle : ListStyle {
     /// When you create a custom view, Swift infers this type from your
     /// implementation of the required ``View/body-swift.property`` property.
     public typealias Body = Never
+}
+
+/// A layout that arranges its children in a horizontal line.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@frozen public struct HStackLayout : Layout {
+
+    /// The vertical alignment of children.
+    public var alignment: VerticalAlignment
+
+    /// The distance between adjacent children, or `nil` if the stack should
+    /// choose a default distance for each pair of children.
+    public var spacing: CGFloat?
+
+    /// Creates an instance with the given spacing and vertical alignment.
+    ///
+    /// - Parameters:
+    ///     - alignment: The guide for aligning the subviews in this stack. It
+    ///       has the same vertical screen coordinate for all children.
+    ///     - spacing: The distance between adjacent subviews, or `nil` if you
+    ///       want the stack to choose a default distance for each pair of
+    ///       subviews.
+    ///     - content: A view builder that creates the content of this stack.
+    @inlinable public init(alignment: VerticalAlignment = .center, spacing: CGFloat? = nil)
+
+    /// The type defining the data to animate.
+    public typealias AnimatableData = EmptyAnimatableData
+
+    /// Cached values associated with the layout instance.
+    ///
+    /// If you create a cache for your custom layout, you can use
+    /// a type alias to define this type as your data storage type.
+    /// Alternatively, you can refer to the data storage type directly in all
+    /// the places where you work with the cache.
+    ///
+    /// See ``makeCache(subviews:)-23agy`` for more information.
+    public typealias Cache
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension HStackLayout : Sendable {
 }
 
 /// A shape style that maps to one of the numbered content styles.
@@ -21548,6 +22134,7 @@ extension LabelStyleConfiguration.Icon : View {
 public struct LabeledContent<Label, Content> {
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension LabeledContent : View where Label : View, Content : View {
 
     /// Creates a standard labeled element, with a view that conveys
@@ -21729,23 +22316,8 @@ public protocol LabeledContentStyle {
     /// Creates a view that represents the body of labeled content.
     @ViewBuilder func makeBody(configuration: Self.Configuration) -> Self.Body
 
-    /// Creates a view that represents the body of labeled content.
-    /// Do not implement this, this will be removed in the future.
-    @ViewBuilder func body(configuration: Self.Configuration) -> Self.Body
-
     /// The properties of a labeled content instance.
     typealias Configuration = LabeledContentStyleConfiguration
-}
-
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension LabeledContentStyle {
-
-    /// Creates a view that represents the body of labeled content.
-    public func makeBody(configuration: Self.Configuration) -> Self.Body
-
-    /// Creates a view that represents the body of labeled content.
-    /// Do not implement this, this will be removed in the future.
-    public func body(configuration: Self.Configuration) -> Self.Body
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -24279,7 +24851,7 @@ extension List {
     ///
     ///     List(
     ///         $foods,
-    ///         edits: [.delete, .move],
+    ///         editActions: [.delete, .move],
     ///         selection: $selectedFoods
     ///     ) { $food in
     ///        HStack {
@@ -24289,22 +24861,22 @@ extension List {
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation
+    /// modifiers will override any synthesized action
     ///
     /// - Parameters:
     ///   - data: The identifiable data for computing and to be edited by
     ///     the list.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - selection: A binding to a set that identifies selected rows.
     ///   - rowContent: A view builder that creates the view for a single row of
     ///     the list.
     @available(watchOS, unavailable)
-    @MainActor public init<Data, RowContent>(_ data: Binding<Data>, edits: EditOperations<Data>, selection: Binding<Set<SelectionValue>>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, Data.Element.ID>, Data.Element.ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, RowContent : View, Data.Element : Identifiable, Data.Index : Hashable
+    @MainActor public init<Data, RowContent>(_ data: Binding<Data>, editActions: EditActions<Data>, selection: Binding<Set<SelectionValue>>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, Data.Element.ID>, Data.Element.ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, RowContent : View, Data.Element : Identifiable, Data.Index : Hashable
 
     /// Creates a list that computes its rows on demand from an underlying
     /// collection of identifiable, allows to edit the collection, and
@@ -24316,7 +24888,7 @@ extension List {
     ///
     ///     List(
     ///         $foods,
-    ///         edits: [.delete, .move],
+    ///         editActions: [.delete, .move],
     ///         selection: $selectedFoods
     ///     ) { $food in
     ///        HStack {
@@ -24326,23 +24898,23 @@ extension List {
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation
+    /// modifiers will override any synthesized action
     ///
     /// - Parameters:
     ///   - data: The identifiable data for computing and to be edited by
     ///     the list.
     ///   - id: The key path to the data model's identifier.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - selection: A binding to a set that identifies selected rows.
     ///   - rowContent: A view builder that creates the view for a single row of
     ///
     @available(watchOS, unavailable)
-    @MainActor public init<Data, ID, RowContent>(_ data: Binding<Data>, id: KeyPath<Data.Element, ID>, edits: EditOperations<Data>, selection: Binding<Set<SelectionValue>>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, ID>, ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, ID : Hashable, RowContent : View, Data.Index : Hashable
+    @MainActor public init<Data, ID, RowContent>(_ data: Binding<Data>, id: KeyPath<Data.Element, ID>, editActions: EditActions<Data>, selection: Binding<Set<SelectionValue>>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, ID>, ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, ID : Hashable, RowContent : View, Data.Index : Hashable
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -24358,7 +24930,7 @@ extension List {
     ///
     ///     List(
     ///         $foods,
-    ///         edits: [.delete, .move],
+    ///         editActions: [.delete, .move],
     ///         selection: $selectedFood
     ///     ) { $food in
     ///        HStack {
@@ -24368,21 +24940,21 @@ extension List {
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation
+    /// modifiers will override any synthesized action
     ///
     /// - Parameters:
     ///   - data: The identifiable data for computing the list.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - selection: A binding to a selected value.
     ///   - rowContent: A view builder that creates the view for a single row of
     ///     the list.
     @available(watchOS, unavailable)
-    @MainActor public init<Data, RowContent>(_ data: Binding<Data>, edits: EditOperations<Data>, selection: Binding<SelectionValue?>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, Data.Element.ID>, Data.Element.ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, RowContent : View, Data.Element : Identifiable, Data.Index : Hashable
+    @MainActor public init<Data, RowContent>(_ data: Binding<Data>, editActions: EditActions<Data>, selection: Binding<SelectionValue?>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, Data.Element.ID>, Data.Element.ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, RowContent : View, Data.Element : Identifiable, Data.Index : Hashable
 
     /// Creates a list that computes its rows on demand from an underlying
     /// collection of identifiable data, allows to edit the collection, and
@@ -24394,7 +24966,7 @@ extension List {
     ///
     ///     List(
     ///         $foods,
-    ///         edits: [.delete, .move],
+    ///         editActions: [.delete, .move],
     ///         selection: $selectedFood
     ///     ) { $food in
     ///        HStack {
@@ -24404,22 +24976,22 @@ extension List {
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation
+    /// modifiers will override any synthesized action
     ///
     /// - Parameters:
     ///   - data: The identifiable data for computing the list.
     ///   - id: The key path to the data model's identifier.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - selection: A binding to a selected value.
     ///   - rowContent: A view builder that creates the view for a single row of
     ///     the list.
     @available(watchOS, unavailable)
-    @MainActor public init<Data, ID, RowContent>(_ data: Binding<Data>, id: KeyPath<Data.Element, ID>, edits: EditOperations<Data>, selection: Binding<SelectionValue?>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, ID>, ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, ID : Hashable, RowContent : View, Data.Index : Hashable
+    @MainActor public init<Data, ID, RowContent>(_ data: Binding<Data>, id: KeyPath<Data.Element, ID>, editActions: EditActions<Data>, selection: Binding<SelectionValue?>?, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, ID>, ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, ID : Hashable, RowContent : View, Data.Index : Hashable
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -24432,7 +25004,7 @@ extension List where SelectionValue == Never {
     /// foods allowing the user to delete or move elements from the
     /// collection.
     ///
-    ///     List($foods, edits: [.delete, .move]) { $food in
+    ///     List($foods, editActions: [.delete, .move]) { $food in
     ///        HStack {
     ///            Text(food.name)
     ///            Toggle("Favorite", isOn: $food.isFavorite)
@@ -24440,19 +25012,19 @@ extension List where SelectionValue == Never {
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation
+    /// modifiers will override any synthesized action
     ///
     /// - Parameters:
     ///   - data: A collection of identifiable data for computing the list.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - rowContent: A view builder that creates the view for a single row of
     ///     the list.
-    @MainActor public init<Data, RowContent>(_ data: Binding<Data>, edits: EditOperations<Data>, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, Data.Element.ID>, Data.Element.ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, RowContent : View, Data.Element : Identifiable, Data.Index : Hashable
+    @MainActor public init<Data, RowContent>(_ data: Binding<Data>, editActions: EditActions<Data>, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, Data.Element.ID>, Data.Element.ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, RowContent : View, Data.Element : Identifiable, Data.Index : Hashable
 
     /// Creates a list that computes its rows on demand from an underlying
     /// collection of identifiable data and allows to edit the collection.
@@ -24461,7 +25033,7 @@ extension List where SelectionValue == Never {
     /// foods allowing the user to delete or move elements from the
     /// collection.
     ///
-    ///     List($foods, edits: [.delete, .move]) { $food in
+    ///     List($foods, editActions: [.delete, .move]) { $food in
     ///        HStack {
     ///            Text(food.name)
     ///            Toggle("Favorite", isOn: $food.isFavorite)
@@ -24469,20 +25041,20 @@ extension List where SelectionValue == Never {
     ///     }
     ///
     /// Use ``View/deleteDisabled(_:)`` and ``View/moveDisabled(_:)``
-    /// to disable respectively delete or move operations on a per-row basis.
+    /// to disable respectively delete or move actions on a per-row basis.
     ///
     /// Explicit ``DynamicViewContent.onDelete(perform:)``,
     /// ``DynamicViewContent.onMove(perform:)``, or
     /// ``View.swipeActions(edge:allowsFullSwipe:content:)``
-    /// modifiers will override any synthesized operation
+    /// modifiers will override any synthesized action
     ///
     /// - Parameters:
     ///   - data: A collection of identifiable data for computing the list.
     ///   - id: The key path to the data model's identifier.
-    ///   - edits: The edit operations that are synthesized on `data`.
+    ///   - editActions: The edit actions that are synthesized on `data`.
     ///   - rowContent: A view builder that creates the view for a single row of
     ///     the list.
-    @MainActor public init<Data, ID, RowContent>(_ data: Binding<Data>, id: KeyPath<Data.Element, ID>, edits: EditOperations<Data>, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, ID>, ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, ID : Hashable, RowContent : View, Data.Index : Hashable
+    @MainActor public init<Data, ID, RowContent>(_ data: Binding<Data>, id: KeyPath<Data.Element, ID>, editActions: EditActions<Data>, @ViewBuilder rowContent: @escaping (Binding<Data.Element>) -> RowContent) where Content == ForEach<IndexedIdentifierCollection<Data, ID>, ID, EditableCollectionContent<RowContent, Data>>, Data : MutableCollection, Data : RandomAccessCollection, ID : Hashable, RowContent : View, Data.Index : Hashable
 }
 
 /// The configuration of a tint effect applied to content within a List.
@@ -24951,6 +25523,19 @@ extension LocalizedStringKey.StringInterpolation {
     ///
     /// - Parameter interval: The date interval to append.
     public mutating func appendInterpolation(_ interval: DateInterval)
+}
+
+extension LocalizedStringKey.StringInterpolation {
+
+    /// Appends the localized string resource to a string interpolation.
+    ///
+    /// Don't call this method directly; it's used by the compiler when
+    /// interpreting string interpolations.
+    ///
+    /// - Parameters:
+    ///   - value: The localized string resource to append.
+    @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
+    public mutating func appendInterpolation(_ resource: LocalizedStringResource)
 }
 
 /// A gesture that succeeds when the user performs a long press.
@@ -27365,15 +27950,22 @@ extension NavigationLink {
     /// component of the containing navigation view.
     ///
     /// This method sets the behavior when the navigation link is used in a
-    /// multi-column navigation view, such as
-    /// ``DoubleColumnNavigationViewStyle``. If `isDetailLink` is `true`,
-    /// performing the link in the primary column sets the contents of the
-    /// secondary (detail) column to be the link's destination view.  If
-    /// `isDetailLink` is `false`, the link navigates to the destination view
-    /// within the primary column.
+    /// ``NavigationSplitView``, or a
+    /// multi-column navigation view, such as one using
+    /// ``ColumnNavigationViewStyle``.
+    ///
+    /// For example, in a two-column navigation split view, if `isDetailLink` is
+    /// `true`, triggering the link in the sidebar column sets the contents of
+    /// the detail column to be the link's destination view. If `isDetailLink`
+    /// is `false`, the link navigates to the destination view within the
+    /// primary column.
     ///
     /// If you do not set the detail link behavior with this method, the
     /// behavior defaults to `true`.
+    ///
+    /// The `isDetailLink` modifier only affects view-destination links. Links
+    /// that present data values always search for a matching navigation
+    /// destination beginning in the column that contains the link.
     ///
     /// - Parameter isDetailLink: A Boolean value that specifies whether this
     /// link presents its destination as the detail component when used in a
@@ -27697,7 +28289,7 @@ extension NavigationPath.CodableRepresentation : Equatable {
 /// whether to emphasize the detail column or to give all of the columns equal
 /// prominence.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@MainActor public struct NavigationSplitView<Sidebar, Content, Detail> : View where Sidebar : View, Content : View, Detail : View {
+public struct NavigationSplitView<Sidebar, Content, Detail> : View where Sidebar : View, Content : View, Detail : View {
 
     /// Creates a three-column navigation split view.
     ///
@@ -27705,7 +28297,7 @@ extension NavigationPath.CodableRepresentation : Equatable {
     ///   - sidebar: The view to show in the leading column.
     ///   - content: The view to show in the middle column.
     ///   - detail: The view to show in the detail area.
-    @MainActor public init(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder content: () -> Content, @ViewBuilder detail: () -> Detail)
+    public init(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder content: () -> Content, @ViewBuilder detail: () -> Detail)
 
     /// Creates a three-column navigation split view that enables programmatic
     /// control of leading columns' visibility.
@@ -27716,14 +28308,14 @@ extension NavigationPath.CodableRepresentation : Equatable {
     ///   - sidebar: The view to show in the leading column.
     ///   - content: The view to show in the middle column.
     ///   - detail: The view to show in the detail area.
-    @MainActor public init(columnVisibility: Binding<NavigationSplitViewVisibility>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder content: () -> Content, @ViewBuilder detail: () -> Detail)
+    public init(columnVisibility: Binding<NavigationSplitViewVisibility>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder content: () -> Content, @ViewBuilder detail: () -> Detail)
 
     /// Creates a two-column navigation split view.
     ///
     /// - Parameters:
     ///   - sidebar: The view to show in the leading column.
     ///   - detail: The view to show in the detail area.
-    @MainActor public init(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
+    public init(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
 
     /// Creates a two-column navigation split view that enables programmatic
     /// control of the leading column's visibility.
@@ -27733,7 +28325,7 @@ extension NavigationPath.CodableRepresentation : Equatable {
     ///     visibility of the leading column.
     ///   - sidebar: The view to show in the leading column.
     ///   - detail: The view to show in the detail area.
-    @MainActor public init(columnVisibility: Binding<NavigationSplitViewVisibility>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
+    public init(columnVisibility: Binding<NavigationSplitViewVisibility>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
 
     /// The content and behavior of the view.
     ///
@@ -28494,6 +29086,92 @@ public struct OpenURLAction {
     public func callAsFunction(_ url: URL, completion: @escaping (_ accepted: Bool) -> Void)
 }
 
+/// An action that presents a window.
+///
+/// If the targeted scene accepts data, then the value passed to the action will
+/// be provided to the scene's content closure.
+///
+/// Use the ``EnvironmentValues/openWindow`` environment value to get the
+/// instance of this structure for a given ``Environment``. Then call the
+/// instance to present a window. You call the instance directly because it
+/// defines a ``OpenWindowAction/callAsFunction(id:)`` method that Swift calls
+/// when you call the instance.
+///
+/// For example, you can define a button that opens the specified note item
+/// in a new window:
+///
+///     @main
+///     struct Notes: App {
+///         var body: some Scene {
+///             WindowGroup(for: Note.ID.self) { $noteID in
+///                 // ...
+///             }
+///         }
+///     }
+///
+///     struct NewNoteWindow: View {
+///         var note: Note
+///         @Environment(\.openWindow) private var openWindow
+///
+///         var body: some View {
+///             Button("Open Note In New Window") {
+///                 openWindow(value: note.id)
+///             }
+///         }
+///     }
+///
+/// For best performance, use lightweight data for the presentation value.
+/// For structured model values that conform to
+/// <doc://com.apple.documentation/documentation/Swift/Identifiable>,
+/// the value's identifier makes a good presentation value.
+@available(iOS 16.0, macOS 13.0, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public struct OpenWindowAction {
+
+    /// Presents a window for the ``WindowGroup`` scene that handles the type of
+    /// the presented value.
+    ///
+    /// If there exists a window in the group whose presented value matches the
+    /// provided value, the system brings it to the front. If not, it creates a
+    /// new window and passes a binding to the provided value to its root view.
+    ///
+    /// For best performance, use lightweight data for the presentation value.
+    /// For structured model values that conform to
+    /// <doc://com.apple.documentation/documentation/Swift/Identifiable>,
+    /// the value's identifier makes a good presentation value.
+    ///
+    /// - Parameter value: The value to present.
+    public func callAsFunction<D>(value: D) where D : Decodable, D : Encodable, D : Hashable
+
+    /// Presents a window for the scene with the specified identifier.
+    ///
+    /// If the scene is a ``WindowGroup``, the system creates a new window for
+    /// the group. If the window group presents data, the system provies the
+    /// default value or `nil` to the the window's root view.
+    ///
+    /// If the scene is a ``Window``, the system orders its window to the front.
+    ///
+    /// - Parameter id: The identifier of the scene to present.
+    public func callAsFunction(id: String)
+
+    /// Presents a window for the `WindowGroup` scene with the specified
+    /// identifier, that handles the type of the presented value.
+    ///
+    /// If there exists a window in the group whose presented value matches the
+    /// provided value, the system brings it to the front. If not, it creates a
+    /// new window and passes a binding to the provided value to its root view.
+    ///
+    /// For best performance, use lightweight data for the presentation value.
+    /// For structured model values that conform to
+    /// <doc://com.apple.documentation/documentation/Swift/Identifiable>,
+    /// the value's identifier makes a good presentation value.
+    ///
+    /// - Parameter id: The identifier of the scene to present.
+    /// - Parameter value: The value to present.
+    public func callAsFunction<D>(id: String, value: D) where D : Decodable, D : Encodable, D : Hashable
+}
+
 /// A structure that computes views and disclosure groups on demand from an
 /// underlying collection of tree-structured, identified data.
 ///
@@ -28926,7 +29604,7 @@ public struct PageTabViewStyle : TabViewStyle {
 ///
 ///     var body: some View {
 ///         HStack {
-///             PasteButton(String.self) { strings in
+///             PasteButton(payloadType: String.self) { strings in
 ///                 pastedText = strings[0]
 ///             }
 ///             Divider()
@@ -29469,9 +30147,9 @@ extension Picker {
     /// Creates a picker that displays a custom label.
     ///
     /// If the wrapped values of the collection passed to `sources` are not all
-    /// the same, some styles will render the selection in a mixed state. The
-    /// specific presentation will depend on the style.  For example, a Picker
-    /// with a menu style will use dashes instead of checkmarks to indicate the
+    /// the same, some styles render the selection in a mixed state. The
+    /// specific presentation depends on the style.  For example, a Picker
+    /// with a menu style uses dashes instead of checkmarks to indicate the
     /// selected values.
     ///
     /// In the following example, a picker in a document inspector controls the
@@ -29491,7 +30169,7 @@ extension Picker {
     ///         var thickness: Thickness
     ///     }
     ///
-    ///     @State var selectedObjectBorders = [
+    ///     @State private var selectedObjectBorders = [
     ///         Border(color: .black, thickness: .thin),
     ///         Border(color: .red, thickness: .thick)
     ///     ]
@@ -29551,67 +30229,10 @@ extension Picker where Label == Text {
 
     /// Creates a picker that generates its label from a localized string key.
     ///
-    /// If the wrapped values of the Bindings in the collection passed to
-    /// `selection` are not all the same, some styles will render the selection
-    /// in a mixed state. The specific presentation will depend on the style.
-    /// For example, a Picker with a menu style will use dashes instead of
-    /// checkmarks to indicate the selected values.
-    ///
-    /// In the following example, a picker in a document inspector controls the
-    /// thickness of borders for the currently-selected shapes, which can
-    /// be of any number.
-    ///
-    ///     enum Thickness: String, CaseIterable, Identifiable {
-    ///         case thin
-    ///         case regular
-    ///         case thick
-    ///
-    ///         var id: Self { self }
-    ///     }
-    ///
-    ///     struct Border {
-    ///         var color: Color
-    ///         var thickness: Thickness
-    ///     }
-    ///
-    ///     @State var selectedObjectBorders = [
-    ///         Border(color: .black, thickness: .thin),
-    ///         Border(color: .red, thickness: .thick)
-    ///     ]
-    ///
-    ///     Picker(
-    ///         "Border Thickness",
-    ///         selection: $selectedObjectBorders.lazy.map(\.thickness)
-    ///     ) {
-    ///         ForEach(Thickness.allCases) { thickness in
-    ///             Text(thickness.rawValue)
-    ///         }
-    ///     }
-    ///
-    /// - Parameters:
-    ///     - titleKey: A localized string key that describes the purpose of
-    ///       selecting an option.
-    ///     - selection: A collection of bindings to a property that determines
-    ///       the currently-selected options. When a user selects an option
-    ///       from the picker, all bindings
-    ///       in the collection are updated with the selected option.
-    ///     - content: A view that contains the set of options.
-    ///
-    /// This initializer creates a ``Text`` view on your behalf, and treats the
-    /// localized key similar to ``Text/init(_:tableName:bundle:comment:)``. See
-    /// ``Text`` for more information about localizing strings.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Picker.init(_:sources:selection:content).")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Picker.init(_:sources:selection:content).")
-    public init<C>(_ titleKey: LocalizedStringKey, selection: C, @ViewBuilder content: () -> Content) where C : Collection, C.Element == Binding<SelectionValue>
-
-    /// Creates a picker that generates its label from a localized string key.
-    ///
-    /// If the wrapped values of the collection passed to `sources` are not all  
-    /// the same, some styles will render the selection in a mixed state. The
-    /// specific presentation will depend on the style.  For example, a Picker
-    /// with a menu style will use dashes instead of checkmarks to indicate the
+    /// If the wrapped values of the collection passed to `sources` are not all
+    /// the same, some styles render the selection in a mixed state. The
+    /// specific presentation depends on the style.  For example, a Picker
+    /// with a menu style uses dashes instead of checkmarks to indicate the
     /// selected values.
     ///
     /// In the following example, a picker in a document inspector controls the
@@ -29631,7 +30252,7 @@ extension Picker where Label == Text {
     ///         var thickness: Thickness
     ///     }
     ///
-    ///     @State var selectedObjectBorders = [
+    ///     @State private var selectedObjectBorders = [
     ///         Border(color: .black, thickness: .thin),
     ///         Border(color: .red, thickness: .thick)
     ///     ]
@@ -29679,73 +30300,13 @@ extension Picker where Label == Text {
     /// ``init(_:selection:content:)-6lwfn`` instead.
     public init<S>(_ title: S, selection: Binding<SelectionValue>, @ViewBuilder content: () -> Content) where S : StringProtocol
 
-    /// Creates a picker bound to a collection of bindings that
-    /// generates its label from a string.
-    ///
-    /// If the wrapped values of the Bindings in the collection passed to
-    /// `selection` are not all the same, some styles will render the selection
-    /// in a mixed state. The specific presentation will depend on the style.
-    /// For example, a Picker with a menu style will use dashes instead of
-    /// checkmarks to indicate the selected values.
-    ///
-    /// In the following example, a picker in a document inspector controls the
-    /// thickness of borders for the currently-selected shapes, which can
-    /// be of any number.
-    ///
-    ///     enum Thickness: String, CaseIterable, Identifiable {
-    ///         case thin
-    ///         case regular
-    ///         case thick
-    ///
-    ///         var id: Self { self }
-    ///     }
-    ///
-    ///     struct Border {
-    ///         var color: Color
-    ///         var thickness: Thickness
-    ///     }
-    ///
-    ///     @State var selectedObjectBorders = [
-    ///         Border(color: .black, thickness: .thin),
-    ///         Border(color: .red, thickness: .thick)
-    ///     ]
-    ///
-    ///     Picker(
-    ///         "Border Thickness",
-    ///         selection: $selectedObjectBorders.lazy.map(\.thickness)
-    ///     ) {
-    ///         ForEach(Thickness.allCases) { thickness in
-    ///             Text(thickness.rawValue)
-    ///         }
-    ///     }
-    ///
-    /// - Parameters:
-    ///     - title: A string that describes the purpose of selecting an option.
-    ///     - selection: A collection of bindings to a property that determines
-    ///       the currently-selected options. When a user selects an option
-    ///       from the picker, all bindings
-    ///       in the collection are updated with the selected option.
-    ///     - content: A view that contains the set of options.
-    ///
-    /// This initializer creates a ``Text`` view on your behalf, and treats the
-    /// title similar to ``Text/init(_:)-9d1g4``. See ``Text`` for more
-    /// information about localizing strings.
-    ///
-    /// To initialize a picker with a localized string key, use
-    /// ``init(_:selection:content:)-8otfr`` instead.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Picker.init(_:sources:selection:content).")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Picker.init(_:sources:selection:content).")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Picker.init(_:sources:selection:content).")
-    public init<C, S>(_ title: S, selection: C, @ViewBuilder content: () -> Content) where C : RandomAccessCollection, S : StringProtocol, C.Element == Binding<SelectionValue>
-
     /// Creates a picker bound to a collection of bindings that generates its
     /// label from a string.
     ///
     /// If the wrapped values of the collection passed to `sources` are not all
-    /// the same, some styles will render the selection in a mixed state. The
-    /// specific presentation will depend on the style.  For example, a Picker
-    /// with a menu style will use dashes instead of checkmarks to indicate the
+    /// the same, some styles render the selection in a mixed state. The
+    /// specific presentation depends on the style.  For example, a Picker
+    /// with a menu style uses dashes instead of checkmarks to indicate the
     /// selected values.
     ///
     /// In the following example, a picker in a document inspector controls the
@@ -29765,7 +30326,7 @@ extension Picker where Label == Text {
     ///         var thickness: Thickness
     ///     }
     ///
-    ///     @State var selectedObjectBorders = [
+    ///     @State private var selectedObjectBorders = [
     ///         Border(color: .black, thickness: .thin),
     ///         Border(color: .red, thickness: .thick)
     ///     ]
@@ -29793,6 +30354,9 @@ extension Picker where Label == Text {
     /// This initializer creates a ``Text`` view on your behalf, and treats the
     /// title similar to ``Text/init(_:)-9d1g4``. See ``Text`` for more
     /// information about localizing strings.
+    ///
+    /// To initialize a picker with a localized string key, use
+    /// ``init(_:sources:selection:content:)-6e1x`` instead.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public init<C, S>(_ title: S, sources: C, selection: KeyPath<C.Element, Binding<SelectionValue>>, @ViewBuilder content: () -> Content) where C : RandomAccessCollection, S : StringProtocol
 }
@@ -30169,6 +30733,21 @@ public struct PresentationMode {
     ///
     /// If `isPresented` is false, `dismiss()` is a no-op.
     public mutating func dismiss()
+}
+
+/// A view that represents the content of a presented window.
+///
+/// You don't create this type directly. ``WindowGroup`` creates values for you.
+@available(iOS 16.0, macOS 13.0, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+public struct PresentedWindowContent<Data, Content> : View where Data : Decodable, Data : Encodable, Data : Hashable, Content : View {
+
+    /// The type of view representing the body of this view.
+    ///
+    /// When you create a custom view, Swift infers this type from your
+    /// implementation of the required ``View/body-swift.property`` property.
+    public typealias Body = Never
 }
 
 /// A context type for use with a preview.
@@ -31136,6 +31715,13 @@ extension ProgressViewStyle where Self == CircularProgressViewStyle {
 
     /// A progress view that visually indicates its progress using a circular
     /// gauge.
+    ///
+    /// On watchOS, and in widgets and complications, a circular progress view will
+    /// appear as an `accessoryCircularCapacity` styled gauge. If the progress
+    /// view is indeterminate, the gauge will be empty.
+    ///
+    /// In cases where no determinate circular progress view style is available,
+    /// an indeterminate style will be used.
     public static var circular: CircularProgressViewStyle { get }
 }
 
@@ -33356,7 +33942,7 @@ extension SearchFieldPlacement {
 /// A structure that defines ways in which search suggestions may be placed.
 ///
 /// You can influence which modes search suggestions are displayed for by
-/// using the ``View/searchSuggestions(_:in:)`` modifier.
+/// using the ``View/searchSuggestions(_:for:)`` modifier.
 ///
 ///     enum FruitSuggestion: String, Identifiable {
 ///         case apple, banana, orange
@@ -33373,7 +33959,7 @@ extension SearchFieldPlacement {
 ///                     Text(suggestion.rawValue)
 ///                         .searchCompletion(suggestion.rawValue)
 ///                 }
-///                 .searchSuggestions(.hidden, in: .content)
+///                 .searchSuggestions(.hidden, for: .content)
 ///             }
 ///     }
 ///
@@ -41692,6 +42278,20 @@ extension Text {
     public static func + (lhs: Text, rhs: Text) -> Text
 }
 
+extension Text {
+
+    /// Creates a text view that displays a localized string resource.
+    ///
+    /// Use this initializer to display a localized string that is
+    /// represented by a <doc://com.apple.documentation/documentation/Foundation/LocalizedStringResource>
+    ///
+    ///     var object = LocalizedStringResource("pencil")
+    ///     Text(object) // Localizes the resource if possible, or displays "pencil" if not.
+    ///
+    @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
+    public init(_ resource: LocalizedStringResource)
+}
+
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Text {
 
@@ -44604,36 +45204,6 @@ public struct Toggle<Label> : View where Label : View {
     ///         Alarm(isOn: false, name: "Evening")
     ///     ]
     ///
-    ///     Toggle(isOn: $alarms.lazy.map(\.isOn)) {
-    ///         Text("Enable all alarms")
-    ///     }
-    ///
-    /// - Parameters:
-    ///   - isOn: A collection of bindings that determines whether the toggle
-    ///     is on, mixed or off.
-    ///   - label: A view that describes the purpose of the toggle.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(sources:isOn:label:).")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Toggle.init(sources:isOn:label:).")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(sources:isOn:label:).")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Toggle.init(sources:isOn:label:).")
-    public init<C>(isOn: C, @ViewBuilder label: () -> Label) where C : RandomAccessCollection, C.Element == Binding<Bool>
-
-    /// Creates a toggle representing a collection of values with a custom label.
-    ///
-    /// The example below shows how you can create a single toggle representing
-    /// the state of multiple alarms:
-    ///
-    ///     struct Alarm: Hashable, Identifiable {
-    ///       var id = UUID()
-    ///       var isOn = false
-    ///       var name = ""
-    ///     }
-    ///
-    ///     @State var alarms = [
-    ///         Alarm(isOn: true, name: "Morning"),
-    ///         Alarm(isOn: false, name: "Evening")
-    ///     ]
-    ///
     ///     Toggle(sources: $alarms, isOn: \.isOn) {
     ///         Text("Enable all alarms")
     ///     }
@@ -44733,43 +45303,6 @@ extension Toggle where Label == Text {
     ///    on or off.
     public init<S>(_ title: S, isOn: Binding<Bool>) where S : StringProtocol
 
-    /// Creates a toggle representing a collection of values
-    /// that generates its label from a localized string key.
-    ///
-    /// This initializer creates a ``Text`` view on your behalf, and treats the
-    /// localized key similar to ``Text/init(_:tableName:bundle:comment:)``. See
-    /// `Text` for more information about localizing strings.
-    ///
-    /// To initialize a toggle with a string variable, use
-    /// ``Toggle/init(_:isOn:)-3oiei`` instead.
-    ///
-    /// The example below shows how you can create a single toggle representing
-    /// the state of multiple alarms:
-    ///
-    ///     struct Alarm: Hashable, Identifiable {
-    ///       var id = UUID()
-    ///       var isOn = false
-    ///       var name = ""
-    ///     }
-    ///
-    ///     @State var alarms = [
-    ///         Alarm(isOn: true, name: "Morning"),
-    ///         Alarm(isOn: false, name: "Evening")
-    ///     ]
-    ///
-    ///     Toggle("Enable all alarms", isOn: $alarms.lazy.map(\.isOn))
-    ///
-    /// - Parameters:
-    ///   - titleKey: The key for the toggle's localized title, that describes
-    ///     the purpose of the toggle.
-    ///   - isOn: A collection of bindings that determines whether the toggle
-    ///     is on, mixed or off.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Toggle.init(_:sources:isOn).")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Toggle.init(_:sources:isOn).")
-    public init<C>(_ titleKey: LocalizedStringKey, isOn: C) where C : RandomAccessCollection, C.Element == Binding<Bool>
-
     /// Creates a toggle representing a collection of values that generates its
     /// label from a localized string key.
     ///
@@ -44805,42 +45338,6 @@ extension Toggle where Label == Text {
     ///     is on, mixed or off.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public init<C>(_ titleKey: LocalizedStringKey, sources: C, isOn: KeyPath<C.Element, Binding<Bool>>) where C : RandomAccessCollection
-
-    /// Creates a toggle representing a collection of values
-    /// that generates its label from a string.
-    ///
-    /// This initializer creates a ``Text`` view on your behalf, and treats the
-    /// title similar to ``Text/init(_:)-9d1g4``. See `Text` for more
-    /// information about localizing strings.
-    ///
-    /// To initialize a toggle with a localized string key, use
-    /// ``Toggle/init(_:isOn:)-78gj1`` instead.
-    ///
-    /// The example below shows how you can create a single toggle representing
-    /// the state of multiple alarms:
-    ///
-    ///     struct Alarm: Hashable, Identifiable {
-    ///       var id = UUID()
-    ///       var isOn = false
-    ///       var name = ""
-    ///     }
-    ///
-    ///     @State var alarms = [
-    ///         Alarm(isOn: true, name: "Morning"),
-    ///         Alarm(isOn: false, name: "Evening")
-    ///     ]
-    ///
-    ///     Toggle("Enable all alarms", isOn: $alarms.lazy.map(\.isOn))
-    ///
-    /// - Parameters:
-    ///   - title: A string that describes the purpose of the toggle.
-    ///   - isOn: A collection of bindings that determines whether the toggle
-    ///     is on, mixed or off.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use Toggle.init(_:sources:isOn).")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Use Toggle.init(_:sources:isOn).")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Use Toggle.init(_:sources:isOn).")
-    public init<S, C>(_ title: S, isOn: C) where S : StringProtocol, C : RandomAccessCollection, C.Element == Binding<Bool>
 
     /// Creates a toggle representing a collection of values that generates its
     /// label from a string.
@@ -45517,47 +46014,113 @@ extension ToolbarContentBuilder {
 
 }
 
-/// The priority of customizable toolbar content.
+/// The customization behavior of customizable toolbar content.
 ///
-/// Customizable toolbar content support different types of behaviors
-/// based on its priority. For example, high priority items can not be removed
-/// from the toolbar or moved within the toolbar.
+/// Customizable toolbar content support different types of customization
+/// behaviors. For example, some customizable content may not be removed by
+/// the user. Some content may be placed in a toolbar that supports
+/// customization overall, but not for that particular content.
 ///
 /// Use this type in conjunction with the
-/// ``CustomizableToolbarContent/customizationPriority(_:)`` modifier.
+/// ``CustomizableToolbarContent/customizationBehavior(_:)`` modifier.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-public struct ToolbarCustomizationPriority {
+public struct ToolbarCustomizationBehavior {
 
-    /// The high priority.
+    /// The default customization behavior.
     ///
-    /// Items with this priority can not be moved within the toolbar
-    /// or removed from the toolbar and will be placed before any
-    /// other customizable items. These are the most important
-    /// items that users need for the app to function.
-    public static var high: ToolbarCustomizationPriority { get }
-
-    /// The default priority.
-    ///
-    /// Items with this priority start in the toolbar and can be
+    /// Items with this behavior start in the toolbar and can be
     /// moved or removed from the toolbar by the user.
-    public static var `default`: ToolbarCustomizationPriority { get }
+    public static var `default`: ToolbarCustomizationBehavior { get }
 
-    /// The medium priority.
+    /// The reorderable customization behavior.
     ///
-    /// In iOS, items with this priority  can be moved or removed from the
-    /// toolbar itself, but will always be present in the overflow menu.
-    ///
-    /// In macOS, items with this priority are equivalent to items with the
-    /// default priority.
-    public static var medium: ToolbarCustomizationPriority { get }
+    /// Items with this behavior start in the toolbar and can be moved within
+    /// the toolbar by the user, but can not be removed from the toolbar.
+    public static var reorderable: ToolbarCustomizationBehavior { get }
 
-    /// The low priority.
+    /// The disabled customization behavior.
     ///
-    /// Items with this priority don't start in the toolbar. Instead, they
-    /// start in the customization popover in iOS and the
-    /// customization palette in macOS. The user can add them to the toolbar
-    /// if they so desire.
-    public static var low: ToolbarCustomizationPriority { get }
+    /// Items with this behavior may not be removed or moved by the user.
+    /// They will be placed before other customizatable items. Use this
+    /// behavior for the most important items that users need for the app
+    /// to do common functionality.
+    public static var disabled: ToolbarCustomizationBehavior { get }
+}
+
+/// Options that influence the default customization behavior of
+/// customizable toolbar content.
+///
+/// Use this type in conjunction with the
+/// ``CustomizableToolbarContent/defaultCustomization(_:options)`` modifier.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+public struct ToolbarCustomizationOptions : OptionSet {
+
+    /// The raw type that can be used to represent all values of the conforming
+    /// type.
+    ///
+    /// Every distinct value of the conforming type has a corresponding unique
+    /// value of the `RawValue` type, but there may be values of the `RawValue`
+    /// type that don't have a corresponding value of the conforming type.
+    public typealias RawValue = Int
+
+    /// Configures default customizable toolbar content to always be
+    /// present in the toolbar.
+    ///
+    /// In iOS, default customizable toolbar content have the option of always
+    /// being available in the toolbar regardless of the customization status
+    /// of the user. These items will always be in the overflow menu of the
+    /// toolbar. Users can customize whether the items are present as controls
+    /// in the toolbar itself but will still always be able to access the item
+    /// if they remove it from the toolbar itself.
+    ///
+    /// Consider using this for items that users should always be able to
+    /// access, but may not be important enough to always occupy space in
+    /// the toolbar itself.
+    public static var alwaysAvailable: ToolbarCustomizationOptions { get }
+
+    /// The corresponding value of the raw type.
+    ///
+    /// A new instance initialized with `rawValue` will be equivalent to this
+    /// instance. For example:
+    ///
+    ///     enum PaperSize: String {
+    ///         case A4, A5, Letter, Legal
+    ///     }
+    ///
+    ///     let selectedSize = PaperSize.Letter
+    ///     print(selectedSize.rawValue)
+    ///     // Prints "Letter"
+    ///
+    ///     print(selectedSize == PaperSize(rawValue: selectedSize.rawValue)!)
+    ///     // Prints "true"
+    public var rawValue: Int
+
+    /// Creates a new option set from the given raw value.
+    ///
+    /// This initializer always succeeds, even if the value passed as `rawValue`
+    /// exceeds the static properties declared as part of the option set. This
+    /// example creates an instance of `ShippingOptions` with a raw value beyond
+    /// the highest element, with a bit mask that effectively contains all the
+    /// declared static members.
+    ///
+    ///     let extraOptions = ShippingOptions(rawValue: 255)
+    ///     print(extraOptions.isStrictSuperset(of: .all))
+    ///     // Prints "true"
+    ///
+    /// - Parameter rawValue: The raw value of the option set to create. Each bit
+    ///   of `rawValue` potentially represents an element of the option set,
+    ///   though raw values may include bits that are not defined as distinct
+    ///   values of the `OptionSet` type.
+    public init(rawValue: Int)
+
+    /// The type of the elements of an array literal.
+    public typealias ArrayLiteralElement = ToolbarCustomizationOptions
+
+    /// The element type of the option set.
+    ///
+    /// To inherit all the default implementations from the `OptionSet` protocol,
+    /// the `Element` type must be `Self`, the default.
+    public typealias Element = ToolbarCustomizationOptions
 }
 
 /// A model that represents an item which can be placed in the toolbar
@@ -45581,8 +46144,18 @@ extension ToolbarItem where ID == () {
     public init(placement: ToolbarItemPlacement = .automatic, @ViewBuilder content: () -> Content)
 }
 
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension ToolbarItem : CustomizableToolbarContent where ID == String {
+
+    /// Creates a toolbar item with the specified placement and content,
+    /// which allows for user customization.
+    ///
+    /// - Parameters:
+    ///   - id: A unique identifier for this item.
+    ///   - placement: Which section of the toolbar
+    ///     the item should be placed in.
+    ///   - content: The content of the item.
+    @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+    public init(id: String, placement: ToolbarItemPlacement = .automatic, @ViewBuilder content: () -> Content)
 
     /// Creates a toolbar item with the specified placement and content,
     /// which allows for user customization.
@@ -45594,7 +46167,11 @@ extension ToolbarItem : CustomizableToolbarContent where ID == String {
     ///   - showsByDefault: Whether the item appears by default in the toolbar,
     ///     or only shows if the user explicitly adds it via customization.
     ///   - content: The content of the item.
-    public init(id: String, placement: ToolbarItemPlacement = .automatic, showsByDefault: Bool = true, @ViewBuilder content: () -> Content)
+    @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use the CustomizableToolbarContent/defaultCustomization(_:options) modifier with a value of .hidden")
+    @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use the CustomizableToolbarContent/defaultCustomization(_:options) modifier with a value of .hidden")
+    @available(tvOS, introduced: 14.0, deprecated: 100000.0, message: "Use the CustomizableToolbarContent/defaultCustomization(_:options) modifier with a value of .hidden")
+    @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use the CustomizableToolbarContent/defaultCustomization(_:options) modifier with a value of .hidden")
+    public init(id: String, placement: ToolbarItemPlacement = .automatic, showsByDefault: Bool, @ViewBuilder content: () -> Content)
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -45864,7 +46441,7 @@ public struct ToolbarItemPlacement {
 /// The placement of a toolbar.
 ///
 /// Use this type in conjunction with modifiers like
-/// ``View/toolbarBackground(_:in:)-1k7vw`` and ``View/toolbar(_:in:)`` to
+/// ``View/toolbarBackground(_:for:)-1k7vw`` and ``View/toolbar(_:for:)`` to
 /// customize the appearance of different bars managed by SwiftUI. Not all bars
 /// support all types of customizations.
 ///
@@ -45950,23 +46527,6 @@ public struct ToolbarRole {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public static var editor: ToolbarRole { get }
-}
-
-@available(iOS, introduced: 16.0, deprecated: 16.0, renamed: "ToolbarTitleMenu")
-@available(macOS, introduced: 13.0, deprecated: 13.0, renamed: "ToolbarTitleMenu")
-@available(tvOS, introduced: 16.0, deprecated: 16.0, renamed: "ToolbarTitleMenu")
-@available(watchOS, introduced: 9.0, deprecated: 9.0, renamed: "ToolbarTitleMenu")
-public struct ToolbarTitleActions<Actions> : ToolbarContent, CustomizableToolbarContent where Actions : View {
-
-    /// Creates a toolbar title menu where actions are inferred from your
-    /// apps commands.
-    public init() where Actions == EmptyView
-
-    /// Creates a toolbar title menu.
-    public init(@ViewBuilder actions: () -> Actions)
-
-    /// The type of content representing the body of this toolbar content.
-    public typealias Body = Never
 }
 
 /// The title menu of a toolbar.
@@ -47549,6 +48109,44 @@ extension UserInterfaceSizeClass : Hashable {
     public typealias Body = Never
 }
 
+/// A layout that arranges its children in a horizontal line.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@frozen public struct VStackLayout : Layout {
+
+    /// The horizontal alignment of children.
+    public var alignment: HorizontalAlignment
+
+    /// The distance between adjacent children, or nil if the stack should
+    /// choose a default distance for each pair of children.
+    public var spacing: CGFloat?
+
+    /// Creates an instance with the given `spacing` and Y axis `alignment`.
+    ///
+    /// - Parameters:
+    ///     - alignment: the guide that will have the same horizontal screen
+    ///       coordinate for all children.
+    ///     - spacing: the distance between adjacent children, or nil if the
+    ///       stack should choose a default distance for each pair of children.
+    @inlinable public init(alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil)
+
+    /// The type defining the data to animate.
+    public typealias AnimatableData = EmptyAnimatableData
+
+    /// Cached values associated with the layout instance.
+    ///
+    /// If you create a cache for your custom layout, you can use
+    /// a type alias to define this type as your data storage type.
+    /// Alternatively, you can refer to the data storage type directly in all
+    /// the places where you work with the cache.
+    ///
+    /// See ``makeCache(subviews:)-23agy`` for more information.
+    public typealias Cache
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension VStackLayout : Sendable {
+}
+
 /// A type that can serve as the animatable data of an animatable type.
 ///
 /// `VectorArithmetic` extends the `AdditiveArithmetic` protocol with scalar
@@ -48878,6 +49476,50 @@ extension View {
 
 
     /// Creates a new view that exposes the provided object to other views whose
+    /// state depends on the focused view hierarchy.
+    ///
+    /// Use this method instead of ``View/focusedSceneObject(_:)`` when your
+    /// scene includes multiple focusable views with their own associated data,
+    /// and you need an app- or scene-scoped element like a command or toolbar
+    /// item that operates on the data associated with whichever view currently
+    /// has focus. Each focusable view can supply its own object:
+    ///
+    ///     struct MessageView: View {
+    ///         @StateObject private var message = Message(...)
+    ///
+    ///         var body: some View {
+    ///             TextField(...)
+    ///                 .focusedObject(message)
+    ///         }
+    ///     }
+    ///
+    /// Interested views can then use the ``FocusedObject`` property wrapper to
+    /// observe and update the focused view's object. In this example, an app
+    /// command updates the focused view's data, and is automatically disabled
+    /// when focus is in an unrelated part of the scene:
+    ///
+    ///     struct MessageCommands: Commands {
+    ///         @FocusedObject private var message: Message?
+    ///
+    ///         var body: some Commands {
+    ///             CommandGroup(after: .pasteboard) {
+    ///                 Button("Add Duck to Message") {
+    ///                     message?.text.append(" 🦆")
+    ///                 }
+    ///                 .keyboardShortcut("d")
+    ///                 .disabled(message == nil)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - object: The observable object to associate with focus, or `nil` if
+    ///     no object is currently available.
+    /// - Returns: A view that supplies an observable object when in focus.
+    @inlinable public func focusedObject<T>(_ object: T?) -> some View where T : ObservableObject
+
+
+    /// Creates a new view that exposes the provided object to other views whose
     /// whose state depends on the active scene.
     ///
     /// Use this method instead of ``View/focusedObject(_:)`` for observable
@@ -48922,6 +49564,54 @@ extension View {
     /// - Returns: A view that supplies an observable object while the scene
     ///   is active.
     @inlinable public func focusedSceneObject<T>(_ object: T) -> some View where T : ObservableObject
+
+
+    /// Creates a new view that exposes the provided object to other views whose
+    /// whose state depends on the active scene.
+    ///
+    /// Use this method instead of ``View/focusedObject(_:)`` for observable
+    /// objects that must be visible regardless of where focus is located in the
+    /// active scene. This is sometimes needed for things like main menu and
+    /// discoverability HUD commands that observe and update data from the
+    /// active scene but aren't concerned with what the user is actually focused
+    /// on. The scene's root view can supply the scene's state object:
+    ///
+    ///     struct RootView: View {
+    ///         @StateObject private var sceneData = SceneData()
+    ///
+    ///         var body: some View {
+    ///             NavigationSplitView {
+    ///                 ...
+    ///             }
+    ///             .focusedSceneObject(sceneData)
+    ///         }
+    ///     }
+    ///
+    /// Interested views can then use the ``FocusedObject`` property wrapper to
+    /// observe and update the active scene's state object. In this example, an
+    /// app command updates the active scene's data, and is enabled as long as
+    /// any scene is active.
+    ///
+    ///     struct MessageCommands: Commands {
+    ///         @FocusedObject private var sceneData: SceneData?
+    ///
+    ///         var body: some Commands {
+    ///             CommandGroup(after: .newItem) {
+    ///                 Button("New Message") {
+    ///                     sceneData?.addMessage()
+    ///                 }
+    ///                 .keyboardShortcut("n", modifiers: [.option, .command])
+    ///                 .disabled(sceneData == nil)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - object: The observable object to associate with the scene, or `nil`
+    ///     if no object is currently available.
+    /// - Returns: A view that supplies an observable object while the scene
+    ///   is active.
+    @inlinable public func focusedSceneObject<T>(_ object: T?) -> some View where T : ObservableObject
 
 }
 
@@ -50653,18 +51343,6 @@ extension View {
 
 }
 
-extension View {
-
-    /// Configure the title actions of a toolbar.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    @available(iOS, introduced: 16.0, deprecated: 16.0, renamed: "toolbarTitleMenu")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, renamed: "toolbarTitleMenu")
-    @available(tvOS, introduced: 16.0, deprecated: 16.0, renamed: "toolbarTitleMenu")
-    @available(watchOS, introduced: 9.0, deprecated: 9.0, renamed: "toolbarTitleMenu")
-    public func toolbarTitleActions<A>(@ViewBuilder actions: () -> A) -> some View where A : View
-
-}
-
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension View {
 
@@ -50996,6 +51674,17 @@ extension View {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
+    /// Sets a value for the specified preference key, the value is a
+    /// function of the key's current value and a geometry value tied
+    /// to the current coordinate space, allowing readers of the value
+    /// to convert the geometry to their local coordinates.
+    ///
+    /// - Parameters:
+    ///   - key: the preference key type.
+    ///   - value: the geometry value in the current coordinate space.
+    ///   - transform: the function to produce the preference value.
+    ///
+    /// - Returns: a new version of the view that writes the preference.
     @inlinable public func transformAnchorPreference<A, K>(key _: K.Type = K.self, value: Anchor<A>.Source, transform: @escaping (inout K.Value, Anchor<A>) -> Void) -> some View where K : PreferenceKey
 
 }
@@ -52843,150 +53532,6 @@ extension View {
 
 }
 
-extension View {
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: The preferred placement of the search field within the
-    ///     containing view hierarchy.
-    ///   - prompt: A ``Text`` view representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<V, S>(text: Binding<String>, scope: Binding<V>, placement: SearchFieldPlacement = .automatic, prompt: Text? = nil, @ViewBuilder scopes: () -> S) -> some View where V : Hashable, S : View
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: The preferred placement of the search field within the
-    ///     containing view hierarchy.
-    ///   - prompt: The key for the localized prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<V, S>(text: Binding<String>, scope: Binding<V>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey, @ViewBuilder scopes: () -> S) -> some View where V : Hashable, S : View
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: The preferred placement of the search field within the
-    ///     containing view hierarchy.
-    ///   - prompt: A string representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<D, V, S>(text: Binding<String>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: S, @ViewBuilder scopes: () -> V) -> some View where D : Hashable, V : View, S : StringProtocol
-
-}
-
-extension View {
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A ``Text`` view representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:) and View.searchSuggestions(_:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:) and View.searchSuggestions(_:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<D, V1, V2>(text: Binding<String>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: Text? = nil, @ViewBuilder scopes: () -> V1, @ViewBuilder suggestions: () -> V2) -> some View where D : Hashable, V1 : View, V2 : View
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A key for the localized prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:) and View.searchSuggestions(_:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:) and View.searchSuggestions(_:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<D, V1, V2>(text: Binding<String>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey, @ViewBuilder scopes: () -> V1, @ViewBuilder suggestions: () -> V2) -> some View where D : Hashable, V1 : View, V2 : View
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A string representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:) and View.searchSuggestions(_:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:) and View.searchSuggestions(_:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<D, V1, V2, S>(text: Binding<String>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: S, @ViewBuilder scopes: () -> V1, @ViewBuilder suggestions: () -> V2) -> some View where D : Hashable, V1 : View, V2 : View, S : StringProtocol
-
-}
-
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
@@ -54528,7 +55073,7 @@ extension View {
     ///                     Text(suggestion.rawValue)
     ///                         .searchCompletion(suggestion.rawValue)
     ///                 }
-    ///                 .searchSuggestions(.hidden, in: .content)
+    ///                 .searchSuggestions(.hidden, for: .content)
     ///             }
     ///     }
     ///
@@ -54538,7 +55083,7 @@ extension View {
     ///   - placements: The set of locations in which to set the visibility of
     ///     search suggestions.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func searchSuggestions(_ visibility: Visibility, in placements: SearchSuggestionsPlacement.Set) -> some View
+    public func searchSuggestions(_ visibility: Visibility, for placements: SearchSuggestionsPlacement.Set) -> some View
 
 }
 
@@ -55012,9 +55557,9 @@ extension View {
     ///         NavigationView {
     ///             ContentView()
     ///                 .toolbarBackground(
-    ///                     .blue, in: .navigationBar, .tabBar)
+    ///                     .blue, for: .navigationBar, .tabBar)
     ///                 .toolbarColorScheme(
-    ///                     .dark, in: .navigationBar, .tabBar)
+    ///                     .dark, for: .navigationBar, .tabBar)
     ///         }
     ///     }
     ///
@@ -55027,7 +55572,7 @@ extension View {
     ///             MainView()
     ///             SettingsView()
     ///         }
-    ///         .toolbarBackground(.blue, in: .tabBar)
+    ///         .toolbarBackground(.blue, for: .tabBar)
     ///     }
     ///
     /// Depending on the specified bars, the requested style may not be able to
@@ -55035,10 +55580,10 @@ extension View {
     ///
     /// - Parameters:
     ///   - style: The style to display as the background of the bar.
-    ///   - bars: The bars to place the style in or
+    ///   - bars: The bars to use the style for or
     ///     ``ToolbarPlacement/automatic`` if empty.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func toolbarBackground<S>(_ style: S, in bars: ToolbarPlacement...) -> some View where S : ShapeStyle
+    public func toolbarBackground<S>(_ style: S, for bars: ToolbarPlacement...) -> some View where S : ShapeStyle
 
 
     /// Specifies the preferred visibility of backgrounds on a bar managed by
@@ -55064,7 +55609,7 @@ extension View {
     ///     TabView {
     ///         FirstTab()
     ///         MiddleTab()
-    ///             .toolbarBackground(.visible, in: .tabBar)
+    ///             .toolbarBackground(.visible, for: .tabBar)
     ///         LastTab()
     ///     }
     ///
@@ -55075,7 +55620,7 @@ extension View {
     ///         NavigationView {
     ///             ContentView()
     ///                 .toolbarBackground(
-    ///                     .visible, in: .navigationBar, .tabBar)
+    ///                     .visible, for: .navigationBar, .tabBar)
     ///         }
     ///     }
     ///
@@ -55084,7 +55629,7 @@ extension View {
     ///   - bars: The bars to update the color scheme of or
     ///     ``ToolbarPlacement/automatic`` if empty.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func toolbarBackground(_ visibility: Visibility, in bars: ToolbarPlacement...) -> some View
+    public func toolbarBackground(_ visibility: Visibility, for bars: ToolbarPlacement...) -> some View
 
 
     /// Specifies the preferred color scheme of a bar managed by SwiftUI.
@@ -55113,9 +55658,9 @@ extension View {
     ///         NavigationView {
     ///             ContentView()
     ///                 .toolbarBackground(
-    ///                     .blue, in: .navigationBar, .tabBar)
+    ///                     .blue, for: .navigationBar, .tabBar)
     ///                 .toolbarColorScheme(
-    ///                     .dark, in: .navigationBar, .tabBar)
+    ///                     .dark, for: .navigationBar, .tabBar)
     ///         }
     ///     }
     ///
@@ -55141,7 +55686,7 @@ extension View {
     ///   - bars: The bars to update the color scheme of or
     ///     ``ToolbarPlacement/automatic`` if empty.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func toolbarColorScheme(_ colorScheme: ColorScheme?, in bars: ToolbarPlacement...) -> some View
+    public func toolbarColorScheme(_ colorScheme: ColorScheme?, for bars: ToolbarPlacement...) -> some View
 
 
     /// Specifies the visibility of a bar managed by SwiftUI.
@@ -55164,7 +55709,7 @@ extension View {
     ///         NavigationView {
     ///             ContentView()
     ///                 .toolbar(
-    ///                     .hidden, in: .navigationBar, .tabBar)
+    ///                     .hidden, for: .navigationBar, .tabBar)
     ///         }
     ///     }
     ///
@@ -55180,7 +55725,7 @@ extension View {
     ///   - bars: The bars to update the visibility of or
     ///     ``ToolbarPlacement/automatic`` if empty.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func toolbar(_ visibility: Visibility, in bars: ToolbarPlacement...) -> some View
+    public func toolbar(_ visibility: Visibility, for bars: ToolbarPlacement...) -> some View
 
 }
 
@@ -55378,7 +55923,7 @@ extension View {
 
 extension View {
 
-    /// Configures the search scopes for this view.
+    /// Configures the search suggestions for this view.
     ///
     /// You can suggest search terms during a search operation by providing a
     /// collection of view to this modifier. The interface presents the
@@ -55390,7 +55935,8 @@ extension View {
     /// completion in each case:
     ///
     ///     ProductList()
-    ///         .searchable(text: $text) {
+    ///         .searchable(text: $text)
+    ///         .searchSuggestions {
     ///             Text("🍎").searchCompletion("apple")
     ///             Text("🍐").searchCompletion("pear")
     ///             Text("🍌").searchCompletion("banana")
@@ -55411,7 +55957,8 @@ extension View {
     /// in a model:
     ///
     ///     ProductList()
-    ///         .searchable(text: $text) {
+    ///         .searchable(text: $text)
+    ///         .searchSuggestions {
     ///             ForEach(model.suggestedSearches) { suggestion in
     ///                 Label(suggestion.title,  image: suggestion.image)
     ///                     .searchCompletion(suggestion.text)
@@ -55436,7 +55983,6 @@ extension View {
 
 }
 
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension View {
 
     /// Marks this view as searchable, which configures the display of a
@@ -55453,6 +55999,10 @@ extension View {
     ///     which provides users with guidance on what to search for.
     ///   - suggestions: A view builder that produces content that
     ///     populates a list of suggestions.
+    @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(tvOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(watchOS, introduced: 8.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
     public func searchable<S>(text: Binding<String>, placement: SearchFieldPlacement = .automatic, prompt: Text? = nil, @ViewBuilder suggestions: () -> S) -> some View where S : View
 
 
@@ -55470,6 +56020,10 @@ extension View {
     ///     which provides users with guidance on what to search for.
     ///   - suggestions: A view builder that produces content that
     ///     populates a list of suggestions.
+    @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(tvOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(watchOS, introduced: 8.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
     public func searchable<S>(text: Binding<String>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey, @ViewBuilder suggestions: () -> S) -> some View where S : View
 
 
@@ -55487,6 +56041,10 @@ extension View {
     ///     which provides users with guidance on what to search for.
     ///   - suggestions: A view builder that produces content that
     ///     populates a list of suggestions.
+    @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(tvOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+    @available(watchOS, introduced: 8.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
     public func searchable<V, S>(text: Binding<String>, placement: SearchFieldPlacement = .automatic, prompt: S, @ViewBuilder suggestions: () -> V) -> some View where V : View, S : StringProtocol
 
 }
@@ -57322,6 +57880,17 @@ extension View {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
+    /// Sets a value for the specified preference key, the value is a
+    /// function of a geometry value tied to the current coordinate
+    /// space, allowing readers of the value to convert the geometry to
+    /// their local coordinates.
+    ///
+    /// - Parameters:
+    ///   - key: the preference key type.
+    ///   - value: the geometry value in the current coordinate space.
+    ///   - transform: the function to produce the preference value.
+    ///
+    /// - Returns: a new version of the view that writes the preference.
     @inlinable public func anchorPreference<A, K>(key _: K.Type = K.self, value: Anchor<A>.Source, transform: @escaping (Anchor<A>) -> K.Value) -> some View where K : PreferenceKey
 
 }
@@ -58329,24 +58898,25 @@ extension View {
     ///
     /// First define your `AXChartDescriptorRepresentable` type.
     ///
-    ///    struct MyChartDescriptorRepresentable:
-    ///    AXChartDescriptorRepresentable {
-    ///        func makeChartDescriptor() -> AXChartDescriptor {
-    ///            // build and return your `AXChartDescriptor` here
-    ///        }
+    ///     struct MyChartDescriptorRepresentable:
+    ///     AXChartDescriptorRepresentable {
+    ///         func makeChartDescriptor() -> AXChartDescriptor {
+    ///             // Build and return your `AXChartDescriptor` here.
+    ///         }
     ///
-    ///        func updateChartDescriptor(_ descriptor: AXChartDescriptor) {
-    ///           // Update your chart descriptor with any new values, or
-    ///           // don't override if your chart doesn't have changing values.
-    ///        }
-    ///    }
+    ///         func updateChartDescriptor(_ descriptor: AXChartDescriptor) {
+    ///             // Update your chart descriptor with any new values, or
+    ///             // don't override if your chart doesn't have changing
+    ///             // values.
+    ///         }
+    ///     }
     ///
     /// Then use the `accessibilityChartDescriptor` modifier to provide an
     /// instance of your `AXChartDescriptorRepresentable` type to the view
     /// representing your chart:
     ///
-    ///    SomeChartView()
-    ///        .accessibilityChartDescriptor(MyChartDescriptorRepresentable())
+    ///     SomeChartView()
+    ///         .accessibilityChartDescriptor(MyChartDescriptorRepresentable())
     public func accessibilityChartDescriptor<R>(_ representable: R) -> some View where R : AXChartDescriptorRepresentable
 
 }
@@ -58424,27 +58994,6 @@ extension View {
 @available(tvOS, unavailable)
 extension View {
 
-    /// Specifies the background style for scrollable views within this view.
-    ///
-    /// The following example replaces the standard system background of the
-    /// List with a red color:
-    ///
-    ///     List {
-    ///         Text("One")
-    ///         Text("Two")
-    ///         Text("Three")
-    ///     }
-    ///     .scrollContentBackground(.red)
-    ///
-    /// The background is for the *content*, not the scrollable view itself, so
-    /// any provided background view will scroll along with the contents.
-    ///
-    /// - Parameters:
-    ///    - style: the style to use for the background. If the value is `nil`,
-    ///      the system uses the default style to fill the background.
-    public func scrollContentBackground<S>(_ style: S?) -> some View where S : ShapeStyle
-
-
     /// Specifies the visibility of the background for scrollable views within
     /// this view.
     ///
@@ -58456,10 +59005,6 @@ extension View {
     ///         Text("Three")
     ///     }
     ///     .scrollContentBackground(.hidden)
-    ///
-    /// > Note: SwiftUI stores the visibility and background as separate
-    /// properties and consults them both when deciding what to do. Currently an
-    /// explicit `.hidden` will take priorirty over a custom background.
     ///
     /// - Parameters:
     ///    - visibility: the visibility to use for the background.
@@ -59707,10 +60252,27 @@ extension View {
     @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
     public func focusedValue<Value>(_ keyPath: WritableKeyPath<FocusedValues, Value?>, _ value: Value) -> some View
 
-}
 
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-extension View {
+    /// Creates a new view that exposes the provided value to other views whose
+    /// state depends on the focused view hierarchy.
+    ///
+    /// Use this method instead of ``View/focusedSceneValue(_:_:)`` when your
+    /// scene includes multiple focusable views with their own associated
+    /// values, and you need an app- or scene-scoped element like a command or
+    /// toolbar item that operates on the value associated with whichever view
+    /// currently has focus. Each focusable view can supply its own value:
+    ///
+    ///
+    ///
+    /// - Parameters:
+    ///   - keyPath: The key path to associate `value` with when adding
+    ///     it to the existing table of exported focus values.
+    ///   - value: The focus value to export, or `nil` if no value is
+    ///     currently available.
+    /// - Returns: A modified representation of this view.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func focusedValue<Value>(_ keyPath: WritableKeyPath<FocusedValues, Value?>, _ value: Value?) -> some View
+
 
     /// Modifies this view by injecting a value that you provide for use by
     /// other views whose state depends on the focused scene.
@@ -59765,7 +60327,66 @@ extension View {
     ///     it to the existing table of published focus values.
     ///   - value: The focus value to publish.
     /// - Returns: A modified representation of this view.
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
     public func focusedSceneValue<T>(_ keyPath: WritableKeyPath<FocusedValues, T?>, _ value: T) -> some View
+
+
+    /// Creates a new view that exposes the provided value to other views whose
+    /// state depends on the active scene.
+    ///
+    /// Use this method instead of ``View/focusedValue(_:_:)`` for values that
+    /// must be visible regardless of where focus is located in the active
+    /// scene. For example, if an app needs a command for moving focus to a
+    /// particular text field in the sidebar, it could use this modifier to
+    /// publish a button action that's visible to command views as long as the
+    /// scene is active, and regardless of where focus happens to be in it.
+    ///
+    ///     struct Sidebar: View {
+    ///         @FocusState var isFiltering: Bool
+    ///
+    ///         var body: some View {
+    ///             VStack {
+    ///                 TextField(...)
+    ///                     .focused(when: $isFiltering)
+    ///                     .focusedSceneValue(\.filterAction) {
+    ///                         isFiltering = true
+    ///                     }
+    ///             }
+    ///         }
+    ///     }
+    ///
+    ///     struct NavigationCommands: Commands {
+    ///         @FocusedValue(\.filterAction) var filterAction
+    ///
+    ///         var body: some Commands {
+    ///             CommandMenu("Navigate") {
+    ///                 Button("Filter in Sidebar") {
+    ///                     filterAction?()
+    ///                 }
+    ///             }
+    ///             .disabled(filterAction == nil)
+    ///         }
+    ///     }
+    ///
+    ///     struct FilterActionKey: FocusedValuesKey {
+    ///         typealias Value = () -> Void
+    ///     }
+    ///
+    ///     extension FocusedValues {
+    ///         var filterAction: (() -> Void)? {
+    ///             get { self[FilterActionKey.self] }
+    ///             set { self[FilterActionKey.self] = newValue }
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - keyPath: The key path to associate `value` with when adding
+    ///     it to the existing table of published focus values.
+    ///   - value: The focus value to publish, or `nil` if no value is
+    ///     currently available.
+    /// - Returns: A modified representation of this view.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func focusedSceneValue<T>(_ keyPath: WritableKeyPath<FocusedValues, T?>, _ value: T?) -> some View
 
 }
 
@@ -62903,7 +63524,6 @@ extension View {
 
 }
 
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension View {
 
     /// Defines a region of the window in which default focus is evaluated by
@@ -62943,6 +63563,7 @@ extension View {
     ///     programmatically, but not when responding to user-directed
     ///     navigation commands.
     /// - Returns: The modified view.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func defaultFocus<V>(_ binding: FocusState<V>.Binding, _ value: V, priority: DefaultFocusEvaluationPriority = .automatic) -> some View where V : Hashable
 
 }
@@ -64623,6 +65244,363 @@ public struct WindowGroup<Content> : Scene where Content : View {
     public typealias Body = some Scene
 }
 
+@available(iOS 16.0, macOS 13.0, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension WindowGroup {
+
+    /// Creates a window group with an identifier.
+    ///
+    /// The window group uses the given view as a
+    /// template to form the content of each window in the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<D, C>(id: String, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a localized title and an identifier.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    /// The system ignores any text styling in the title.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The ``Text`` view to use for the group's title.
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<D, C>(_ title: Text, id: String, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a key for a localized title string and an
+    /// identifier.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - titleKey: The title key to use for the title of the group.
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<D, C>(_ titleKey: LocalizedStringKey, id: String, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a title string and an identifier.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The string to use for the title of the group.
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<S, D, C>(_ title: S, id: String, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, S : StringProtocol, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group.
+    ///
+    /// The window group uses the given view as a template to form the
+    /// content of each window in the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameter type: The type of presented data this window group accepts.
+    /// - Parameter content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<D, C>(for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a localized title.
+    ///
+    /// The window group uses the given view as a
+    /// template to form the content of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// The system ignores any text styling in the title.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The ``Text`` view to use for the group's title.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<D, C>(_ title: Text, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a key for a localized title string.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - titleKey: The title key to use for the group's title.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<D, C>(_ titleKey: LocalizedStringKey, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a title string.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The string to use for the title of the group.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    public init<S, D, C>(_ title: S, for type: D.Type, @ViewBuilder content: @escaping (Binding<D?>) -> C) where Content == PresentedWindowContent<D, C>, S : StringProtocol, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with an identifier.
+    ///
+    /// The window group uses the given view as a
+    /// template to form the content of each window in the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<D, C>(id: String, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a localized title and an identifier.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    /// The system ignores any text styling in the title.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The ``Text`` view to use for the group's title.
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<D, C>(_ title: Text, id: String, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a key for a localized title string and an
+    /// identifier.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - titleKey: The title key to use for the title of the group.
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<D, C>(_ titleKey: LocalizedStringKey, id: String, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a title string and an identifier.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The string to use for the title of the group.
+    ///   - id: A string that uniquely identifies the window group. Identifiers
+    ///     must be unique among the window groups in your app.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<S, D, C>(_ title: S, id: String, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, S : StringProtocol, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group.
+    ///
+    /// The window group using the given view as a template to form the
+    /// content of each window in the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - type:The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<D, C>(for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a localized title.
+    ///
+    /// The window group uses the given view as a
+    /// template to form the content of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// The system ignores any text styling in the title.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The ``Text`` view to use for the group's title.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<D, C>(_ title: Text, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a key for a localized title string.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - titleKey: The title key to use for the group's title.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<D, C>(_ titleKey: LocalizedStringKey, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, D : Decodable, D : Encodable, D : Hashable, C : View
+
+    /// Creates a window group with a title string.
+    ///
+    /// The window group uses the given view as a template to form the content
+    /// of each window in the group.
+    ///
+    /// The system uses the title to distinguish the window group in the user
+    /// interface, such as in the name of commands associated with the group.
+    ///
+    /// A window in the group will be created when presenting a value
+    /// of the same type via ``EnvironmentValues/openWindow``.
+    ///
+    /// - Parameters:
+    ///   - title: The string to use for the title of the group.
+    ///   - type: The type of presented data this window group accepts.
+    ///   - content: A closure that creates the content for each instance
+    ///     of the group. The closure receives a binding to the value passed via
+    ///     ``EnvironmentValues/openWindow``. The value of this binding will be
+    ///     persisted and restored during state restoration of the window.
+    ///   - defaultValue: A closure that returns a default value to present,
+    ///     which will be called in situations where the window is presented
+    ///     without a value provided.
+    public init<S, D, C>(_ title: S, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, S : StringProtocol, D : Decodable, D : Encodable, D : Hashable, C : View
+}
+
 /// A view that overlays its children, aligning them in both axes.
 ///
 /// The `ZStack` assigns each successive child view a higher z-axis value than
@@ -64692,6 +65670,38 @@ public struct WindowGroup<Content> : Scene where Content : View {
     /// When you create a custom view, Swift infers this type from your
     /// implementation of the required ``View/body-swift.property`` property.
     public typealias Body = Never
+}
+
+/// A layout that overlays its children, aligning them in both axes.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@frozen public struct ZStackLayout : Layout {
+
+    /// The alignment of children.
+    public var alignment: Alignment
+
+    /// Creates an instance with the given alignment.
+    ///
+    /// - Parameters:
+    ///   - alignment: The guide for aligning the subviews in this stack
+    ///     on both the x- and y-axes.
+    @inlinable public init(alignment: Alignment = .center)
+
+    /// The type defining the data to animate.
+    public typealias AnimatableData = EmptyAnimatableData
+
+    /// Cached values associated with the layout instance.
+    ///
+    /// If you create a cache for your custom layout, you can use
+    /// a type alias to define this type as your data storage type.
+    /// Alternatively, you can refer to the data storage type directly in all
+    /// the places where you work with the cache.
+    ///
+    /// See ``makeCache(subviews:)-23agy`` for more information.
+    public typealias Cache = Void
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension ZStackLayout : Sendable {
 }
 
 /// Returns the result of recomputing the view's body with the provided
