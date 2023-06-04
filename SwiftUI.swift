@@ -3244,7 +3244,7 @@ extension AnyGradient {
 ///
 ///         var body: some View {
 ///             let layout = dynamicTypeSize <= .medium ?
-///                 AnyLayout(HStack()) : AnyLayout(VStack())
+///                 AnyLayout(HStackLayout()) : AnyLayout(VStackLayout())
 ///
 ///             layout {
 ///                 Text("First label")
@@ -3253,6 +3253,11 @@ extension AnyGradient {
 ///         }
 ///     }
 ///
+/// The types that you use with `AnyLayout` must conform to the ``Layout``
+/// protocol. The above example chooses between the ``HStackLayout`` and
+/// ``VStackLayout`` types, which are versions of the built-in ``HStack``
+/// and ``VStack`` containers that conform to the protocol. You can also
+/// use custom layout types that you define.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct AnyLayout : Layout {
 
@@ -3768,7 +3773,7 @@ extension AnyTransition {
     public static var slide: AnyTransition { get }
 }
 
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension AnyTransition {
 
     /// Creates a transition that when added to a view will animate the
@@ -8619,7 +8624,7 @@ extension DynamicViewContent {
     ///
     /// - Returns: A view that calls `action` when elements are inserted into
     ///   the original view.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T], Int) -> Void) -> some DynamicViewContent where T : Transferable
 
 }
@@ -15689,6 +15694,10 @@ extension GraphicsContext.GradientOptions : Sendable {
 /// The lower-right contains the word world. The cells of the grid
 /// have minimal vertical or horizontal spacing.](Grid-1-iOS)
 ///
+/// > Note: If you need a grid that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``GridLayout`` instead.
+///
 /// ### Multicolumn cells
 ///
 /// If you provide a view rather than a ``GridRow`` as an element in the
@@ -16008,28 +16017,34 @@ public struct GridItem {
     public init(_ size: GridItem.Size = .flexible(), spacing: CGFloat? = nil, alignment: Alignment? = nil)
 }
 
-/// A layout that arranges other views in a two dimensional layout.
+/// A grid that you can use in conditional layouts.
+///
+/// This layout container behaves like a ``Grid``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``Grid`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct GridLayout {
 
-    /// The alignment of children.
+    /// The alignment of subviews.
     public var alignment: Alignment
 
-    /// The horizontal distance between adjacent children, or nil if
-    /// the stack should choose a default distance for each pair of
-    /// children.
+    /// The horizontal distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default horizonal distances between
+    /// subviews.
     public var horizontalSpacing: CGFloat?
 
-    /// The vertical distance between adjacent children, or nil if
-    /// the stack should choose a default distance for each pair of
-    /// children.
+    /// The vertical distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default vertical distances between
+    /// subviews.
     public var verticalSpacing: CGFloat?
 
-    /// Creates a grid with the specified spacing, alignment, and child
-    /// views.
+    /// Creates a grid with the specified spacing and alignment.
     ///
     /// - Parameters:
-    ///   - alignment: The guide for aligning the child views within the
+    ///   - alignment: The guide for aligning subviews within the
     ///     space allocated for a given cell. The default is
     ///     ``Alignment/center``.
     ///   - horizontalSpacing: The horizontal distance between each cell, given
@@ -16769,12 +16784,12 @@ public struct GroupedFormStyle : FormStyle {
     public typealias Body = some View
 }
 
-/// A view that arranges its children in a horizontal line.
+/// A view that arranges its subviews in a horizontal line.
 ///
 /// Unlike ``LazyHStack``, which only renders the views when your app needs to
 /// display them onscreen, an `HStack` renders the views all at once, regardless
 /// of whether they are on- or offscreen. Use the regular `HStack` when you have
-/// a small number of child views or don't want the delayed rendering behavior
+/// a small number of subviews or don't want the delayed rendering behavior
 /// of the "lazy" version.
 ///
 /// The following example shows a simple horizontal stack of five text views:
@@ -16796,6 +16811,9 @@ public struct GroupedFormStyle : FormStyle {
 /// ![Five text views, named Item 1 through Item 5, arranged in a
 /// horizontal row.](SwiftUI-HStack-simple.png)
 ///
+/// > Note: If you need a horizontal stack that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``HStackLayout`` instead.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct HStack<Content> : View where Content : View {
 
@@ -16803,7 +16821,7 @@ public struct GroupedFormStyle : FormStyle {
     ///
     /// - Parameters:
     ///   - alignment: The guide for aligning the subviews in this stack. This
-    ///     guide has the same vertical screen coordinate for every child view.
+    ///     guide has the same vertical screen coordinate for every subview.
     ///   - spacing: The distance between adjacent subviews, or `nil` if you
     ///     want the stack to choose a default distance for each pair of
     ///     subviews.
@@ -16817,26 +16835,31 @@ public struct GroupedFormStyle : FormStyle {
     public typealias Body = Never
 }
 
-/// A layout that arranges its children in a horizontal line.
+/// A horizontal container that you can use in conditional layouts.
+///
+/// This layout container behaves like an ``HStack``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``HStack`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct HStackLayout : Layout {
 
-    /// The vertical alignment of children.
+    /// The vertical alignment of subviews.
     public var alignment: VerticalAlignment
 
-    /// The distance between adjacent children, or `nil` if the stack should
-    /// choose a default distance for each pair of children.
+    /// The distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default distances between subviews.
     public var spacing: CGFloat?
 
-    /// Creates an instance with the given spacing and vertical alignment.
+    /// Creates a horizontal stack with the specified spacing and vertical
+    /// alignment.
     ///
     /// - Parameters:
     ///     - alignment: The guide for aligning the subviews in this stack. It
-    ///       has the same vertical screen coordinate for all children.
-    ///     - spacing: The distance between adjacent subviews, or `nil` if you
-    ///       want the stack to choose a default distance for each pair of
-    ///       subviews.
-    ///     - content: A view builder that creates the content of this stack.
+    ///       has the same vertical screen coordinate for all subviews.
+    ///     - spacing: The distance between adjacent subviews. Set this value
+    ///       to `nil` to use default distances between subviews.
     @inlinable public init(alignment: VerticalAlignment = .center, spacing: CGFloat? = nil)
 
     /// The type defining the data to animate.
@@ -21838,6 +21861,24 @@ extension LocalizedStringKey.StringInterpolation {
     public mutating func appendInterpolation(_ interval: DateInterval)
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension LocalizedStringKey.StringInterpolation {
+
+    /// Appends a timer interval to a string interpolation.
+    ///
+    /// Don't call this method directly; it's used by the compiler when
+    /// interpreting string interpolations.
+    ///
+    /// - Parameters:
+    ///     - timerInterval: The interval between where to run the timer.
+    ///     - pauseTime: If present, the date at which to pause the timer.
+    ///         The default is `nil` which indicates to never pause.
+    ///     - countsDown: Whether to count up or down. The default is `true`.
+    ///     - showsHours: Whether to include an hours component if there are
+    ///         more than 60 minutes left on the timer. The default is `true`.
+    public mutating func appendInterpolation(timerInterval: ClosedRange<Date>, pauseTime: Date? = nil, countsDown: Bool = true, showsHours: Bool = true)
+}
+
 /// A gesture that succeeds when the user performs a long press.
 ///
 /// To recognize a long-press gesture on a view, create and configure the
@@ -24090,7 +24131,7 @@ public struct NavigationSplitViewVisibility : Equatable, Codable {
     /// - Parameters:
     ///   - lhs: A value to compare.
     ///   - rhs: Another value to compare.
-    public static func == (a: NavigationSplitViewVisibility, b: NavigationSplitViewVisibility) -> Bool
+    public static func == (lhs: NavigationSplitViewVisibility, rhs: NavigationSplitViewVisibility) -> Bool
 
     /// Encodes this value into the given encoder.
     ///
@@ -26355,7 +26396,7 @@ extension ProgressView {
     ///     }
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countdown` parameter to
+    /// the date range to the end. You can use the `countsDown` parameter to
     /// create a progress view that fills as time passes. In this example, the
     /// progress view begins 80% percent complete:
     ///
@@ -26364,7 +26405,7 @@ extension ProgressView {
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countdown: false) {
+    ///             ProgressView(interval: start...end, countsDown: false) {
     ///                 Text("Timer")
     ///             }
     ///         }
@@ -26374,13 +26415,13 @@ extension ProgressView {
     /// automatically updates to describe the current time remaining.
     ///
     /// - Parameters:
-    ///     - interval: The date range over which the view should progress.
-    ///     - countdown: If `true`, the view empties as time passes. The
+    ///     - timerInterval: The date range over which the view should progress.
+    ///     - countsDown: If `true`, the view empties as time passes. The
     ///       default is `true`.
     ///     - label: A view that describes the purpose of the progress view.
     ///     - currentValueLabel: A view that displays the current value of the
     ///       timer.
-    public init(interval: ClosedRange<Date>, countdown: Bool = true, @ViewBuilder label: () -> Label, @ViewBuilder currentValueLabel: () -> CurrentValueLabel)
+    public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label, @ViewBuilder currentValueLabel: () -> CurrentValueLabel)
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -26398,12 +26439,12 @@ extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end)
+    ///             ProgressView(timerInterval: start...end)
     ///         }
     ///     }
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countdown` parameter to
+    /// the date range to the end. You can use the `countsDown` parameter to
     /// create a progress view that fills as time passes. In this example, the
     /// progress view begins 80% percent complete:
     ///
@@ -26412,7 +26453,7 @@ extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countdown: false) {
+    ///             ProgressView(timerInterval: start...end, countsDown: false) {
     ///                 Text("Timer")
     ///             }
     ///         }
@@ -26422,11 +26463,11 @@ extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
     /// automatically updates to describe the current time remaining.
     ///
     /// - Parameters:
-    ///     - interval: The date range over which the view should progress.
-    ///     - countdown: If `true`, the view empties as time passes. The
+    ///     - timerInterval: The date range over which the view should progress.
+    ///     - countsDown: If `true`, the view empties as time passes. The
     ///       default is `true`.
     ///     - label: A view that describes the purpose of the progress view.
-    public init(interval: ClosedRange<Date>, countdown: Bool = true, @ViewBuilder label: () -> Label)
+    public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label)
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -26444,7 +26485,7 @@ extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDat
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end)
+    ///             ProgressView(timerInterval: start...end)
     ///         }
     ///     }
     ///
@@ -26458,7 +26499,7 @@ extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDat
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countdown: false) {
+    ///             ProgressView(timerInterval: start...end, countsDown: false) {
     ///                 Text("Timer")
     ///             }
     ///         }
@@ -26468,10 +26509,10 @@ extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDat
     /// automatically updates to describe the current time remaining.
     ///
     /// - Parameters:
-    ///     - interval: The date range over which the view should progress.
-    ///     - countdown: If `true`, the view empties as time passes. The
+    ///     - timerInterval: The date range over which the view should progress.
+    ///     - countsDown: If `true`, the view empties as time passes. The
     ///       default is `true`.
-    public init(interval: ClosedRange<Date>, countdown: Bool = true)
+    public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true)
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -35290,6 +35331,29 @@ extension Text {
     public init(_ interval: DateInterval)
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension Text {
+
+    /// Creates an instance that displays a timer counting within the provided
+    /// interval.
+    ///
+    ///     Text(
+    ///         timerInterval: Date.now...Date(timeInterval: 12 * 60, since: .now))
+    ///         pauseTime: Date.now + (10 * 60))
+    ///
+    /// The example above shows a text that displays a timer counting down
+    /// from "12:00" and will pause when reaching "10:00".
+    ///
+    /// - Parameters:
+    ///     - timerInterval: The interval between where to run the timer.
+    ///     - pauseTime: If present, the date at which to pause the timer.
+    ///         The default is `nil` which indicates to never pause.
+    ///     - countsDown: Whether to count up or down. The default is `true`.
+    ///     - showsHours: Whether to include an hours component if there are
+    ///         more than 60 minutes left on the timer. The default is `true`.
+    public init(timerInterval: ClosedRange<Date>, pauseTime: Date? = nil, countsDown: Bool = true, showsHours: Bool = true)
+}
+
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Text {
 
@@ -39125,12 +39189,12 @@ extension UnitPoint : Animatable {
 extension UnitPoint : Sendable {
 }
 
-/// A view that arranges its children in a vertical line.
+/// A view that arranges its subviews in a vertical line.
 ///
 /// Unlike ``LazyVStack``, which only renders the views when your app needs to
-/// display them onscreen, a `VStack` renders the views all at once, regardless
+/// display them, a `VStack` renders the views all at once, regardless
 /// of whether they are on- or offscreen. Use the regular `VStack` when you have
-/// a small number of child views or don't want the delayed rendering behavior
+/// a small number of subviews or don't want the delayed rendering behavior
 /// of the "lazy" version.
 ///
 /// The following example shows a simple vertical stack of 10 text views:
@@ -39152,6 +39216,9 @@ extension UnitPoint : Sendable {
 /// ![Ten text views, named Item 1 through Item 10, arranged in a
 /// vertical line.](SwiftUI-VStack-simple.png)
 ///
+/// > Note: If you need a vertical stack that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``VStackLayout`` instead.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct VStack<Content> : View where Content : View {
 
@@ -39159,7 +39226,7 @@ extension UnitPoint : Sendable {
     ///
     /// - Parameters:
     ///   - alignment: The guide for aligning the subviews in this stack. This
-    ///     guide has the same vertical screen coordinate for every child view.
+    ///     guide has the same vertical screen coordinate for every subview.
     ///   - spacing: The distance between adjacent subviews, or `nil` if you
     ///     want the stack to choose a default distance for each pair of
     ///     subviews.
@@ -39173,24 +39240,31 @@ extension UnitPoint : Sendable {
     public typealias Body = Never
 }
 
-/// A layout that arranges its children in a horizontal line.
+/// A vertical container that you can use in conditional layouts.
+///
+/// This layout container behaves like a ``VStack``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``VStack`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct VStackLayout : Layout {
 
-    /// The horizontal alignment of children.
+    /// The horizontal alignment of subviews.
     public var alignment: HorizontalAlignment
 
-    /// The distance between adjacent children, or nil if the stack should
-    /// choose a default distance for each pair of children.
+    /// The distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default distances between subviews.
     public var spacing: CGFloat?
 
-    /// Creates an instance with the given `spacing` and Y axis `alignment`.
+    /// Creates a vertical stack with the specified spacing and horizontal
+    /// alignment.
     ///
     /// - Parameters:
-    ///     - alignment: the guide that will have the same horizontal screen
-    ///       coordinate for all children.
-    ///     - spacing: the distance between adjacent children, or nil if the
-    ///       stack should choose a default distance for each pair of children.
+    ///     - alignment: The guide for aligning the subviews in this stack. It
+    ///       has the same horizontal screen coordinate for all subviews.
+    ///     - spacing: The distance between adjacent subviews. Set this value
+    ///       to `nil` to use default distances between subviews.
     @inlinable public init(alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil)
 
     /// The type defining the data to animate.
@@ -41489,7 +41563,8 @@ extension View {
     ///     programmatically, but not when responding to user-directed
     ///     navigation commands.
     /// - Returns: The modified view.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    @available(iOS, unavailable)
     public func defaultFocus<V>(_ binding: FocusState<V>.Binding, _ value: V, priority: DefaultFocusEvaluationPriority = .automatic) -> some View where V : Hashable
 
 }
@@ -55056,13 +55131,13 @@ public struct WindowGroup<Content> : Scene where Content : View {
     public typealias Body = some Scene
 }
 
-/// A view that overlays its children, aligning them in both axes.
+/// A view that overlays its subviews, aligning them in both axes.
 ///
-/// The `ZStack` assigns each successive child view a higher z-axis value than
-/// the one before it, meaning later children appear "on top" of earlier ones.
+/// The `ZStack` assigns each successive subview a higher z-axis value than
+/// the one before it, meaning later subviews appear "on top" of earlier ones.
 ///
 /// The following example creates a `ZStack` of 100 x 100 point ``Rectangle``
-/// views filled with one of six colors, offsetting each successive child view
+/// views filled with one of six colors, offsetting each successive subview
 /// by 10 points so they don't completely overlap:
 ///
 ///     let colors: [Color] =
@@ -55085,9 +55160,9 @@ public struct WindowGroup<Content> : Scene where Content : View {
 /// seen.](SwiftUI-ZStack-offset-rectangles.png)
 ///
 /// The `ZStack` uses an ``Alignment`` to set the x- and y-axis coordinates of
-/// each child, defaulting to a ``Alignment/center`` alignment. In the following
+/// each subview, defaulting to a ``Alignment/center`` alignment. In the following
 /// example, the `ZStack` uses a ``Alignment/bottomLeading`` alignment to lay
-/// out two children, a red 100 x 50 point rectangle below, and a blue 50 x 100
+/// out two subviews, a red 100 x 50 point rectangle below, and a blue 50 x 100
 /// point rectangle on top. Because of the alignment value, both rectangles
 /// share a bottom-left corner with the `ZStack` (in locales where left is the
 /// leading side).
@@ -55109,6 +55184,9 @@ public struct WindowGroup<Content> : Scene where Content : View {
 /// The rectangles share their bottom left point with the containing green
 /// square.](SwiftUI-ZStack-alignment.png)
 ///
+/// > Note: If you need a version of this stack that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``ZStackLayout`` instead.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct ZStack<Content> : View where Content : View {
 
@@ -55127,14 +55205,19 @@ public struct WindowGroup<Content> : Scene where Content : View {
     public typealias Body = Never
 }
 
-/// A layout that overlays its children, aligning them in both axes.
+/// An overlaying container that you can use in conditional layouts.
+///
+/// This layout container behaves like a ``ZStack``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``ZStack`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct ZStackLayout : Layout {
 
-    /// The alignment of children.
+    /// The alignment of subviews.
     public var alignment: Alignment
 
-    /// Creates an instance with the given alignment.
+    /// Creates a stack with the specified alignment.
     ///
     /// - Parameters:
     ///   - alignment: The guide for aligning the subviews in this stack
