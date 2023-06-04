@@ -636,12 +636,6 @@ extension AccessibilityLabeledPairRole : Hashable {
 extension AccessibilityLabeledPairRole : Sendable {
 }
 
-/// A type that describes the presentation style of an
-/// accessibility quick action.
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-public protocol AccessibilityQuickActionStyle {
-}
-
 /// Content within an accessibility rotor.
 ///
 /// Generally generated from control flow constructs like `ForEach` and `if`, and
@@ -6189,17 +6183,18 @@ extension Circle : InsettableShape {
 extension Circle : Sendable {
 }
 
-/// A progress view that visually indicates its progress using a circular
-/// gauge.
+/// A progress view that uses a circular gauge to indicate the partial
+/// completion of an activity.
 ///
-/// On watchOS, and in widgets and complications, a circular progress view will
-/// appear as an `accessoryCircularCapacity` styled gauge. If the progress
-/// view is indeterminate, the gauge will be empty.
+/// On watchOS, and in widgets and complications, a circular progress view
+/// appears as a gauge with the ``GaugeStyle/accessoryCircularCapacity``
+/// style. If the progress view is indeterminate, the gauge is empty.
 ///
 /// In cases where no determinate circular progress view style is available,
-/// an indeterminate style will be used.
+/// circular progress views use an indeterminate style.
 ///
-/// You can also use ``ProgressViewStyle/circular`` to construct this style.
+/// Use ``ProgressViewStyle/circular`` to construct the circular progress view
+/// style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct CircularProgressViewStyle : ProgressViewStyle {
 
@@ -6364,6 +6359,7 @@ extension Color {
     public static var accentColor: Color { get }
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Color : Transferable {
 
     /// One group of colors–constant colors–created with explicitly specified
@@ -7336,7 +7332,9 @@ public struct CommandGroup<Content> : Commands where Content : View {
 }
 
 /// Identifier types for standard locations that new command groups can be
-/// placed relative to.
+/// placed relative to. Note that the names for these placements are not
+/// user-visible, which is why they are declared using the ``Text(verbatim:)``
+/// initializer.
 @available(iOS 14.0, macOS 11.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
@@ -7478,8 +7476,8 @@ public struct CommandGroupPlacement {
     @available(iOS, unavailable)
     public static let windowList: CommandGroupPlacement
 
-    /// Standard placement for commands that describe and reveal any
-    /// `SingleWindow`s defined by the app.
+    /// Standard placement for commands that describe and reveal any `Window`s
+    /// defined by the app.
     @available(macOS 13.0, *)
     @available(iOS, unavailable)
     @available(tvOS, unavailable)
@@ -7991,6 +7989,7 @@ extension ContentSizeCategory {
 ///
 /// Content transitions only take effect within the context of an
 /// ``Animation`` block.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct ContentTransition : Equatable {
 
     /// The identity content transition, which indicates that content changes
@@ -8646,7 +8645,10 @@ extension CustomizableToolbarContent {
     ///
     /// Use the ``CustomizableToolbarContent/defaultCustomization(_:options:)``
     /// modifier providing either a `defaultVisibility` or `options` instead.
-    @available(*, deprecated, message: "Please provide either a visibility or customization options")
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Please provide either a visibility or customization options")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Please provide either a visibility or customization options")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Please provide either a visibility or customization options")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Please provide either a visibility or customization options")
     public func defaultCustomization() -> some CustomizableToolbarContent
 
 }
@@ -9150,7 +9152,8 @@ public struct DefaultDatePickerStyle : DatePickerStyle {
     public typealias Body = some View
 }
 
-/// The default type of current value label for a date-relative progress view.
+/// The default type of the current value label when used by a date-relative
+/// progress view.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct DefaultDateProgressLabel : View {
 
@@ -9334,7 +9337,7 @@ public struct DefaultPickerStyle : PickerStyle {
 /// The default progress view style in the current context of the view being
 /// styled.
 ///
-/// You can also use ``ProgressViewStyle/automatic`` to construct this style.
+/// Use ``ProgressViewStyle/automatic`` to construct this style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct DefaultProgressViewStyle : ProgressViewStyle {
 
@@ -10493,12 +10496,19 @@ extension DynamicTableRowContent {
     ///     ]
     ///
     ///     var body: some View {
-    ///         Table(profiles) {
+    ///         Table {
     ///             TableColumn("Given Name", value: \.givenName)
     ///             TableColumn("Family Name", value: \.familyName)
-    ///     }
-    ///     .dropDestination(for: Profile.self) { offset, receivedProfiles in
-    ///         people.insert(contentsOf: receivedProfiles, at: offset)
+    ///         } rows: {
+    ///             ForEach(profiles) {
+    ///                 TableRow($0)
+    ///             }
+    ///             .dropDestination(
+    ///                 for: Profile.self
+    ///             ) { offset, receivedProfiles in
+    ///                 people.insert(contentsOf: receivedProfiles, at: offset)
+    ///             }
+    ///         }
     ///     }
     ///
     /// - Parameters:
@@ -10694,6 +10704,7 @@ extension DynamicViewContent {
     ///             .dropDestination(for: Profile.self) { receivedProfiles, offset in
     ///                 profiles.insert(contentsOf: receivedProfiles, at: offset)
     ///             }
+    ///         }
     ///     }
     ///
     /// - Parameters:
@@ -11841,6 +11852,44 @@ extension EnvironmentValues {
     /// receives `true` when calling the action, because the
     /// handler always returns ``OpenURLAction/Result/handled``.
     public var openURL: OpenURLAction
+}
+
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+extension EnvironmentValues {
+
+    /// A Boolean value that indicates whether the display or environment currently requires
+    /// reduced luminance.
+    ///
+    /// When you detect this condition, lower the overall brightness of your view.
+    /// For example, you can change large, filled shapes to be stroked, and choose
+    /// less bright colors:
+    ///
+    ///     @Environment(\.isLuminanceReduced) var isLuminanceReduced
+    ///
+    ///     var body: some View {
+    ///         if isLuminanceReduced {
+    ///             Circle()
+    ///                 .stroke(Color.gray, lineWidth: 10)
+    ///         } else {
+    ///             Circle()
+    ///                 .fill(Color.white)
+    ///         }
+    ///     }
+    ///
+    /// In addition to the changes that you make, the system could also
+    /// dim the display to achieve a suitable brightness. By reacting to
+    /// `isLuminanceReduced`, you can preserve contrast and readability
+    /// while helping to satisfy the reduced brightness requirement.
+    ///
+    /// > Note: On watchOS, the system typically sets this value to `true` when the user
+    /// lowers their wrist, but the display remains on. Starting in watchOS 8, the system keeps your
+    /// view visible on wrist down by default. If you want the system to blur the screen
+    /// instead, as it did in earlier versions of watchOS, set the value for the
+    /// <doc://com.apple.documentation/documentation/BundleResources/Information_Property_List/WKSupportsAlwaysOnDisplay>
+    /// key in your app's
+    /// <doc://com.apple.documentation/documentation/BundleResources/Information_Property_List>
+    /// file to `false`.
+    public var isLuminanceReduced: Bool
 }
 
 extension EnvironmentValues {
@@ -14598,6 +14647,10 @@ extension Font {
     /// Sets the weight of the font.
     public func weight(_ weight: Font.Weight) -> Font
 
+    /// Sets the width of the font.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func width(_ width: Font.Width) -> Font
+
     /// Adds bold styling to the font.
     public func bold() -> Font
 
@@ -14711,6 +14764,57 @@ extension Font {
         ///   - lhs: A value to compare.
         ///   - rhs: Another value to compare.
         public static func == (a: Font.Weight, b: Font.Weight) -> Bool
+
+        /// The hash value.
+        ///
+        /// Hash values are not guaranteed to be equal across different executions of
+        /// your program. Do not save hash values to use during a future execution.
+        ///
+        /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
+        ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        public var hashValue: Int { get }
+    }
+
+    /// A width to use for fonts that have multiple widths.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public struct Width : Hashable {
+
+        public var value: CGFloat
+
+        public static let compressed: Font.Width
+
+        public static let condensed: Font.Width
+
+        public static let standard: Font.Width
+
+        public static let expanded: Font.Width
+
+        public init(_ value: CGFloat)
+
+        /// Hashes the essential components of this value by feeding them into the
+        /// given hasher.
+        ///
+        /// Implement this method to conform to the `Hashable` protocol. The
+        /// components used for hashing must be the same as the components compared
+        /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
+        /// with each of these components.
+        ///
+        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
+        ///   compile-time error in the future.
+        ///
+        /// - Parameter hasher: The hasher to use when combining the components
+        ///   of this instance.
+        public func hash(into hasher: inout Hasher)
+
+        /// Returns a Boolean value indicating whether two values are equal.
+        ///
+        /// Equality is the inverse of inequality. For any values `a` and `b`,
+        /// `a == b` implies that `a != b` is `false`.
+        ///
+        /// - Parameters:
+        ///   - lhs: A value to compare.
+        ///   - rhs: Another value to compare.
+        public static func == (a: Font.Width, b: Font.Width) -> Bool
 
         /// The hash value.
         ///
@@ -21052,12 +21156,12 @@ extension Image.Orientation : Sendable {
 ///     }
 ///
 ///     private func createAwardView(forUser: String, date: Date) -> some View {
-///         return VStack {
-///              Image(systemName: "trophy")
-///                .resizable()
-///                .frame(width: 200, height: 200)
-///                .frame(maxWidth: .infinity, maxHeight: .infinity)
-///                .shadow(color: .mint, radius: 5)
+///         VStack {
+///             Image(systemName: "trophy")
+///                 .resizable()
+///                 .frame(width: 200, height: 200)
+///                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+///                 .shadow(color: .mint, radius: 5)
 ///             Text(playerName)
 ///                 .font(.largeTitle)
 ///             Text(achievementDate.formatted())
@@ -21078,6 +21182,13 @@ extension Image.Orientation : Sendable {
 /// renderer to rasterize a new image each time the subscriber receives an
 /// update.
 ///
+/// - Important: `ImageRenderer` output only includes views that SwiftUI renders,
+/// such as text, images, shapes, and composite views of these types. It
+/// does not render views provided by native platform frameworks (AppKit and
+/// UIKit) such as web views, media players, and some controls. For these views,
+/// `ImageRenderer` displays a placeholder image, similar to the behavior of
+/// ``View/drawingGroup(opaque:colorMode:)``.
+///
 /// ### Rendering to a PDF context
 ///
 /// The ``render(rasterizationScale:renderer:)`` method renders the specified
@@ -21089,8 +21200,10 @@ extension Image.Orientation : Sendable {
 /// view hierarchy, such as text, symbol images, lines, shapes, and fills.
 ///
 /// The following example uses the `createAwardView(forUser:date:)` method from
-/// the previous example, and exports its contents as a one-page PDF to the file
-/// URL `renderURL`:
+/// the previous example, and exports its contents as an 800-by-600 point PDF to
+/// the file URL `renderURL`. It uses the `size` parameter sent to the
+/// rendering closure to center the `trophyAndDate` view vertically and
+/// horizontally on the page.
 ///
 ///     var body: some View {
 ///         let trophyAndDate = createAwardView(forUser: playerName,
@@ -21098,18 +21211,22 @@ extension Image.Orientation : Sendable {
 ///         VStack {
 ///             trophyAndDate
 ///             Button("Save Achievement") {
-///                 if let consumer = CGDataConsumer(url: renderURL as CFURL),
-///                    let pdfContext = CGContext(consumer: consumer, mediaBox: nil, nil) {
-///                     let renderer = ImageRenderer(content: trophyAndDate)
-///                     renderer.render { size, renderer in
-///                         let options: [CFString: Any] = [
-///                             kCGPDFContextMediaBox: CGRect(origin: .zero, size: size)
-///                         ]
-///                         pdfContext.beginPDFPage(options as CFDictionary)
-///                         renderer(pdfContext)
-///                         pdfContext.endPDFPage()
-///                         pdfContext.closePDF()
+///                 let renderer = ImageRenderer(content: trophyAndDate)
+///                 renderer.render { size, renderer in
+///                     var mediaBox = CGRect(origin: .zero,
+///                                           size: CGSize(width: 800, height: 600))
+///                     guard let consumer = CGDataConsumer(url: renderURL as CFURL),
+///                           let pdfContext =  CGContext(consumer: consumer,
+///                                                       mediaBox: &mediaBox, nil)
+///                     else {
+///                         return
 ///                     }
+///                     pdfContext.beginPDFPage(nil)
+///                     pdfContext.translateBy(x: mediaBox.size.width / 2 - size.width / 2,
+///                                            y: mediaBox.size.height / 2 - size.height / 2)
+///                     renderer(pdfContext)
+///                     pdfContext.endPDFPage()
+///                     pdfContext.closePDF()
 ///                 }
 ///             }
 ///         }
@@ -22065,8 +22182,8 @@ extension LabelStyleConfiguration.Icon : View {
 ///             MyCustomView(value: $value)
 ///         }
 ///         Picker("Selected Value", selection: $selection) {
-///             PickerOption("Option 1", 1)
-///             PickerOption("Option 2", 2)
+///             Text("Option 1").tag(1)
+///             Text("Option 2").tag(2)
 ///         }
 ///     }
 ///
@@ -22158,8 +22275,8 @@ extension LabelStyleConfiguration.Icon : View {
 ///             MyCustomView(value: $value)
 ///         }
 ///         Picker("Selected Value", selection: $selection) {
-///             PickerOption("Option 1", 1)
-///             PickerOption("Option 2", 2)
+///             Text("Option 1").tag(1)
+///             Text("Option 2").tag(2)
 ///         }
 ///     }
 ///     .labels(.hidden)
@@ -23932,6 +24049,22 @@ public enum LegibilityWeight : Hashable {
     public var hashValue: Int { get }
 }
 
+/// A type-erased widget configuration.
+///
+/// You don't use this type directly. Instead SwiftUI creates this type on
+/// your behalf.
+@available(iOS 16.1, macOS 13.0, watchOS 9.1, *)
+@available(tvOS, unavailable)
+@frozen public struct LimitedAvailabilityConfiguration : WidgetConfiguration {
+
+    /// The type of widget configuration representing the body of
+    /// this configuration.
+    ///
+    /// When you create a custom widget, Swift infers this type from your
+    /// implementation of the required `body` property.
+    public typealias Body = Never
+}
+
 /// A gauge style that displays bar that fills from leading to trailing
 /// edges as the gauge's current value increases.
 ///
@@ -23985,7 +24118,7 @@ public struct LinearCapacityGaugeStyle : GaugeStyle {
 
 /// A progress view that visually indicates its progress using a horizontal bar.
 ///
-/// You can also use ``ProgressViewStyle/linear`` to construct this style.
+/// Use ``ProgressViewStyle/linear`` to construct this style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct LinearProgressViewStyle : ProgressViewStyle {
 
@@ -28187,6 +28320,8 @@ public struct NSHostingSizingOptions : OptionSet {
 
     @MainActor override dynamic open func viewWillMove(toWindow newWindow: NSWindow?)
 
+    @MainActor override dynamic open func prepareForReuse()
+
     @MainActor override dynamic open func viewDidMoveToWindow()
 
     @MainActor override dynamic open func didChangeValue(forKey key: String)
@@ -28403,6 +28538,8 @@ public protocol NSViewControllerRepresentable : View where Self.Body == Never {
     @MainActor func sizeThatFits(_ proposal: ProposedViewSize, nsViewController: Self.NSViewControllerType, context: Self.Context) -> CGSize?
 
     typealias Context = NSViewControllerRepresentableContext<Self>
+
+    typealias LayoutOptions
 }
 
 @available(macOS 10.15, *)
@@ -28635,6 +28772,8 @@ public protocol NSViewRepresentable : View where Self.Body == Never {
     @MainActor func sizeThatFits(_ proposal: ProposedViewSize, nsView: Self.NSViewType, context: Self.Context) -> CGSize?
 
     typealias Context = NSViewRepresentableContext<Self>
+
+    typealias LayoutOptions
 }
 
 @available(macOS 10.15, *)
@@ -32841,9 +32980,9 @@ public struct PrimitiveButtonStyleConfiguration {
     public func trigger()
 }
 
-/// A view that shows the progress towards completion of a task.
+/// A view that shows the progress toward completion of a task.
 ///
-/// Use a progress view to show that a task is making progress towards
+/// Use a progress view to show that a task is incomplete but advancing toward
 /// completion. A progress view can show both determinate (percentage complete)
 /// and indeterminate (progressing or not) types of progress.
 ///
@@ -32856,14 +32995,22 @@ public struct PrimitiveButtonStyleConfiguration {
 /// a determinate `ProgressView`. The progress view uses its default total of
 /// `1.0`, and because `progress` starts with an initial value of `0.5`,
 /// the progress view begins half-complete. A "More" button below the progress
-/// view allows the user to increment the progress in 5% increments:
+/// view allows people to increment the progress in increments of five percent:
 ///
-///     @State private var progress = 0.5
+///     struct LinearProgressDemoView: View {
+///         @State private var progress = 0.5
 ///
-///     VStack {
-///         ProgressView(value: progress)
-///         Button("More", action: { progress += 0.05 })
+///         var body: some View {
+///             VStack {
+///                 ProgressView(value: progress)
+///                 Button("More") { progress += 0.05 }
+///             }
+///         }
 ///     }
+///
+/// ![A horizontal bar that represents progress, with a More button
+/// placed underneath. The progress bar is at 50 percent from the leading
+/// edge.](ProgressView-1-macOS)
 ///
 /// To create an indeterminate progress view, use an initializer that doesn't
 /// take a progress value:
@@ -32872,33 +33019,84 @@ public struct PrimitiveButtonStyleConfiguration {
 ///         ProgressView()
 ///     }
 ///
+/// ![An indeterminate progress view, presented as a spinning set of gray lines
+/// emanating from the center of a circle, with opacity varying from fully
+/// opaque to transparent. An animation rotates which line is most opaque,
+/// creating the spinning effect.](ProgressView-2-macOS)
+///
+/// You can also create a progress view that covers a closed range of
+/// <doc://com.apple.documentation/documentation/Foundation/Date> values. As long
+/// as the current date is within the range, the progress view automatically
+/// updates, filling or depleting the progress view as it nears the end of the
+/// range. The following example shows a five-minute timer whose start time is
+/// that of the progress view's initialization:
+///
+///     struct DateRelativeProgressDemoView: View {
+///         let workoutDateRange = Date()...Date().addingTimeInterval(5*60)
+///
+///         var body: some View {
+///              ProgressView(timerInterval: workoutDateRange) {
+///                  Text("Workout")
+///              }
+///         }
+///     }
+///
+/// ![A horizontal progress view that shows a bar partially filled with as it
+/// counts a five-minute duration.](ProgressView-3-macOS)
+///
 /// ### Styling progress views
 ///
 /// You can customize the appearance and interaction of progress views by
 /// creating styles that conform to the ``ProgressViewStyle`` protocol. To set a
 /// specific style for all progress view instances within a view, use the
 /// ``View/progressViewStyle(_:)`` modifier. In the following example, a custom
-/// style adds a dark blue shadow to all progress views within the enclosing
+/// style adds a rounded pink border to all progress views within the enclosing
 /// ``VStack``:
 ///
-///     struct ShadowedProgressViews: View {
+///     struct BorderedProgressViews: View {
 ///         var body: some View {
 ///             VStack {
-///                 ProgressView(value: 0.25)
-///                 ProgressView(value: 0.75)
+///                 ProgressView(value: 0.25) { Text("25% progress") }
+///                 ProgressView(value: 0.75) { Text("75% progress") }
 ///             }
-///             .progressViewStyle(DarkBlueShadowProgressViewStyle())
+///             .progressViewStyle(PinkBorderedProgressViewStyle())
 ///         }
 ///     }
 ///
-///     struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
+///     struct PinkBorderedProgressViewStyle: ProgressViewStyle {
 ///         func makeBody(configuration: Configuration) -> some View {
 ///             ProgressView(configuration)
-///                 .shadow(color: Color(red: 0, green: 0, blue: 0.6),
-///                         radius: 4.0, x: 1.0, y: 2.0)
+///                 .padding(4)
+///                 .border(.pink, width: 3)
+///                 .cornerRadius(4)
 ///         }
 ///     }
 ///
+/// ![Two horizontal progress views, one at 25 percent complete and the other at 75 percent,
+/// each rendered with a rounded pink border.](ProgressView-4-macOS)
+///
+/// SwiftUI provides two built-in progress view styles,
+/// ``ProgressViewStyle/linear`` and ``ProgressViewStyle/circular``, as well as
+/// an automatic style that defaults to the most appropriate style in the
+/// current context. The following example shows a circular progress view that
+/// starts at 60 percent completed.
+///
+///     struct CircularProgressDemoView: View {
+///         @State private var progress = 0.6
+///
+///         var body: some View {
+///             VStack {
+///                 ProgressView(value: progress)
+///                     .progressViewStyle(.circular)
+///             }
+///         }
+///     }
+///
+/// ![A ring shape, filled to 60 percent completion with a blue
+/// tint.](ProgressView-5-macOS)
+///
+/// On platforms other than macOS, the circular style may appear as an
+/// indeterminate indicator instead.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct ProgressView<Label, CurrentValueLabel> : View where Label : View, CurrentValueLabel : View {
 
@@ -32929,46 +33127,52 @@ public struct ProgressView<Label, CurrentValueLabel> : View where Label : View, 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension ProgressView {
 
-    /// Creates a progress view for showing continuous progress with time.
+    /// Creates a progress view for showing continuous progress as time passes,
+    /// with descriptive and current progress labels.
     ///
-    /// Use this method to create a view that shows continuous progress within a
-    /// date range. In the example below, the progress view is initialized with
-    /// a range of `start...end` and so
-    /// the progress view begins half-complete.
+    /// Use this initializer to create a view that shows continuous progress
+    /// within a date range. The following example initializes a progress view
+    /// with a range of `start...end`, where `start` is 30 seconds in the past
+    /// and `end` is 90 seconds in the future. As a result, the progress view
+    /// begins at 25 percent complete. This example also provides custom views
+    /// for a descriptive label (Progress) and a current value label that shows
+    /// the date range.
     ///
-    ///     struct NowPlayingDetails: View {
+    ///     struct ContentView: View {
+    ///         let start = Date().addingTimeInterval(-30)
+    ///         let end = Date().addingTimeInterval(90)
+    ///
     ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end)
-    ///         }
+    ///             ProgressView(interval: start...end,
+    ///                          countsDown: false) {
+    ///                 Text("Progress")
+    ///             } currentValueLabel: {
+    ///                 Text(start...end)
+    ///              }
+    ///          }
     ///     }
+    ///
+    /// ![A horizontal bar that represents progress, partially filled in from
+    /// the leading edge. The title, Progress, appears above the bar, and the
+    /// date range, 1:43 to 1:45 PM, appears below the bar. These values represent
+    /// the time progress began and when it ends, given a current time of
+    /// 1:44.](ProgressView-6-macOS)
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countsDown` parameter to
-    /// create a progress view that fills as time passes. In this example, the
-    /// progress view begins 80% percent complete:
+    /// the date range to the end, but you can use the `countsDown` parameter to
+    /// create a progress view that fills as time passes, as the above example
+    /// demonstrates.
     ///
-    ///     struct TimerView: View {
-    ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countsDown: false) {
-    ///                 Text("Timer")
-    ///             }
-    ///         }
-    ///     }
-    ///
-    /// By default, the progress view will be labeled with text that
-    /// automatically updates to describe the current time remaining.
+    /// > Note: Date-relative progress views, such as those created with this
+    ///   initializer, don't support custom styles.
     ///
     /// - Parameters:
     ///     - timerInterval: The date range over which the view should progress.
-    ///     - countsDown: If `true`, the view empties as time passes. The
-    ///       default is `true`.
-    ///     - label: A view that describes the purpose of the progress view.
+    ///     - countsDown: A Boolean value that determines whether the view
+    ///       empties or fills as time passes. If `true` (the default), the
+    ///       view empties.
+    ///     - label: An optional view that describes the purpose of the progress
+    ///       view.
     ///     - currentValueLabel: A view that displays the current value of the
     ///       timer.
     public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label, @ViewBuilder currentValueLabel: () -> CurrentValueLabel)
@@ -32977,91 +33181,96 @@ extension ProgressView {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
 
-    /// Creates a progress view for showing continuous progress with time.
+    /// Creates a progress view for showing continuous progress as time passes,
+    /// with a descriptive label.
     ///
-    /// Use this method to create a view that shows continuous progress within a
-    /// date range. In the example below, the progress view is initialized with
-    /// a range of `start...end` and so
-    /// the progress view begins half-complete.
+    /// Use this initializer to create a view that shows continuous progress
+    /// within a date range. The following example initializes a progress view
+    /// with a range of `start...end`, where `start` is 30 seconds in the past
+    /// and `end` is 90 seconds in the future. As a result, the progress view
+    /// begins at 25 percent complete. This example also provides a custom
+    /// descriptive label.
     ///
-    ///     struct NowPlayingDetails: View {
+    ///     struct ContentView: View {
+    ///         let start = Date().addingTimeInterval(-30)
+    ///         let end = Date().addingTimeInterval(90)
+    ///
     ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end)
+    ///             ProgressView(interval: start...end,
+    ///                          countsDown: false) {
+    ///                 Text("Progress")
+    ///              }
     ///         }
     ///     }
+    ///
+    /// ![A horizontal bar that represents progress, partially filled in from
+    /// the leading edge. The title, Progress, appears above the bar, and the
+    /// elapsed time, 0:34, appears below the bar.](ProgressView-7-macOS)
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countsDown` parameter to
-    /// create a progress view that fills as time passes. In this example, the
-    /// progress view begins 80% percent complete:
+    /// the date range to the end, but you can use the `countsDown` parameter to
+    /// create a progress view that fills as time passes, as the above example
+    /// demonstrates.
     ///
-    ///     struct TimerView: View {
-    ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end, countsDown: false) {
-    ///                 Text("Timer")
-    ///             }
-    ///         }
-    ///     }
+    /// The progress view provided by this initializer uses a text label that
+    /// automatically updates to describe the current time remaining. To provide
+    /// a custom label to show the current value, use
+    /// ``init(value:total:label:currentValueLabel:)`` instead.
     ///
-    /// By default, the progress view will be labeled with text that
-    /// automatically updates to describe the current time remaining.
+    /// > Note: Date-relative progress views, such as those created with this
+    ///   initializer, don't support custom styles.
     ///
     /// - Parameters:
-    ///     - timerInterval: The date range over which the view should progress.
-    ///     - countsDown: If `true`, the view empties as time passes. The
-    ///       default is `true`.
-    ///     - label: A view that describes the purpose of the progress view.
+    ///     - timerInterval: The date range over which the view progresses.
+    ///     - countsDown: A Boolean value that determines whether the view
+    ///       empties or fills as time passes. If `true` (the default), the
+    ///       view empties.
+    ///     - label: An optional view that describes the purpose of the progress
+    ///       view.
     public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label)
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDateProgressLabel {
 
-    /// Creates a progress view for showing continuous progress with time.
+    /// Creates a progress view for showing continuous progress as time passes.
     ///
-    /// Use this method to create a view that shows continuous progress within a
-    /// date range. In the example below, the progress view is initialized with
-    /// a range of `start...end` and so
-    /// the progress view begins half-complete.
+    /// Use this initializer to create a view that shows continuous progress
+    /// within a date range. The following example initializes a progress view
+    /// with a range of `start...end`, where `start` is 30 seconds in the past
+    /// and `end` is 90 seconds in the future. As a result, the progress view
+    /// begins at 25 percent complete.
     ///
-    ///     struct NowPlayingDetails: View {
+    ///     struct ContentView: View {
+    ///         let start = Date().addingTimeInterval(-30)
+    ///         let end = Date().addingTimeInterval(90)
+    ///
     ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end)
+    ///             ProgressView(interval: start...end
+    ///                          countsDown: false)
     ///         }
     ///     }
+    ///
+    /// ![A horizontal bar that represents progress, partially filled in from
+    /// the leading edge. The elapsed time, 0:34, appears below the
+    /// bar.](ProgressView-8-macOS)
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countdown` parameter to
-    /// create a progress view that fills as time passes. In this example, the
-    /// progress view begins 80 percent complete:
+    /// the date range to the end, but you can use the `countsDown` parameter to
+    /// create a progress view that fills as time passes, as the above example
+    /// demonstrates.
     ///
-    ///     struct TimerView: View {
-    ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end, countsDown: false) {
-    ///                 Text("Timer")
-    ///             }
-    ///         }
-    ///     }
+    /// The progress view provided by this initializer omits a descriptive
+    /// label and provides a text label that automatically updates to describe
+    /// the current time remaining. To provide custom views for these labels,
+    /// use ``init(value:total:label:currentValueLabel:)`` instead.
     ///
-    /// By default, the progress view will be labeled with text that
-    /// automatically updates to describe the current time remaining.
+    /// > Note: Date-relative progress views, such as those created with this
+    ///   initializer, don't support custom styles.
     ///
     /// - Parameters:
-    ///     - timerInterval: The date range over which the view should progress.
-    ///     - countsDown: If `true`, the view empties as time passes. The
-    ///       default is `true`.
+    ///     - timerInterval: The date range over which the view progresses.
+    ///     - countsDown: If `true` (the default), the view empties as time passes.
     public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true)
 }
 
@@ -33234,19 +33443,28 @@ extension ProgressView {
     /// ``ProgressViewStyle`` to create an instance of the styled progress view.
     /// This is useful for custom progress view styles that only modify the
     /// current progress view style, as opposed to implementing a brand new
-    /// style.
+    /// style. Because this modifier style can't know how the current style
+    /// represents progress, avoid making assumptions about the view's contents,
+    /// such as whether it uses bars or other shapes.
     ///
-    /// For example, the following style adds a dark blue shadow to the progress
-    /// view, but otherwise preserves the progress view's current style:
+    /// The following example shows a style that adds a rounded pink border to a
+    /// progress view, but otherwise preserves the progress view's current
+    /// style:
     ///
-    ///     struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
+    ///     struct PinkBorderedProgressViewStyle: ProgressViewStyle {
     ///         func makeBody(configuration: Configuration) -> some View {
     ///             ProgressView(configuration)
-    ///                 .shadow(color: Color(red: 0, green: 0, blue: 0.6),
-    ///                         radius: 4.0, x: 1.0, y: 2.0)
+    ///                 .padding(4)
+    ///                 .border(.pink, width: 3)
+    ///                 .cornerRadius(4)
     ///         }
     ///     }
     ///
+    /// ![Two horizontal progress views, one at 25 percent complete and the
+    /// other at 75 percent, each rendered with a rounded pink
+    /// border.](ProgressView-4-macOS)
+    ///
+    /// - Note: Progress views in widgets don't apply custom styles.
     public init(_ configuration: ProgressViewStyleConfiguration) where Label == ProgressViewStyleConfiguration.Label, CurrentValueLabel == ProgressViewStyleConfiguration.CurrentValueLabel
 }
 
@@ -33300,15 +33518,15 @@ extension ProgressViewStyle where Self == LinearProgressViewStyle {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension ProgressViewStyle where Self == CircularProgressViewStyle {
 
-    /// A progress view that visually indicates its progress using a circular
-    /// gauge.
+    /// The style of a progress view that uses a circular gauge to indicate the
+    /// partial completion of an activity.
     ///
-    /// On watchOS, and in widgets and complications, a circular progress view will
-    /// appear as an `accessoryCircularCapacity` styled gauge. If the progress
-    /// view is indeterminate, the gauge will be empty.
+    /// On watchOS, and in widgets and complications, a circular progress view
+    /// appears as a gauge with the ``GaugeStyle/accessoryCircularCapacity``
+    /// style. If the progress view is indeterminate, the gauge is empty.
     ///
     /// In cases where no determinate circular progress view style is available,
-    /// an indeterminate style will be used.
+    /// circular progress views use an indeterminate style.
     public static var circular: CircularProgressViewStyle { get }
 }
 
@@ -43704,8 +43922,8 @@ extension TableRowContent {
     /// If you want to display a preview beside the context menu, use
     /// ``TableRowContent/contextMenu(menuItems:preview:)``. If you want
     /// to display a context menu that's based on the current selection,
-    /// use ``View/contextMenu(forSelectionType:menu:)``. To add context menus
-    /// to other kinds of views, use ``View/contextMenu(menuItems:)``.
+    /// use ``View/contextMenu(forSelectionType:menu:primaryAction:)``. To add
+    /// context menus to other kinds of views, use ``View/contextMenu(menuItems:)``.
     ///
     /// - Parameter menuItems: A closure that produces the menu's contents. You
     ///   can deactivate the context menu by returning nothing from the closure.
@@ -43747,8 +43965,8 @@ extension TableRowContent {
     /// If you don't need a preview, use
     /// ``TableRowContent/contextMenu(menuItems:)``. If you want
     /// to display a context menu that's based on the current selection,
-    /// use ``View/contextMenu(forSelectionType:menu:)``. To add context
-    /// menus to other kinds of views, see ``View/contextMenu(menuItems:)``.
+    /// use ``View/contextMenu(forSelectionType:menu:primaryAction:)``. To add
+    /// context menus to other kinds of views, see ``View/contextMenu(menuItems:)``.
     ///
     /// - Parameters:
     ///   - menuItems: A closure that produces the menu's contents. You can
@@ -44103,6 +44321,14 @@ extension Text {
     /// - Returns: Text that uses the font weight you specify.
     public func fontWeight(_ weight: Font.Weight?) -> Text
 
+    /// Sets the font width of the text.
+    ///
+    /// - Parameter width: One of the available font widths.
+    ///
+    /// - Returns: Text that uses the font width you specify, if available.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func fontWidth(_ width: Font.Width?) -> Text
+
     /// Applies a bold font weight to the text.
     ///
     /// - Returns: Bold text.
@@ -44130,6 +44356,14 @@ extension Text {
     /// - Returns: Italic text.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func italic(_ isActive: Bool) -> Text
+
+    /// Sets the font design of the text.
+    ///
+    /// - Parameter design: One of the available font designs.
+    ///
+    /// - Returns: Text that uses the font design you specify.
+    @available(iOS 16.1, macOS 13.0, tvOS 16.1, watchOS 9.1, *)
+    public func fontDesign(_ design: Font.Design?) -> Text
 
     /// Modifies the text view's font to use fixed-width digits, while leaving
     /// other characters proportionally spaced.
@@ -48259,6 +48493,7 @@ extension ToolbarItem where ID == () {
     public init(placement: ToolbarItemPlacement = .automatic, @ViewBuilder content: () -> Content)
 }
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension ToolbarItem : CustomizableToolbarContent where ID == String {
 
     /// Creates a toolbar item with the specified placement and content,
@@ -50346,84 +50581,6 @@ extension View {
     ///   - text: The text to display and edit in the search field.
     ///   - tokens: A collection of tokens to display and edit in the
     ///     search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A ``Text`` view representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, S>(text: Binding<String>, tokens: Binding<C>, placement: SearchFieldPlacement = .automatic, prompt: Text? = nil, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder suggestions: () -> S) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, S : View, C.Element : Identifiable
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A key for the localized prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, S>(text: Binding<String>, tokens: Binding<C>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder suggestions: () -> S) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, S : View, C.Element : Identifiable
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A string representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, V, S>(text: Binding<String>, tokens: Binding<C>, placement: SearchFieldPlacement = .automatic, prompt: S, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder suggestions: () -> V) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, V : View, S : StringProtocol, C.Element : Identifiable
-
-}
-
-extension View {
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
     ///   - suggestedTokens: A collection of tokens to display as suggestions.
     ///   - placement: The preferred placement of the search field within the
     ///     containing view hierarchy.
@@ -50484,174 +50641,6 @@ extension View {
 
 }
 
-extension View {
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: The preferred placement of the search field within the
-    ///     containing view hierarchy.
-    ///   - prompt: A ``Text`` view representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, D, V>(text: Binding<String>, tokens: Binding<C>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: Text? = nil, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder scopes: () -> V) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, D : Hashable, V : View, C.Element : Identifiable
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: The preferred placement of the search field within the
-    ///     containing view hierarchy.
-    ///   - prompt: The key for the localized prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, D, V>(text: Binding<String>, tokens: Binding<C>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder scopes: () -> V) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, D : Hashable, V : View, C.Element : Identifiable
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: The preferred placement of the search field within the
-    ///     containing view hierarchy.
-    ///   - prompt: A string representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, D, V, S>(text: Binding<String>, tokens: Binding<C>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: S, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder scopes: () -> V) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, D : Hashable, V : View, S : StringProtocol, C.Element : Identifiable
-
-}
-
-extension View {
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A ``Text`` view representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, D, V1, V2>(text: Binding<String>, tokens: Binding<C>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: Text? = nil, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder scopes: () -> V1, @ViewBuilder suggestions: () -> V2) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, D : Hashable, V1 : View, V2 : View, C.Element : Identifiable
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A key for the localized prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, D, V1, V2>(text: Binding<String>, tokens: Binding<C>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder scopes: () -> V1, @ViewBuilder suggestions: () -> V2) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, D : Hashable, V1 : View, V2 : View, C.Element : Identifiable
-
-
-    /// Marks this view as searchable, which configures the display of a
-    /// search field.
-    ///
-    /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
-    ///
-    /// - Parameters:
-    ///   - text: The text to display and edit in the search field.
-    ///   - tokens: A collection of tokens to display and edit in the
-    ///     search field.
-    ///   - scope: The active scope of the search field.
-    ///   - placement: Where the search field should attempt to be
-    ///     placed based on the containing view hierarchy.
-    ///   - prompt: A string representing the prompt of the search field
-    ///     which provides users with guidance on what to search for.
-    ///   - token: A view builder that creates a view given an element in
-    ///     tokens.
-    ///   - scopes: A view builder representing the scopes of the search field
-    ///     which will be used to populate a ``Picker``
-    ///   - suggestions: A view builder that produces content that
-    ///     populates a list of suggestions.
-    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Use View.searchScopes(_:scopes:)")
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func searchable<C, T, D, V1, V2, S>(text: Binding<String>, tokens: Binding<C>, scope: Binding<D>, placement: SearchFieldPlacement = .automatic, prompt: S, @ViewBuilder token: @escaping (C.Element) -> T, @ViewBuilder scopes: () -> V1, @ViewBuilder suggestions: () -> V2) -> some View where C : RandomAccessCollection, C : RangeReplaceableCollection, T : View, D : Hashable, V1 : View, V2 : View, S : StringProtocol, C.Element : Identifiable
-
-}
-
 @available(iOS 13.0, macOS 10.15, tvOS 14.0, *)
 @available(watchOS, introduced: 6.0, deprecated: 7.0)
 extension View {
@@ -50695,7 +50684,7 @@ extension View {
     /// container that supports selection, like a ``List`` or a ``Table``, and
     /// to distinguish between menu activation on a selection and
     /// activation in an empty area of the container, use
-    /// ``View/contextMenu(forSelectionType:menu:)``.
+    /// ``View/contextMenu(forSelectionType:menu:primaryAction:)``.
     ///
     /// - Parameter menuItems: A closure that produces the menu's contents. You
     ///   can deactivate the context menu by returning nothing from the closure.
@@ -50753,7 +50742,8 @@ extension View {
     /// instead. If you want to add a context menu to a container that supports
     /// selection, like a ``List`` or a ``Table``, and you want to distinguish
     /// between menu activation on a selection and activation in an empty area
-    /// of the container, use ``View/contextMenu(forSelectionType:menu:)``.
+    /// of the container, use
+    /// ``View/contextMenu(forSelectionType:menu:primaryAction:)``.
     ///
     /// - Parameters:
     ///   - menuItems: A closure that produces the menu's contents. You can
@@ -54249,80 +54239,111 @@ extension View {
 @available(watchOS, unavailable)
 extension View {
 
-    /// Adds an item-based context menu to the view.
+    /// Adds an item-based context menu to a view.
     ///
-    /// Use an item-based context menu with a container that supports selection,
-    /// such as a `List` or `Table`. The modifier's closure will be invoked by
-    /// the container to construct a context menu for the current context.
+    /// You can add an item-based context menu to a container that supports
+    /// selection, like a ``List`` or a ``Table``. In the closure that you
+    /// use to define the menu, you receive a collection of items that
+    /// depends on the selection state of the container and the location where
+    /// the person clicks or taps to activate the menu. The collection contains:
     ///
-    /// The following example shows a `List` that supports an empty area menu, a
-    /// single-item menu, and a multi-item menu.
+    /// * The selected item or items, when people initiate the context menu
+    ///   from any selected item.
+    /// * Nothing, if people tap or click to activate the context menu from
+    ///   an empty part of the container. This is true even when one or more
+    ///   items is currently selected.
     ///
-    ///     List(selection: $selection) {
-    ///         // ...
-    ///     }
-    ///     .contextMenu(forSelectionType: ItemID.self) { items in
-    ///         if items.isEmpty {
-    ///             // Empty area menu
-    ///             Button("New Item") { ... }
-    ///         } else if items.count == 1 {
-    ///             // Single-item menu
-    ///             Button("Copy") { ... }
-    ///             Button("Delete", role: .destructive) { ... }
-    ///         } else {
-    ///             // Multi-item menu
-    ///             Button("Copy") { ... }
-    ///             Button("New Folder With Selection") { ... }
-    ///             Button("Delete Selected", role: .destructive) { ... }
+    /// You can vary the menu contents according to the number of selected
+    /// items. For example, the following code has a list that defines an
+    /// empty area menu, a single item menu, and a multi-item menu:
+    ///
+    ///     struct ContextMenuItemExample: View {
+    ///         var items: [Item]
+    ///         @State private var selection = Set<Item.ID>()
+    ///
+    ///         var body: some View {
+    ///             List(selection: $selection) {
+    ///                 ForEach(items) { item in
+    ///                     Text(item.name)
+    ///                 }
+    ///             }
+    ///             .contextMenu(forSelectionType: Item.ID.self) { items in
+    ///                 if items.isEmpty { // Empty area menu.
+    ///                     Button("New Item") { }
+    ///
+    ///                 } else if items.count == 1 { // Single item menu.
+    ///                     Button("Copy") { }
+    ///                     Button("Delete", role: .destructive) { }
+    ///
+    ///                 } else { // Multi-item menu.
+    ///                     Button("Copy") { }
+    ///                     Button("New Folder With Selection") { }
+    ///                     Button("Delete Selected", role: .destructive) { }
+    ///                 }
+    ///             }
     ///         }
     ///     }
     ///
-    /// ### Primary Actions
+    /// The above example assumes that the `Item` type conforms to the
+    /// <doc://com.apple.documentation/documentation/Swift/Identifiable>
+    /// protocol, and relies on the associated `ID` type for both selection
+    /// and context menu presentation.
     ///
-    /// Context menus can be created with a custom primary action. In macOS,
-    /// a single click on a row in a selectable container selects that row,
-    /// and you double click to perform the primary action. In iOS and iPadOS,
-    /// tapping on the row is enough to trigger the primary action. To select
-    /// a row without performing an action, either enter edit mode or hold
+    /// If you add the modifier to a view hierarchy that doesn't have a
+    /// container that supports selection, the context menu never activates.
+    /// To add a context menu that doesn't depend on selection behavior, use
+    /// ``View/contextMenu(menuItems:)``. To add a context menu to a specific
+    /// row in a table, use ``TableRowContent/contextMenu(menuItems:)``.
+    ///
+    /// ### Add a primary action
+    ///
+    /// Optionally, you can add a custom primary action to the context menu. In
+    /// macOS, a single click on a row in a selectable container selects that
+    /// row, and a double click performs the primary action. In iOS and iPadOS,
+    /// tapping on the row activates the primary action. To select a row
+    /// without performing an action, either enter edit mode or hold
     /// shift or command on a keyboard while tapping the row.
     ///
-    /// In the example below, double clicking the row on macOS will open a
-    /// new window viewing the selection.
+    /// For example, you can modify the context menu from the previous example
+    /// so that double clicking the row on macOS opens a new window for
+    /// selected items. Get the ``OpenWindowAction`` from the environment:
     ///
     ///     @Environment(\.openWindow) private var openWindow
     ///
-    ///     List(selection: $selection) {
-    ///         // ...
-    ///     }
-    ///     .contextMenu(forSelectionType: ItemID.self) { items in
-    ///         if !items.isEmpty {
-    ///             Button("Open in New Window") {
-    ///                 openItemsInWindow(items)
-    ///             }
-    ///         }
-    ///     } primaryAction: { items in
-    ///         openItemsInWindow(items)
-    ///     }
+    /// Then call ``EnvironmentValues/openWindow`` from inside the
+    /// `primaryAction` closure for each item:
     ///
-    ///     func openItemsInWindow(_ items: Set<ItemID>) {
+    ///     .contextMenu(forSelectionType: Item.ID.self) { items in
+    ///         // ...
+    ///     } primaryAction: { items in
     ///         for item in items {
     ///             openWindow(value: item)
     ///         }
     ///     }
     ///
-    /// > Note: using this modifier without a selectable container as a
-    ///   descendant will result in no menu being shown when the menu gesture
-    ///   activates.
+    /// The open window action depends on the declaration of a ``WindowGroup``
+    /// scene in your ``App`` that responds to the `Item` type:
     ///
-    /// - Parameter itemType: The identifier type of the items. This must match
-    ///   the selection type of the container that will present the menu.
-    /// - Parameter menu: A view that produces the menu. The parameter is a set
-    ///   of the items the menu should act on. If the set is empty, the menu was
-    ///   activated over the empty area of the selectable container.
-    /// - Parameter primaryAction: The action to perform on primary interaction
-    ///   of the items.
-    /// - Returns: A view that sets the item-based contextual menu for this
-    ///   view.
+    ///     WindowGroup("Item Detail", for: Item.self) { $item in
+    ///         // ...
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - itemType: The identifier type of the items. Ensure that this
+    ///     matches the container's selection type.
+    ///   - menu: A closure that produces the menu. A single parameter to the
+    ///     closure contains the set of items to act on. An empty set indicates
+    ///     menu activation over the empty area of the selectable container,
+    ///     while a non-empty set indicates menu activation over selected items.
+    ///     Use controls like ``Button``, ``Picker``, and ``Toggle`` to define
+    ///     the menu items. You can also create submenus using ``Menu``, or
+    ///     group items with ``Section``. You can deactivate the context menu
+    ///     by returning nothing from the closure.
+    ///   - primaryAction: A closure that defines the action to perform in
+    ///     response to the primary interaction. A single parameter to the
+    ///     closure contains the set of items to act on.
+    ///
+    /// - Returns: A view that can display an item-based context menu.
     public func contextMenu<I, M>(forSelectionType itemType: I.Type = I.self, @ViewBuilder menu: @escaping (Set<I>) -> M, primaryAction: ((Set<I>) -> Void)? = nil) -> some View where I : Hashable, M : View
 
 }
@@ -54923,6 +54944,8 @@ extension View {
     /// Defines the destination of a drag and drop operation that handles the
     /// dropped content with a closure that you specify.
     ///
+    /// The dropped content can be provided as binary data, file URLs, or file promises.
+    ///
     /// The drop destination is the same size and position as this view.
     ///
     ///     @State var isDropTargeted = false
@@ -55256,12 +55279,8 @@ extension View {
     ///         Button("Select", action: selectFolders)
     ///         Button("New Folder", action: createFolder)
     ///         Picker("Appearance", selection: $appearance) {
-    ///             PickerOption(value: .icons) {
-    ///                 Label("Icons", systemImage: "square.grid.2x2")
-    ///             }
-    ///             PickerOption(value: .list) {
-    ///                 Label("List", systemImage: "list.bullet")
-    ///             }
+    ///             Label("Icons", systemImage: "square.grid.2x2").tag(Appearance.icons)
+    ///             Label("List", systemImage: "list.bullet").tag(Appearance.list)
     ///         }
     ///     } label: {
     ///         Label("Settings", systemImage: "ellipsis.circle")
@@ -55273,9 +55292,9 @@ extension View {
     /// ``PickerStyle/menu`` style with a priority-based order:
     ///
     ///     Picker("Flavor", selection: $selectedFlavor) {
-    ///         PickerOption("Chocolate", value: .chocolate)
-    ///         PickerOption("Vanilla", value: .vanilla)
-    ///         PickerOption("Strawberry", value: .strawberry)
+    ///         Text("Chocolate").tag(Flavor.chocolate)
+    ///         Text("Vanilla").tag(Flavor.vanilla)
+    ///         Text("Strawberry").tag(Flavor.strawberry)
     ///     }
     ///     .pickerStyle(.menu)
     ///     .menuOrder(.priority)
@@ -58550,6 +58569,17 @@ extension View {
     public func fontWeight(_ weight: Font.Weight?) -> some View
 
 
+    /// Sets the font width of the text in this view.
+    ///
+    /// - Parameter width: One of the available font widths.
+    ///   Providing `nil` removes the effect of any font width
+    ///   modifier applied higher in the view hierarchy.
+    ///
+    /// - Returns: A view that uses the font width you specify.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func fontWidth(_ width: Font.Width?) -> some View
+
+
     /// Applies a bold font weight to the text in this view.
     ///
     /// - Parameter isActive: A Boolean value that indicates
@@ -58568,6 +58598,17 @@ extension View {
     /// - Returns: A View with italic text.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func italic(_ isActive: Bool = true) -> some View
+
+
+    /// Sets the font design of the text in this view.
+    ///
+    /// - Parameter design: One of the available font designs.
+    ///   Providing `nil` removes the effect of any font design
+    ///   modifier applied higher in the view hierarchy.
+    ///
+    /// - Returns: A view that uses the font design you specify.
+    @available(iOS 16.1, macOS 13.0, tvOS 16.1, watchOS 9.1, *)
+    public func fontDesign(_ design: Font.Design?) -> some View
 
 
     /// Sets the spacing, or kerning, between characters for the text in this view.
@@ -59914,17 +59955,26 @@ extension View {
     /// when the view is selected to replace the partial text being currently
     /// edited of the associated search field.
     ///
-    ///     enum FruitToken: Hashable, CaseIterable {
+    ///     enum FruitToken: Hashable, Identifiable, CaseIterable {
     ///         case apple
     ///         case pear
     ///         case banana
+    ///
+    ///         var id: Self { self }
     ///     }
     ///
     ///     @State var text = ""
     ///     @State var tokens: [FruitToken] = []
     ///
     ///     SearchPlaceholderView()
-    ///         .searchable(text: $text, tokens: $tokens) {
+    ///         .searchable(text: $text, tokens: $tokens) { token in
+    ///             switch token {
+    ///             case .apple: Text("Apple")
+    ///             case .pear: Text("Pear")
+    ///             case .banana: Text("Banana")
+    ///             }
+    ///         }
+    ///         .searchSuggestions {
     ///             Text("🍎").searchCompletion(FruitToken.apple)
     ///             Text("🍐").searchCompletion(FruitToken.pear)
     ///             Text("🍌").searchCompletion(FruitToken.banana)
@@ -60017,7 +60067,7 @@ extension View {
 extension View {
 
     /// Tells a view that acts as a cell in a grid to span the specified
-    /// number of rows.
+    /// number of columns.
     ///
     /// By default, each view that you put into the content closure of a
     /// ``GridRow`` corresponds to exactly one column of the grid. Apply the
@@ -60060,7 +60110,7 @@ extension View {
     /// from the middle columnn that holds the labeled
     /// checkbox.](View-gridCellColumns-1-macOS)
     ///
-    /// > Important: When you tell a cell to span multiple rows, the grid
+    /// > Important: When you tell a cell to span multiple columns, the grid
     /// changes the merged cell to use anchor alignment, rather than the
     /// usual alignment guides. For information about the behavior of
     /// anchor alignment, see ``View/gridCellAnchor(_:)``.
@@ -60479,84 +60529,6 @@ extension View {
 
 }
 
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension View {
-
-    /// Adds a quick action to be shown by the system when active.
-    ///
-    /// The quick action will automatically become active when the
-    /// view appears. If the view is disabled, the action will defer
-    /// becoming active until the view is no longer disabled.
-    ///
-    /// The following example shows how to add a quick action to
-    /// pause and resume a workout, with the ``AccessibilityQuickActionStyle/prompt`` style.
-    ///
-    ///     @State var isPaused = false
-    ///
-    ///     var body: some View {
-    ///         WorkoutView(isPaused: $isPaused)
-    ///             .accessibilityQuickAction(style: .prompt) {
-    ///                 Button(isPaused ? "Resume" : "Pause") {
-    ///                     isPaused.toggle()
-    ///                 }
-    ///             }
-    ///     }
-    ///
-    /// The following example shows how to add a quick action to
-    /// play and pause music, with the ``AccessibilityQuickActionStyle/outline`` style.
-    ///
-    ///     @State var isPlaying = false
-    ///
-    ///     var body: some View {
-    ///         PlayButton(isPlaying: $isPlaying)
-    ///             .contentShape(.focusEffect, Circle())
-    ///             .accessibilityQuickAction(style: .outline) {
-    ///                 Button(isPlaying ? "Pause" : "Play") {
-    ///                     isPlaying.toggle()
-    ///                 }
-    ///             }
-    ///     }
-    ///
-    public func accessibilityQuickAction<Style, Content>(style: Style, @ViewBuilder content: () -> Content) -> some View where Style : AccessibilityQuickActionStyle, Content : View
-
-
-    /// Adds a quick action to be shown by the system when active.
-    ///
-    /// The following example shows how to add a quick action to
-    /// pause and resume a workout, with the ``AccessibilityQuickActionStyle/prompt`` style.
-    ///
-    ///     @State var isPaused = false
-    ///     @State var isQuickActionActive = false
-    ///
-    ///     var body: some View {
-    ///         WorkoutView(isPaused: $isPaused)
-    ///             .accessibilityQuickAction(style: .prompt, isActive: $isQuickActionActive) {
-    ///                 Button(isPaused ? "Resume" : "Pause") {
-    ///                     isPaused.toggle()
-    ///                 }
-    ///             }
-    ///     }
-    ///
-    /// The following example shows how to add a quick action to
-    /// play and pause music, with the ``AccessibilityQuickActionStyle/outline`` style.
-    ///
-    ///     @State var isPlaying = false
-    ///     @State var isQuickActionActive = false
-    ///
-    ///     var body: some View {
-    ///         PlayButton(isPlaying: $isPlaying)
-    ///             .contentShape(.focusEffect, Circle())
-    ///             .accessibilityQuickAction(style: .outline, isActive: $isQuickActionActive) {
-    ///                 Button(isPlaying ? "Pause" : "Play") {
-    ///                     isPlaying.toggle()
-    ///                 }
-    ///             }
-    ///     }
-    ///
-    public func accessibilityQuickAction<Style, Content>(style: Style, isActive: Binding<Bool>, @ViewBuilder content: () -> Content) -> some View where Style : AccessibilityQuickActionStyle, Content : View
-
-}
-
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension View {
 
@@ -60595,6 +60567,23 @@ extension View {
 
 }
 
+@available(iOS 13.0, macOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension View {
+
+    /// Hides the navigation bar back button for the view.
+    ///
+    /// Use `navigationBarBackButtonHidden(_:)` to hide the back button for this
+    /// view.
+    ///
+    /// This modifier only takes effect when this view is inside of and visible
+    /// within a ``NavigationView``.
+    ///
+    /// - Parameter hidesBackButton: A Boolean value that indicates whether to
+    ///   hide the back button. The default value is `true`.
+    public func navigationBarBackButtonHidden(_ hidesBackButton: Bool = true) -> some View
+
+}
+
 @available(iOS, unavailable)
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(_:)` instead.")
 @available(tvOS, unavailable)
@@ -60612,17 +60601,21 @@ extension View {
     /// Presents an alert when a given condition is true, using a localized
     /// string key for the title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert("An error occurred.", isPresented: $didFail) {
+    ///                 .alert(
+    ///                     "Login failed.",
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 }
     ///         }
@@ -60661,18 +60654,22 @@ extension View {
     /// Presents an alert when a given condition is true, using a string
     /// variable as a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
-    ///         var title: String
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert(title, isPresented: $didFail) {
+    ///                 .alert(
+    ///                     alertTitle,
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 }
     ///         }
@@ -60705,19 +60702,22 @@ extension View {
     /// Presents an alert when a given condition is true, using a text view for
     /// the title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
     ///                 .alert(
-    ///                     Text("An error occurred."), isPresented: $didFail
+    ///                     Text(alertTitle),
+    ///                     isPresented: $didFail
     ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 }
     ///         }
@@ -60754,20 +60754,24 @@ extension View {
     /// Presents an alert with a message when a given condition is true, using
     /// a localized string key for a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert("An error occurred.", isPresented: $didFail) {
+    ///                 .alert(
+    ///                     "Login failed.",
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 } message: {
-    ///                     Text("Please ensure your credentials are correct.")
+    ///                     Text("Please check your credentials and try again.")
     ///                 }
     ///         }
     ///     }
@@ -60808,21 +60812,25 @@ extension View {
     /// Presents an alert with a message when a given condition is true using
     /// a string variable as a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
-    ///         var title: String
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert(title, isPresented: $didFail) {
+    ///                 .alert(
+    ///                     alertTitle,
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 } message: {
-    ///                     Text("Please ensure your credentials are correct.")
+    ///                     Text("Please check your credentials and try again.")
     ///                 }
     ///         }
     ///     }
@@ -60857,22 +60865,25 @@ extension View {
     /// Presents an alert with a message when a given condition is true using
     /// a text view as a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
     ///                 .alert(
-    ///                     Text("An error occurred."), isPresented: $didFail
+    ///                     Text(alertTitle),
+    ///                     isPresented: $didFail
     ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 } message: {
-    ///                     Text("Please ensure your credentials are correct.")
+    ///                    Text("Please check your credentials and try again.")
     ///                 }
     ///         }
     ///     }
@@ -60923,27 +60934,29 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 "Saving Failed.", isPresented: $didError,
+    ///                 "Save failed.",
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
     ///             }
     ///         }
@@ -60999,27 +61012,30 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         var title: String
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 title, isPresented: $didError, presenting: details
-    ///             ) { detail in
+    ///                 alertTitle,
+    ///                 isPresented: $didError,
+    ///                 presenting: details
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
     ///             }
     ///         }
@@ -61069,28 +61085,30 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         var title: String
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
-    ///         var body: some View {
-    ///             Button("Save File") {
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
+    ///             var body: some View {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 Text("Saving Failed."), isPresented: $didError,
+    ///                 Text(alertTitle),
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
     ///             }
     ///         }
@@ -61144,30 +61162,32 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 "Saving Failed.", isPresented: $didError,
+    ///                 "Save failed.",
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
-    ///             } message: { detail in
-    ///                 Text(detail.error)
+    ///             } message: { details in
+    ///                 Text(details.error)
     ///             }
     ///         }
     ///     }
@@ -61226,30 +61246,33 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         var title: String
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 title, isPresented: $didError, presenting: details
-    ///             ) { detail in
+    ///                 alertTitle,
+    ///                 isPresented: $didError,
+    ///                 presenting: details
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
-    ///             } message: { detail in
-    ///                 Text(detail.error)
+    ///             } message: { details in
+    ///                 Text(details.error)
     ///             }
     ///         }
     ///     }
@@ -61302,30 +61325,33 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 Text("Saving Failed."), isPresented: $didError,
+    ///                 Text(alertTitle),
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
-    ///             } message: { detail in
-    ///                 Text(detail.error)
+    ///             } message: { details in
+    ///                 Text(details.error)
     ///             }
     ///         }
     ///     }
@@ -61369,17 +61395,18 @@ extension View {
 
     /// Presents an alert when an error is present.
     ///
-    /// In the example below, a button conditionally presents an alert depending
+    /// In the example below, a form conditionally presents an alert depending
     /// upon the value of an error. When the error value isn't `nil`, the system
     /// presents an alert with an "OK" action.
     ///
     /// The title of the alert is inferred from the error's `errorDescription`.
     ///
-    ///     struct TicketPurchaseView: View {
-    ///         @Binding var error: TicketPurchaseError?
-    ///         @State var showAlert = false
+    ///     struct TicketPurchase: View {
+    ///         @State private var error: TicketPurchaseError? = nil
+    ///         @State private var showAlert = false
+    ///
     ///         var body: some View {
-    ///             TicketForm(error: $error)
+    ///             TicketForm(showAlert: $showAlert, error: $error)
     ///                 .alert(isPresented: $showAlert, error: error) {
     ///                     Button("OK") {
     ///                         // Handle acknowledgement.
@@ -61422,25 +61449,24 @@ extension View {
 
     /// Presents an alert with a message when an error is present.
     ///
-    /// In the example below, a button conditionally presents an alert depending
+    /// In the example below, a form conditionally presents an alert depending
     /// upon the value of an error. When the error value isn't `nil`, the system
     /// presents an alert with an "OK" action.
     ///
     /// The title of the alert is inferred from the error's `errorDescription`.
     ///
-    ///     struct TicketPurchaseView: View {
-    ///         @Binding var error: TicketPurchaseError?
-    ///         @State var showAlert = false
+    ///     struct TicketPurchase: View {
+    ///         @State private var error: TicketPurchaseError? = nil
+    ///         @State private var showAlert = false
+    ///
     ///         var body: some View {
-    ///             TicketForm(error: $error)
-    ///                 .alert(isPresented: $showAlert, error: error) {
+    ///             TicketForm(showAlert: $showAlert, error: $error)
+    ///                 .alert(isPresented: $showAlert, error: error) { _ in
     ///                     Button("OK") {
     ///                         // Handle acknowledgement.
     ///                     }
     ///                 } message: { error in
-    ///                     // Here, recommendation is a property of the
-    ///                     // TicketPurchaseError type.
-    ///                     Text(error.recommendation)
+    ///                     Text(error.recoverySuggestion ?? "Try again later.")
     ///                 }
     ///         }
     ///     }
@@ -61688,7 +61714,7 @@ extension View {
     ///     elapse before the gesture succeeds.
     ///     - maximumDistance: The maximum distance that the fingers or cursor
     ///     performing the long press can move before the gesture fails.
-    ///     - action: The action to perform when a long press is recognizes
+    ///     - action: The action to perform when a long press is recognized.
     ///     - onPressingChanged:  A closure to run when the pressing state of the
     ///     gesture changes, passing the current state as a parameter.
     @available(tvOS, unavailable)
@@ -61714,16 +61740,27 @@ extension View {
 
     /// Sets the specified style to render backgrounds within the view.
     ///
-    /// The following examples sets the ``ShapeStyle/background`` style
-    /// to draw symbol backgrounds when enabled:
+    /// The following example uses this modifier to set the
+    /// ``EnvironmentValues/backgroundStyle`` environment value to a
+    /// ``ShapeStyle/blue`` color that includes a subtle ``Color/gradient``.
+    /// SwiftUI fills the ``Circle`` shape that acts as a background element
+    /// with this style:
     ///
     ///     Image(systemName: "swift")
-    ///         .backgroundStyle(.blue)
-    ///         .symbolVariant(.background)
+    ///         .padding()
+    ///         .background(in: Circle())
+    ///         .backgroundStyle(.blue.gradient)
     ///
-    /// To restore the default background style, set
-    /// the ``EnvironmentValues/backgroundStyle`` environment value to
-    /// `nil` using the ``View/environment(_:_:)`` modifer.
+    /// ![An image of the Swift logo inside a circle that's blue with a slight
+    /// linear gradient. The blue color is slightly lighter at the top of the
+    /// circle and slightly darker at the bottom.](View-backgroundStyle-1-iOS)
+    ///
+    /// To restore the default background style, set the
+    /// ``EnvironmentValues/backgroundStyle`` environment value to
+    /// `nil` using the ``View/environment(_:_:)`` modifer:
+    ///
+    ///     .environment(\.backgroundStyle, nil)
+    ///
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     @inlinable public func backgroundStyle<S>(_ style: S) -> some View where S : ShapeStyle
 
@@ -66123,6 +66160,25 @@ public protocol WidgetBundle {
     /// through unmodified.
     public static func buildBlock<Content>(_ content: Content) -> some Widget where Content : Widget
 
+}
+
+@available(iOS 14.0, macOS 11.0, watchOS 9.0, *)
+@available(tvOS, unavailable)
+extension WidgetBundleBuilder {
+
+    /// Provides support for "if" statements in multi-statement closures,
+    /// producing an optional widget that is visible only when the condition
+    /// evaluates to `true`.
+    ///
+    /// "if" statement in a ``WidgetBundleBuilder`` are limited to only
+    /// `#available()` clauses.
+    public static func buildOptional(_ widget: (Widget & _LimitedAvailabilityWidgetMarker)?) -> some Widget
+
+
+    /// Provides support for "if" statements with `#available()` clauses in
+    /// multi-statement closures, producing conditional content for the "then"
+    /// branch, i.e. the conditionally-available branch.
+    public static func buildLimitedAvailability(_ widget: some Widget) -> Widget & _LimitedAvailabilityWidgetMarker
 }
 
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, *)
