@@ -12001,6 +12001,44 @@ extension EnvironmentValues {
     public var isFocused: Bool { get }
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+extension EnvironmentValues {
+
+    /// A Boolean value that indicates whether the display or environment currently requires
+    /// reduced luminance.
+    ///
+    /// When you detect this condition, lower the overall brightness of your view.
+    /// For example, you can change large, filled shapes to be stroked, and choose
+    /// less bright colors:
+    ///
+    ///     @Environment(\.isLuminanceReduced) var isLuminanceReduced
+    ///
+    ///     var body: some View {
+    ///         if isLuminanceReduced {
+    ///             Circle()
+    ///                 .stroke(Color.gray, lineWidth: 10)
+    ///         } else {
+    ///             Circle()
+    ///                 .fill(Color.white)
+    ///         }
+    ///     }
+    ///
+    /// In addition to the changes that you make, the system could also
+    /// dim the display to achieve a suitable brightness. By reacting to
+    /// `isLuminanceReduced`, you can preserve contrast and readability
+    /// while helping to satisfy the reduced brightness requirement.
+    ///
+    /// > Note: On watchOS, the system typically sets this value to `true` when the user
+    /// lowers their wrist, but the display remains on. Starting in watchOS 8, the system keeps your
+    /// view visible on wrist down by default. If you want the system to blur the screen
+    /// instead, as it did in earlier versions of watchOS, set the value for the
+    /// <doc://com.apple.documentation/documentation/BundleResources/Information_Property_List/WKSupportsAlwaysOnDisplay>
+    /// key in your app's
+    /// <doc://com.apple.documentation/documentation/BundleResources/Information_Property_List>
+    /// file to `false`.
+    public var isLuminanceReduced: Bool
+}
+
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
@@ -45132,6 +45170,21 @@ extension TimelineView : View where Content : View {
     ///     prompted the update, as well as a ``Context/Cadence-swift.enum``
     ///     value that the view can use to customize its appearance.
     public init(_ schedule: Schedule, @ViewBuilder content: @escaping (TimelineView<Schedule, Content>.Context) -> Content)
+}
+
+@available(iOS 16.0, watchOS 8.0, *)
+@available(macOS, unavailable)
+@available(tvOS, unavailable)
+extension TimelineView.Context {
+
+    /// Resets any pre-rendered views the system has from the timeline.
+    ///
+    /// When entering Always On Display, the system might pre-render frames. If the
+    /// content of these frames must change in a way that isn't reflected by
+    /// the schedule or the timeline view's current bindings --- for example, because
+    /// the user changes the title of a future calendar event --- call this method to
+    /// request that the frames be regenerated.
+    public func invalidateTimelineContent()
 }
 
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
