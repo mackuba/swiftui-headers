@@ -135,8 +135,10 @@ public enum AccessibilityAdjustmentDirection {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -149,6 +151,7 @@ public enum AccessibilityAdjustmentDirection {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -180,8 +183,10 @@ public struct AccessibilityChildBehavior : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -204,6 +209,7 @@ public struct AccessibilityChildBehavior : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -609,8 +615,10 @@ extension AccessibilityLabeledPairRole : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -623,6 +631,7 @@ extension AccessibilityLabeledPairRole : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -673,7 +682,7 @@ extension AccessibilityQuickActionStyle where Self == AccessibilityQuickActionPr
     /// The following example shows how to add an ``View/accessibilityQuickAction(style:content:)``
     /// to pause and resume a workout.
     ///
-    ///     @State var isPaused = false
+    ///     @State private var isPaused = false
     ///
     ///     var body: some View {
     ///         WorkoutView(isPaused: $isPaused)
@@ -701,7 +710,7 @@ extension AccessibilityQuickActionStyle where Self == AccessibilityQuickActionOu
     /// The following example shows how to add an ``View/accessibilityQuickAction(style:content:)``
     /// to play and pause music.
     ///
-    ///     @State var isPlaying = false
+    ///     @State private var isPlaying = false
     ///
     ///     var body: some View {
     ///         PlayButton(isPlaying: $isPlaying)
@@ -732,6 +741,9 @@ public protocol AccessibilityRotorContent {
 /// Result builder you use to generate rotor entry content.
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @resultBuilder public struct AccessibilityRotorContentBuilder {
+
+    /// Builds an expression within the builder.
+    public static func buildExpression<Content>(_ content: Content) -> Content where Content : AccessibilityRotorContent
 
     public static func buildBlock<Content>(_ content: Content) -> some AccessibilityRotorContent where Content : AccessibilityRotorContent
 
@@ -2591,8 +2603,10 @@ extension Anchor : Hashable where Value : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -2605,6 +2619,7 @@ extension Anchor : Hashable where Value : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -2699,8 +2714,10 @@ extension Angle : Hashable, Comparable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -2723,6 +2740,7 @@ extension Angle : Hashable, Comparable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -3189,8 +3207,10 @@ public struct AnimationTimelineSchedule : TimelineSchedule {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -3213,6 +3233,7 @@ public struct AnimationTimelineSchedule : TimelineSchedule {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -4476,7 +4497,7 @@ public enum AsyncImagePhase {
     public var image: Image? { get }
 
     /// The error that occurred when attempting to load an image, if any.
-    public var error: Error? { get }
+    public var error: (Error)? { get }
 }
 
 /// The default form style.
@@ -5242,8 +5263,10 @@ public enum BlendMode {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -5256,6 +5279,7 @@ public enum BlendMode {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -6339,6 +6363,7 @@ public struct CircularProgressViewStyle : ProgressViewStyle {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -6485,8 +6510,10 @@ extension Color {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -6499,6 +6526,7 @@ extension Color {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -6902,8 +6930,10 @@ public enum ColorRenderingMode {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -6916,6 +6946,7 @@ public enum ColorRenderingMode {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -6972,8 +7003,10 @@ public enum ColorScheme : CaseIterable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -6992,6 +7025,7 @@ public enum ColorScheme : CaseIterable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -7053,8 +7087,10 @@ public enum ColorSchemeContrast : CaseIterable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -7073,6 +7109,7 @@ public enum ColorSchemeContrast : CaseIterable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -7202,8 +7239,10 @@ extension ContainerRelativeShape : Sendable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -7222,6 +7261,7 @@ extension ContainerRelativeShape : Sendable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -7338,8 +7378,10 @@ public enum ContentSizeCategory : Hashable, CaseIterable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -7358,6 +7400,7 @@ public enum ContentSizeCategory : Hashable, CaseIterable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -7535,8 +7578,10 @@ public enum ControlSize : CaseIterable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -7552,6 +7597,7 @@ public enum ControlSize : CaseIterable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -7594,8 +7640,10 @@ extension CoordinateSpace : Equatable, Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -7618,6 +7666,7 @@ extension CoordinateSpace : Equatable, Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -8119,8 +8168,10 @@ public enum DigitalCrownRotationalSensitivity {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -8133,6 +8184,7 @@ public enum DigitalCrownRotationalSensitivity {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -8158,7 +8210,14 @@ extension DigitalCrownRotationalSensitivity : Hashable {
 /// it defines a ``DismissAction/callAsFunction()``
 /// method that Swift calls when you call the instance.
 ///
-/// For example, you can create a button that calls the ``DismissAction``:
+/// You can use this action to:
+///  * Dismiss a modal presentation, like a sheet or a popover.
+///  * Pop the current view from a ``NavigationStack``.
+///  * Close a window that you create with ``WindowGroup`` or ``Window``.
+///
+/// The specific behavior of the action depends on where you call it from.
+/// For example, you can create a button that calls the ``DismissAction``
+/// inside a view that acts as a sheet:
 ///
 ///     private struct SheetContents: View {
 ///         @Environment(\.dismiss) private var dismiss
@@ -8170,7 +8229,7 @@ extension DigitalCrownRotationalSensitivity : Hashable {
 ///         }
 ///     }
 ///
-/// If you present the `SheetContents` view in a sheet, the user can dismiss
+/// When you present the `SheetContents` view, someone can dismiss
 /// the sheet by tapping or clicking the sheet's button:
 ///
 ///     private struct DetailView: View {
@@ -8210,9 +8269,9 @@ extension DigitalCrownRotationalSensitivity : Hashable {
 ///
 /// If you do this, the sheet fails to dismiss because the action applies
 /// to the environment where you declared it, which is that of the detail
-/// view, rather than the sheet. In fact, if you've presented the detail
-/// view in a ``NavigationView``, the dismissal pops the detail view
-/// from the navigation stack.
+/// view, rather than the sheet. In fact, in macOS and iPadOS, if the
+/// `DetailView` is the root view of a window, the dismiss action closes
+/// the window instead.
 ///
 /// The dismiss action has no effect on a view that isn't currently
 /// presented. If you need to query whether SwiftUI is currently presenting
@@ -8266,23 +8325,24 @@ public struct DismissAction {
 /// matching item from a collection:
 ///
 ///     struct ContentView: View {
-///         @State private var text = ""
+///         @State private var searchText = ""
 ///
 ///         var body: some View {
-///             NavigationView {
-///                 SearchResults(searchText: text)
-///                     .searchable(text: $text)
+///             NavigationStack {
+///                 SearchedView(searchText: searchText)
+///                     .searchable(text: $searchText)
 ///             }
 ///         }
 ///     }
 ///
-///     private struct SearchResults: View {
-///         let searchText: String
+///     struct SearchedView: View {
+///         var searchText: String
 ///
 ///         let items = ["a", "b", "c"]
 ///         var filteredItems: [String] { items.filter { $0 == searchText.lowercased() } }
 ///
 ///         @State private var isPresented = false
+///         @Environment(\.dismissSearch) private var dismissSearch
 ///
 ///         var body: some View {
 ///             if let item = filteredItems.first {
@@ -8290,8 +8350,8 @@ public struct DismissAction {
 ///                     isPresented = true
 ///                 }
 ///                 .sheet(isPresented: $isPresented) {
-///                     NavigationView {
-///                         DetailView(item: item)
+///                     NavigationStack {
+///                         DetailView(item: item, dismissSearch: dismissSearch)
 ///                     }
 ///                 }
 ///             }
@@ -8304,10 +8364,10 @@ public struct DismissAction {
 /// an Add button for adding the item to a stored list of items:
 ///
 ///     private struct DetailView: View {
-///         let item: String
+///         var item: String
+///         var dismissSearch: DismissSearchAction
 ///
 ///         @Environment(\.dismiss) private var dismiss
-///         @Environment(\.dismissSearch) private var dismissSearch
 ///
 ///         var body: some View {
 ///             Text("Information about \(item).")
@@ -8322,14 +8382,20 @@ public struct DismissAction {
 ///         }
 ///     }
 ///
-/// The user can dismiss the sheet by dragging it down, effectively
+/// People can dismiss the sheet by dragging it down, effectively
 /// canceling the operation, leaving the in-progress search interaction
-/// intact. Alternatively, the user can tap the Add button to store the
-/// item. Because the user is likely to be done with both the detail view
-/// and the search interaction at this point, the button's closure also
-/// uses the ``EnvironmentValues/dismiss`` property to dismiss the sheet,
-/// and the ``EnvironmentValues/dismissSearch`` property to reset the
-/// search field.
+/// intact. Alternatively, people can tap the Add button to store the item.
+/// Because the person using your app is likely to be done with both the
+/// detail view and the search interaction at this point, the button's
+/// closure also uses the ``EnvironmentValues/dismiss`` property to dismiss
+/// the sheet, and the ``EnvironmentValues/dismissSearch`` property to
+/// reset the search field.
+///
+/// > Important: Access the action from inside the searched view, as the
+///   example above demonstrates, rather than from the searched view’s
+///   parent, or another hierarchy, like that of a sheet. SwiftUI sets the
+///   value in the environment of the view that you apply the searchable
+///   modifier to, and doesn’t propagate the value up the view hierarchy.
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct DismissSearchAction {
 
@@ -8339,7 +8405,7 @@ public struct DismissSearchAction {
     /// call the ``DismissSearchAction`` structure that you get from the
     /// ``Environment``:
     ///
-    ///     private struct SearchedView: View {
+    ///     struct SearchedView: View {
     ///         @Environment(\.dismissSearch) private var dismissSearch
     ///
     ///         var body: some View {
@@ -8381,7 +8447,7 @@ public struct Divider : View {
 /// performs the drag gesture:
 ///
 ///     struct DragGestureView: View {
-///         @State var isDragging = false
+///         @State private var isDragging = false
 ///
 ///         var drag: some Gesture {
 ///             DragGesture()
@@ -8551,8 +8617,10 @@ public enum DynamicTypeSize : Hashable, Comparable, CaseIterable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -8583,6 +8651,7 @@ public enum DynamicTypeSize : Hashable, Comparable, CaseIterable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -9753,19 +9822,36 @@ extension EnvironmentValues {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension EnvironmentValues {
 
-    /// A Boolean that indicates whether the current platform supports opening
-    /// multiple windows.
+    /// A Boolean value that indicates whether the current platform supports
+    /// opening multiple windows.
     ///
-    /// Use the ``EnvironmentValues/openWindow`` action to open windows.
+    /// Read this property from the environment to determine if your app can
+    /// use the ``EnvironmentValues/openWindow`` action to open new windows:
     ///
-    /// On macOS, this property will be `true` for any app using the SwiftUI
-    /// app lLifecycle.
+    ///     struct NewMailViewerButton: View {
+    ///         @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+    ///         @Environment(\.openWindow) private var openWindow
     ///
-    /// On iPadOS, this property will be `true` for any app that uses the
-    /// SwiftUI app lifecycle, if it has the `Info.plist` key
+    ///         var body: some View {
+    ///             Button("Open New Window") {
+    ///                 openWindow(id: "mail-viewer")
+    ///             }
+    ///             .disabled(!supportsMultipleWindows)
+    ///         }
+    ///     }
+    ///
+    /// The reported value depends on both the platform and how you configure
+    /// your app:
+    ///
+    /// * In macOS, this property returns `true` for any app that uses the
+    ///   SwiftUI app lifecycle.
+    /// * In iPadOS, this property returns `true` for any app that uses the
+    ///   SwiftUI app lifecycle and has the Information Property List key
     /// <doc://com.apple.documentation/documentation/bundleresources/information_property_list/uiapplicationscenemanifest/uiapplicationsupportsmultiplescenes> set to `true`.
+    /// * For all other platforms and configurations, the value returns `false`.
     ///
-    /// On all other platforms, the value returns `false`.
+    /// If the value is false and you try to open a window, SwiftUI
+    /// ignores the action and logs a runtime error.
     public var supportsMultipleWindows: Bool { get }
 }
 
@@ -9780,7 +9866,14 @@ extension EnvironmentValues {
     /// it defines a ``DismissAction/callAsFunction()``
     /// method that Swift calls when you call the instance.
     ///
-    /// For example, you can create a button that calls the ``DismissAction``:
+    /// You can use this action to:
+    ///  * Dismiss a modal presentation, like a sheet or a popover.
+    ///  * Pop the current view from a ``NavigationStack``.
+    ///  * Close a window that you create with ``WindowGroup`` or ``Window``.
+    ///
+    /// The specific behavior of the action depends on where you call it from.
+    /// For example, you can create a button that calls the ``DismissAction``
+    /// inside a view that acts as a sheet:
     ///
     ///     private struct SheetContents: View {
     ///         @Environment(\.dismiss) private var dismiss
@@ -9792,7 +9885,7 @@ extension EnvironmentValues {
     ///         }
     ///     }
     ///
-    /// If you present the `SheetContents` view in a sheet, the user can dismiss
+    /// When you present the `SheetContents` view, someone can dismiss
     /// the sheet by tapping or clicking the sheet's button:
     ///
     ///     private struct DetailView: View {
@@ -9832,9 +9925,9 @@ extension EnvironmentValues {
     ///
     /// If you do this, the sheet fails to dismiss because the action applies
     /// to the environment where you declared it, which is that of the detail
-    /// view, rather than the sheet. In fact, if you've presented the detail
-    /// view in a ``NavigationView``, the dismissal pops the detail view
-    /// the navigation stack.
+    /// view, rather than the sheet. In fact, in macOS and iPadOS, if the
+    /// `DetailView` is the root view of a window, the dismiss action closes
+    /// the window instead.
     ///
     /// The dismiss action has no effect on a view that isn't currently
     /// presented. If you need to query whether SwiftUI is currently presenting
@@ -9873,13 +9966,26 @@ extension EnvironmentValues {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension EnvironmentValues {
 
-    /// A value that indicates how text instance aligns its lines when the
-    /// content wraps or contains newlines.
+    /// An environment value that indicates how a text view aligns its lines
+    /// when the content wraps or contains newlines.
     ///
-    /// Use alignment parameters on a parent view to align ``Text`` with respect
-    /// to its parent. Because the horizontal bounds of ``TextField`` never
-    /// exceed its graphical extent, this value has little to no effect on
-    /// single-line text.
+    /// Set this value for a view hierarchy by applying the
+    /// ``View/multilineTextAlignment(_:)`` view modifier. Views in the
+    /// hierarchy that display text, like ``Text`` or ``TextEditor``, read the
+    /// value from the environment and adjust their text alignment accordingly.
+    ///
+    /// This value has no effect on a ``Text`` view that contains only one
+    /// line of text, because a text view has a width that exactly matches the
+    /// width of its widest line. If you want to align an entire text view
+    /// rather than its contents, set the aligment of its container, like a
+    /// ``VStack`` or a frame that you create with the
+    /// ``View/frame(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:alignment:)``
+    /// modifier.
+    ///
+    /// > Note: You can use this value to control the alignment of a ``Text``
+    ///   view that you create with the ``Text/init(_:style:)`` initializer
+    ///   to display localized dates and times, including when the view uses
+    ///   only a single line, but only when that view appears in a widget.
     public var multilineTextAlignment: TextAlignment
 
     /// A value that indicates how the layout truncates the last line of text to
@@ -10317,6 +10423,23 @@ extension EnvironmentValues {
     public var scrollDismissesKeyboardMode: ScrollDismissesKeyboardMode
 }
 
+extension EnvironmentValues {
+
+    /// The scroll bounce mode for the vertical axis of scrollable views.
+    ///
+    /// Use the ``View/scrollBounceBehavior(_:axes:)`` view modifier to set this
+    /// value in the ``Environment``.
+    @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+    public var verticalScrollBounceBehavior: ScrollBounceBehavior
+
+    /// The scroll bounce mode for the horizontal axis of scrollable views.
+    ///
+    /// Use the ``View/scrollBounceBehavior(_:axes:)`` view modifier to set this
+    /// value in the ``Environment``.
+    @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+    public var horizontalScrollBounceBehavior: ScrollBounceBehavior
+}
+
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension EnvironmentValues {
 
@@ -10332,12 +10455,12 @@ extension EnvironmentValues {
     /// ``View/searchable(text:placement:prompt:)-18a8f``:
     ///
     ///     struct SearchingExample: View {
-    ///         @State private var text = ""
+    ///         @State private var searchText = ""
     ///
     ///         var body: some View {
-    ///             NavigationView {
+    ///             NavigationStack {
     ///                 SearchedView()
-    ///                     .searchable(text: $text)
+    ///                     .searchable(text: $searchText)
     ///             }
     ///         }
     ///     }
@@ -10355,6 +10478,12 @@ extension EnvironmentValues {
     /// search operation, the property becomes `false`. To programmatically
     /// set the value to `false` and dismiss the search operation, use
     /// ``EnvironmentValues/dismissSearch``.
+    ///
+    /// > Important: Access the value from inside the searched view, as the
+    ///   example above demonstrates, rather than from the searched view’s
+    ///   parent. SwiftUI sets the value in the environment of the view that
+    ///   you apply the searchable modifier to, and doesn’t propagate the
+    ///   value up the view hierarchy.
     public var isSearching: Bool { get }
 
     /// An action that ends the current search interaction.
@@ -10380,23 +10509,24 @@ extension EnvironmentValues {
     /// matching item from a collection:
     ///
     ///     struct ContentView: View {
-    ///         @State private var text = ""
+    ///         @State private var searchText = ""
     ///
     ///         var body: some View {
-    ///             NavigationView {
-    ///                 SearchResults(searchText: text)
-    ///                     .searchable(text: $text)
+    ///             NavigationStack {
+    ///                 SearchedView(searchText: searchText)
+    ///                     .searchable(text: $searchText)
     ///             }
     ///         }
     ///     }
     ///
-    ///     private struct SearchResults: View {
+    ///     private struct SearchedView: View {
     ///         let searchText: String
     ///
     ///         let items = ["a", "b", "c"]
     ///         var filteredItems: [String] { items.filter { $0 == searchText.lowercased() } }
     ///
     ///         @State private var isPresented = false
+    ///         @Environment(\.dismissSearch) private var dismissSearch
     ///
     ///         var body: some View {
     ///             if let item = filteredItems.first {
@@ -10404,8 +10534,8 @@ extension EnvironmentValues {
     ///                     isPresented = true
     ///                 }
     ///                 .sheet(isPresented: $isPresented) {
-    ///                     NavigationView {
-    ///                         DetailView(item: item)
+    ///                     NavigationStack {
+    ///                         DetailView(item: item, dismissSearch: dismissSearch)
     ///                     }
     ///                 }
     ///             }
@@ -10418,10 +10548,10 @@ extension EnvironmentValues {
     /// an Add button for adding the item to a stored list of items:
     ///
     ///     private struct DetailView: View {
-    ///         let item: String
+    ///         var item: String
+    ///         var dismissSearch: DismissSearchAction
     ///
     ///         @Environment(\.dismiss) private var dismiss
-    ///         @Environment(\.dismissSearch) private var dismissSearch
     ///
     ///         var body: some View {
     ///             Text("Information about \(item).")
@@ -10436,13 +10566,20 @@ extension EnvironmentValues {
     ///         }
     ///     }
     ///
-    /// The user can dismiss the sheet by dragging it down, effectively
+    /// People can dismiss the sheet by dragging it down, effectively
     /// canceling the operation, leaving the in-progress search interaction
-    /// intact. Alternatively, the user can tap the Add button to store the
-    /// item. Because the user is likely to be done with both the detail view
-    /// and the search interaction at this point, the button's closure also
-    /// uses the ``EnvironmentValues/dismiss`` property to dismiss the sheet,
-    /// and the `dismissSearch` property to reset the search field.
+    /// intact. Alternatively, people can tap the Add button to store the item.
+    /// Because the person using your app is likely to be done with both the
+    /// detail view and the search interaction at this point, the button's
+    /// closure also uses the ``EnvironmentValues/dismiss`` property to dismiss
+    /// the sheet, and the ``EnvironmentValues/dismissSearch`` property to
+    /// reset the search field.
+    ///
+    /// > Important: Access the action from inside the searched view, as the
+    ///   example above demonstrates, rather than from the searched view’s
+    ///   parent, or another hierarchy, like that of a sheet. SwiftUI sets the
+    ///   value in the environment of the view that you apply the searchable
+    ///   modifier to, and doesn’t propagate the value up the view hierarchy.
     public var dismissSearch: DismissSearchAction { get }
 
     /// The current placement of search suggestions.
@@ -11846,8 +11983,10 @@ extension FocusedValues : Equatable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -11870,6 +12009,7 @@ extension FocusedValues : Equatable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -11961,8 +12101,10 @@ extension Font {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -11975,6 +12117,7 @@ extension Font {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -12018,27 +12161,20 @@ extension Font {
     @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
     public static let caption2: Font
 
-    /// Use this function to create a system font by specifying the text style,
-    /// a type design, and weight together. The following styles the text with
-    /// a system font in ``Font/TextStyle/body`` text style and
-    /// ``Font/Weight/semibold`` weight:
+    /// Gets a system font that uses the specified style, design, and weight.
     ///
-    ///     Text("Hello").font(.system(.body, weight: .semibold))
-    ///
-    /// While the following styles the text as ``Font/TextStyle/caption`` text
-    /// style with ``Font/Weight/bold`` weight, and applies a `serif`
-    /// ``Font/Design`` to the system font:
+    /// Use this method to create a system font that has the specified
+    /// properties. The following example creates a system font with the
+    /// ``TextStyle/body`` text style, a ``Design/serif`` design, and
+    /// a ``Weight/bold`` weight, and applies the font to a ``Text`` view
+    /// using the ``View/font(_:)`` view modifier:
     ///
     ///     Text("Hello").font(.system(.body, design: .serif, weight: .bold))
     ///
-    /// Both `design` and `weight` can be optional. When you do not provide a
-    /// `design` or `weigght`, the system can pick one based on the current
-    /// context, which may not be ``Font/Weight/regular`` or
-    /// ``Font/Design/default`` in certain context. The following example styles
-    /// the text as ``Font/TextStyle/body`` system font in ``Font/Weight/bold``,
-    /// while its design can depend on the current context:
-    ///
-    ///     Text("Hello").font(.system(.body, weight: .bold))
+    /// The `design` and `weight` parameters are both optional. If you omit
+    /// either, the system uses a default value for that parameter. The
+    /// default values are typically ``Design/default`` and ``Weight/regular``,
+    /// respectively, but might vary depending on the context.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public static func system(_ style: Font.TextStyle, design: Font.Design? = nil, weight: Font.Weight? = nil) -> Font
 
@@ -12112,8 +12248,10 @@ extension Font {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -12129,6 +12267,7 @@ extension Font {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -12299,8 +12438,10 @@ extension Font {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -12323,6 +12464,7 @@ extension Font {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -12350,8 +12492,10 @@ extension Font {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -12374,6 +12518,7 @@ extension Font {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -12421,8 +12566,10 @@ extension Font {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -12435,6 +12582,7 @@ extension Font {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -12654,6 +12802,9 @@ extension ForEach : AccessibilityRotorContent where Content : AccessibilityRotor
 
     /// The internal content of this `AccessibilityRotorContent`.
     public var body: Never { get }
+
+    /// The type for the internal content of this `AccessibilityRotorContent`.
+    public typealias Body = Never
 }
 
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -12698,7 +12849,6 @@ extension ForEach where Content : AccessibilityRotorContent {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ForEach : View where Content : View {
 
-    /// The type for the internal content of this `AccessibilityRotorContent`.
     public typealias Body = Never
 }
 
@@ -13700,8 +13850,9 @@ extension Gesture {
     ///     gesture, and the `transaction` is the context of the gesture.
     ///
     /// - Returns: A version of the gesture that updates the provided `state` as
-    ///   the originating gesture's value changes, and that resets the `state`
-    ///   to its initial value when the users cancels or ends the gesture.
+    ///   the originating gesture's value changes and that resets the `state`
+    ///   to its initial value when the user or the system ends or cancels the
+    ///   gesture.
     @inlinable public func updating<State>(_ state: GestureState<State>, body: @escaping (Self.Value, inout State, inout Transaction) -> Void) -> GestureStateGesture<Self, State>
 }
 
@@ -13859,7 +14010,7 @@ extension GestureMask : Sendable {
 /// the gesture by declaring a property as `@GestureState`:
 ///
 ///     struct SimpleLongPressGestureView: View {
-///         @GestureState var isDetectingLongPress = false
+///         @GestureState private var isDetectingLongPress = false
 ///
 ///         var longPress: some Gesture {
 ///             LongPressGesture(minimumDuration: 3)
@@ -14047,8 +14198,10 @@ extension Gradient : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -14061,6 +14214,7 @@ extension Gradient : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -14088,8 +14242,10 @@ extension Gradient {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -14112,6 +14268,7 @@ extension Gradient {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -14142,8 +14299,10 @@ extension Gradient.Stop : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -14156,6 +14315,7 @@ extension Gradient.Stop : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -15580,7 +15740,6 @@ extension Gradient.Stop : Hashable {
     ///     can call ``draw(_:in:)-5opqf`` with a ``Text`` view, and that
     ///     method performs the resolution automatically.
     ///   - rect: The rectangle in the current user space to draw the text in.
-    ///   - shading: The shading to use when coloring the text.
     public func draw(_ text: GraphicsContext.ResolvedText, in rect: CGRect)
 
     /// Draws resolved text into the context, aligning an anchor within the
@@ -17784,8 +17943,10 @@ extension Image {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -17798,6 +17959,7 @@ extension Image {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -17844,8 +18006,10 @@ extension Image {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -17858,6 +18022,7 @@ extension Image {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -17910,8 +18075,10 @@ extension Image {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -17924,6 +18091,7 @@ extension Image {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -18046,8 +18214,10 @@ extension Image {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -18060,6 +18230,7 @@ extension Image {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -19097,7 +19268,7 @@ extension LabelStyleConfiguration.Icon : View {
 /// A label communicates the identity or purpose of the value, which is
 /// important for accessibility. However, you might want to hide the label
 /// in the display, and some controls or contexts may visually hide their label
-/// by default. The ``View/labels(_:)`` modifier allows controlling that
+/// by default. The ``View/labelsHidden()`` modifier allows controlling that
 /// visibility. The following example hides both labels, producing only a
 /// group of the two value views:
 ///
@@ -19110,7 +19281,7 @@ extension LabelStyleConfiguration.Icon : View {
 ///             Text("Option 2").tag(2)
 ///         }
 ///     }
-///     .labels(.hidden)
+///     .labelsHidden()
 ///
 /// ### Styling labeled content
 ///
@@ -20108,8 +20279,10 @@ public enum LayoutDirection : Hashable, CaseIterable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -20128,6 +20301,7 @@ public enum LayoutDirection : Hashable, CaseIterable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -20829,8 +21003,10 @@ public enum LegibilityWeight : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -20843,6 +21019,7 @@ public enum LegibilityWeight : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -21980,8 +22157,8 @@ extension LocalizedStringKey.StringInterpolation {
 /// red, and then change it to green when the gesture ends:
 ///
 ///     struct LongPressGestureView: View {
-///         @GestureState var isDetectingLongPress = false
-///         @State var completedLongPress = false
+///         @GestureState private var isDetectingLongPress = false
+///         @State private var completedLongPress = false
 ///
 ///         var longPress: some Gesture {
 ///             LongPressGesture(minimumDuration: 3)
@@ -22193,6 +22370,33 @@ public struct Material {
 extension Material : ShapeStyle {
 }
 
+/// The set of menu dismissal behavior options.
+///
+/// Configure the menu dismissal behavior for a view hierarchy using the
+/// ``View/menuActionDismissBehavior(_:)`` view modifier.
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+public struct MenuActionDismissBehavior : Equatable {
+
+    /// Use the a dismissal behavior that's appropriate for the given context.
+    ///
+    /// In most cases, the default behavior is ``enabled``. There are some
+    /// cases, like ``Stepper``, that use ``disabled`` by default.
+    public static let automatic: MenuActionDismissBehavior
+
+    /// Always dismiss the presented menu after performing an action.
+    public static let enabled: MenuActionDismissBehavior
+
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: MenuActionDismissBehavior, b: MenuActionDismissBehavior) -> Bool
+}
+
 /// The order in which a menu presents its content.
 ///
 /// You can configure the preferred menu order using the
@@ -22232,8 +22436,10 @@ public struct MenuOrder : Equatable, Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -22246,6 +22452,7 @@ public struct MenuOrder : Equatable, Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -22981,21 +23188,6 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
     /// `@Namespace` dynamic property.
     @frozen public struct ID : Hashable {
 
-        /// Hashes the essential components of this value by feeding them into the
-        /// given hasher.
-        ///
-        /// Implement this method to conform to the `Hashable` protocol. The
-        /// components used for hashing must be the same as the components compared
-        /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
-        /// with each of these components.
-        ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
-        ///
-        /// - Parameter hasher: The hasher to use when combining the components
-        ///   of this instance.
-        public func hash(into hasher: inout Hasher)
-
         /// Returns a Boolean value indicating whether two values are equal.
         ///
         /// Equality is the inverse of inequality. For any values `a` and `b`,
@@ -23006,6 +23198,23 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
         ///   - rhs: Another value to compare.
         public static func == (a: Namespace.ID, b: Namespace.ID) -> Bool
 
+        /// Hashes the essential components of this value by feeding them into the
+        /// given hasher.
+        ///
+        /// Implement this method to conform to the `Hashable` protocol. The
+        /// components used for hashing must be the same as the components compared
+        /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
+        /// with each of these components.
+        ///
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
+        ///
+        /// - Parameter hasher: The hasher to use when combining the components
+        ///   of this instance.
+        public func hash(into hasher: inout Hasher)
+
         /// The hash value.
         ///
         /// Hash values are not guaranteed to be equal across different executions of
@@ -23013,6 +23222,7 @@ extension ModifiedContent where Modifier == AccessibilityAttachmentModifier {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -23071,8 +23281,10 @@ public struct NavigationBarItem {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -23085,6 +23297,7 @@ public struct NavigationBarItem {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -24545,16 +24758,58 @@ extension NavigationViewStyle where Self == StackNavigationViewStyle {
 
 /// A property wrapper type that subscribes to an observable object and
 /// invalidates a view whenever the observable object changes.
+///
+/// Add the `@ObservedObject` attribute to a parameter of a SwiftUI ``View``
+/// when the input is an
+/// <doc://com.apple.documentation/documentation/Combine/ObservableObject>
+/// and you want the view to update when the object's published properties
+/// change. You typically do this to pass a ``StateObject`` into a subview.
+///
+/// The following example defines a data model as an observable object,
+/// instantiates the model in a view as a state object, and then passes
+/// the instance to a subview as an observed object:
+///
+///     class DataModel: ObservableObject {
+///         @Published var name = "Some Name"
+///         @Published var isEnabled = false
+///     }
+///
+///     struct MyView: View {
+///         @StateObject private var model = DataModel()
+///
+///         var body: some View {
+///             Text(model.name)
+///             MySubView(model: model)
+///         }
+///     }
+///
+///     struct MySubView: View {
+///         @ObservedObject var model: DataModel
+///
+///         var body: some View {
+///             Toggle("Enabled", isOn: $model.isEnabled)
+///         }
+///     }
+///
+/// When any published property of the observable object changes, SwiftUI
+/// updates any view that depends on the object. Subviews can
+/// also make updates to the model properties, like the ``Toggle`` in the
+/// above example, that propagate to other observers throughout the view
+/// hierarchy.
+///
+/// Don't specify a default or initial value for the observed object. Use the
+/// attribute only for a property that acts as an input for a view, as in the
+/// above example.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @propertyWrapper @frozen public struct ObservedObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
 
-    /// A wrapper of the underlying observable object that can create bindings to
-    /// its properties using dynamic member lookup.
+    /// A wrapper of the underlying observable object that can create bindings
+    /// to its properties.
     @dynamicMemberLookup @frozen public struct Wrapper {
 
-        /// Returns a binding to the resulting value of a given key path.
+        /// Gets a binding to the value of a specified key path.
         ///
-        /// - Parameter keyPath  : A key path to a specific resulting value.
+        /// - Parameter keyPath: A key path to a specific  value.
         ///
         /// - Returns: A new binding.
         public subscript<Subject>(dynamicMember keyPath: ReferenceWritableKeyPath<ObjectType, Subject>) -> Binding<Subject> { get }
@@ -24562,33 +24817,88 @@ extension NavigationViewStyle where Self == StackNavigationViewStyle {
 
     /// Creates an observed object with an initial value.
     ///
+    /// This initializer has the same behavior as the ``init(wrappedValue:)``
+    /// initializer. See that initializer for more information.
+    ///
     /// - Parameter initialValue: An initial value.
     public init(initialValue: ObjectType)
 
     /// Creates an observed object with an initial wrapped value.
     ///
-    /// You don't call this initializer directly. Instead, declare a property
-    /// with the `@ObservedObject` attribute, and provide an initial value.
+    /// Don't call this initializer directly. Instead, declare
+    /// an input to a view with the `@ObservedObject` attribute, and pass a
+    /// value to this input when you instantiate the view. Unlike a
+    /// ``StateObject`` which manages data storage, you use an observed
+    /// object to refer to storage that you manage elsewhere, as in the
+    /// following example:
     ///
-    /// - Parameter wrappedValue: An initial value.
+    ///     class DataModel: ObservableObject {
+    ///         @Published var name = "Some Name"
+    ///         @Published var isEnabled = false
+    ///     }
+    ///
+    ///     struct MyView: View {
+    ///         @StateObject private var model = DataModel()
+    ///
+    ///         var body: some View {
+    ///             Text(model.name)
+    ///             MySubView(model: model)
+    ///         }
+    ///     }
+    ///
+    ///     struct MySubView: View {
+    ///         @ObservedObject var model: DataModel
+    ///
+    ///         var body: some View {
+    ///             Toggle("Enabled", isOn: $model.isEnabled)
+    ///         }
+    ///     }
+    ///
+    /// Explicitly calling the observed object initializer in `MySubView` would
+    /// behave correctly, but would needlessly recreate the same observed object
+    /// instance every time SwiftUI calls the view's initializer to redraw the
+    /// view.
+    ///
+    /// - Parameter wrappedValue: An initial value for the observable object.
     public init(wrappedValue: ObjectType)
 
-    /// The underlying value referenced by the observed object.
+    /// The underlying value that the observed object references.
     ///
-    /// This property provides primary access to the value's data. However, you
-    /// don't access `wrappedValue` directly. Instead, you use the property
-    /// variable created with the `@ObservedObject` attribute.
+    /// The wrapped value property provides primary access to the observed
+    /// object's data. However, you don't typically access it by name. Instead,
+    /// SwiftUI accesses this property for you when you refer to the variable
+    /// that you create with the `@ObservedObject` attribute.
     ///
-    /// When a mutable value changes, the new value is immediately available.
-    /// However, a view displaying the value is updated asynchronously and may
-    /// not show the new value immediately.
+    ///     struct MySubView: View {
+    ///         @ObservedObject var model: DataModel
+    ///
+    ///         var body: some View {
+    ///             Text(model.name) // Reads name from model's wrapped value.
+    ///         }
+    ///     }
+    ///
+    /// When you change a wrapped value, you can access the new value
+    /// immediately. However, SwiftUI updates views that display the value
+    /// asynchronously, so the interface might not update immediately.
     @MainActor public var wrappedValue: ObjectType
 
     /// A projection of the observed object that creates bindings to its
-    /// properties using dynamic member lookup.
+    /// properties.
     ///
-    /// Use the projected value to pass a binding value down a view hierarchy.
-    /// To get the `projectedValue`, prefix the property variable with `$`.
+    /// Use the projected value to get a ``Binding`` to a property of an
+    /// observed object. To access the projected value, prefix the property
+    /// variable with a dollar sign (`$`). For example, you can get a binding
+    /// to a model's `isEnabled` Boolean so that a ``Toggle`` can control its
+    /// value:
+    ///
+    ///     struct MySubView: View {
+    ///         @ObservedObject var model: DataModel
+    ///
+    ///         var body: some View {
+    ///             Toggle("Enabled", isOn: $model.isEnabled)
+    ///         }
+    ///     }
+    ///
     @MainActor public var projectedValue: ObservedObject<ObjectType>.Wrapper { get }
 }
 
@@ -25818,6 +26128,86 @@ public struct PreferredColorSchemeKey : PreferenceKey {
     public static func reduce(value: inout PreferredColorSchemeKey.Value, nextValue: () -> PreferredColorSchemeKey.Value)
 }
 
+/// Strategies for adapting a presentation to a different size class.
+///
+/// Use values of this type with the ``View/presentationCompactAdaptation(_:)``
+/// and ``View/presentationCompactAdaptation(horizontal:vertical:)`` modifiers.
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+public struct PresentationAdaptation {
+
+    /// Use the default presentation adaptation.
+    public static var automatic: PresentationAdaptation { get }
+
+    /// Don't adapt for the size class, if possible.
+    public static var none: PresentationAdaptation { get }
+
+    /// Prefer a popover appearance when adapting for size classes.
+    public static var popover: PresentationAdaptation { get }
+
+    /// Prefer a sheet appearance when adapting for size classes.
+    public static var sheet: PresentationAdaptation { get }
+
+    /// Prefer a full-screen-cover appearance when adapting for size classes.
+    public static var fullScreenCover: PresentationAdaptation { get }
+}
+
+/// The kinds of interaction available to views behind a presentation.
+///
+/// Use values of this type with the
+/// ``View/presentationBackgroundInteraction(_:)`` modifier.
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+public struct PresentationBackgroundInteraction {
+
+    /// The default background interaction for the presentation.
+    public static var automatic: PresentationBackgroundInteraction { get }
+
+    /// People can interact with the view behind a presentation.
+    public static var enabled: PresentationBackgroundInteraction { get }
+
+    /// People can interact with the view behind a presentation up through a
+    /// specified detent.
+    ///
+    /// At detents larger than the one you specify, SwiftUI disables
+    /// interaction.
+    ///
+    /// - Parameter detent: The largest detent at which people can interact with
+    ///   the view behind the presentation.
+    public static func enabled(upThrough detent: PresentationDetent) -> PresentationBackgroundInteraction
+
+    /// People can't interact with the view behind a presentation.
+    public static var disabled: PresentationBackgroundInteraction { get }
+}
+
+/// A behavior that you can use to influence how a presentation responds to
+/// swipe gestures.
+///
+/// Use values of this type with the
+/// ``View/presentationContentInteraction(_:)`` modifier.
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+public struct PresentationContentInteraction : Equatable {
+
+    /// The default swipe behavior for the presentation.
+    public static var automatic: PresentationContentInteraction { get }
+
+    /// A behavior that prioritizes resizing a presentation when swiping, rather
+    /// than scrolling the content of the presentation.
+    public static var resizes: PresentationContentInteraction { get }
+
+    /// A behavior that prioritizes scrolling the content of a presentation when
+    /// swiping, rather than resizing the presentation.
+    public static var scrolls: PresentationContentInteraction { get }
+
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: PresentationContentInteraction, b: PresentationContentInteraction) -> Bool
+}
+
 /// A type that represents a height where a sheet naturally rests.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct PresentationDetent : Hashable {
@@ -25859,8 +26249,10 @@ public struct PresentationDetent : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -25883,6 +26275,7 @@ public struct PresentationDetent : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -26099,8 +26492,10 @@ public enum PreviewPlatform {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -26113,6 +26508,7 @@ public enum PreviewPlatform {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -27102,8 +27498,10 @@ public enum Prominence {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -27116,6 +27514,7 @@ public enum Prominence {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -27668,8 +28067,10 @@ public enum RoundedCornerStyle {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -27682,6 +28083,7 @@ public enum RoundedCornerStyle {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -28023,7 +28425,7 @@ extension Scene {
     /// Adds an action to perform when the given value changes.
     ///
     /// Use this modifier to trigger a side effect when a value changes, like
-    /// the value associated with an ``SwiftUI/Environment`` key or a
+    /// the value associated with an ``SwiftUI/Environment`` value or a
     /// ``SwiftUI/Binding``. For example, you can clear a cache when you notice
     /// that a scene moves to the background:
     ///
@@ -28077,8 +28479,29 @@ extension Scene {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @resultBuilder public struct SceneBuilder {
 
+    /// Builds an expression within the builder.
+    public static func buildExpression<Content>(_ content: Content) -> Content where Content : Scene
+
     /// Passes a single scene written as a child scene through unmodified.
     public static func buildBlock<Content>(_ content: Content) -> Content where Content : Scene
+}
+
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+extension SceneBuilder {
+
+    /// Provides support for "if" statements in multi-statement closures,
+    /// producing an optional scene that is visible only when the condition
+    /// evaluates to `true`.
+    ///
+    /// "if" statements in a ``SceneBuilder`` are limited to only
+    /// `#available()` clauses.
+    public static func buildOptional(_ scene: (Scene & _LimitedAvailabilitySceneMarker)?) -> some Scene
+
+
+    /// Provides support for "if" statements with `#available()` clauses in
+    /// multi-statement closures, producing conditional content for the "then"
+    /// branch, i.e. the conditionally-available branch.
+    public static func buildLimitedAvailability(_ scene: some Scene) -> Scene & _LimitedAvailabilitySceneMarker
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -28306,8 +28729,10 @@ public enum ScenePhase : Comparable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -28332,6 +28757,7 @@ public enum ScenePhase : Comparable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -28560,6 +28986,39 @@ extension SceneStorage {
     public init<R>(_ key: String) where Value == R?, R : RawRepresentable, R.RawValue == Int
 }
 
+/// The ways that a scrollable view can bounce when it reaches the end of its
+/// content.
+///
+/// Use the ``View/scrollBounceBehavior(_:axes:)`` view modifier to set a value
+/// of this type for a scrollable view, like a ``ScrollView`` or a ``List``.
+/// The value configures the bounce behavior when people scroll to the end of
+/// the view's content.
+///
+/// You can configure each scrollable axis to use a different bounce mode.
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+public struct ScrollBounceBehavior {
+
+    /// The automatic behavior.
+    ///
+    /// The scrollable view automatically chooses whether content bounces when
+    /// people scroll to the end of the view's content. By default, scrollable
+    /// views use the ``ScrollBounceBehavior/always`` behavior.
+    public static var automatic: ScrollBounceBehavior { get }
+
+    /// The scrollable view always bounces.
+    ///
+    /// The scrollable view always bounces along the specified axis,
+    /// regardless of the size of the content.
+    public static var always: ScrollBounceBehavior { get }
+
+    /// The scrollable view bounces when its content is large enough to require
+    /// scrolling.
+    ///
+    /// The scrollable view bounces along the specified axis if the size of
+    /// the content exceeeds the size of the scrollable view in that axis.
+    public static var basedOnSize: ScrollBounceBehavior { get }
+}
+
 /// The ways that scrollable content can interact with the software keyboard.
 ///
 /// Use this type in a call to the ``View/scrollDismissesKeyboard(_:)``
@@ -28624,6 +29083,20 @@ public struct ScrollIndicatorVisibility {
     /// horizontal swipe gesture might not be available, depending on
     /// the current input device.
     public static var never: ScrollIndicatorVisibility { get }
+}
+
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+extension ScrollIndicatorVisibility : Equatable {
+
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func == (a: ScrollIndicatorVisibility, b: ScrollIndicatorVisibility) -> Bool
 }
 
 /// A scrollable view.
@@ -28823,8 +29296,7 @@ public struct ScrollViewProxy {
     public typealias Body = some View
 }
 
-/// A structure that defines the placement of a search field in a view
-/// hierarchy.
+/// The placement of a search field in a view hierarchy.
 ///
 /// You can give a preferred placement to any of the searchable modifiers, like
 /// ``View/searchable(text:placement:prompt:)-co5e``:
@@ -28838,54 +29310,78 @@ public struct ScrollViewProxy {
 ///         .searchable(text: $text, placement: .sidebar)
 ///     }
 ///
-/// Depending on the containing view hierachy, the requested placement may
-/// not be able to be fulfilled.
+/// Depending on the containing view hierachy, SwiftUI might not be able to
+/// fulfill your request.
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct SearchFieldPlacement {
 
-    /// The search field is placed automatically depending on the platform.
+    /// SwiftUI places the search field automatically.
     ///
-    /// On iOS, iPadOS, and macOS, the search field is placed in the toolbar.
-    ///
-    /// On tvOS and watchOS, the search field will be placed inline with its
-    /// content.
+    /// Placement of the search field depends on the platform:
+    /// * In iOS, iPadOS, and macOS, the search field appears in the toolbar.
+    /// * In tvOS and watchOS, the search field appears inline with its
+    ///   content.
     public static let automatic: SearchFieldPlacement
 
-    /// The search field is placed in the toolbar.
+    /// The search field appears in the toolbar.
     ///
-    /// On iOS and watchOS, the search field is placed beneath the
-    /// navigation bar and revealed by scrolling.
-    ///
-    /// On iPadOS, the search field is placed in the trailing
-    /// navigation bar.
-    ///
-    /// On macOS, the search field is placed in the trailing toolbar.
+    /// The precise placement depends on the platform:
+    /// * In iOS and watchOS, the search field appears below the
+    ///   navigation bar and is revealed by scrolling.
+    /// * In iPadOS, the search field appears in the trailing
+    ///   navigation bar.
+    /// * In macOS, the search field appears in the trailing toolbar.
     @available(tvOS, unavailable)
     public static let toolbar: SearchFieldPlacement
 
-    /// The search field is placed in an drawer of the navigation bar.
+    /// The search field appears in the navigation bar.
     ///
-    /// The drawer is beneath any navigation bar title, and depending
-    /// on the provided display mode, may collapse into the navigation bar as a
-    /// user scrolls the content.
+    /// The field appears below any navigation bar title and uses the
+    /// ``NavigationBarDrawerDisplayMode/automatic`` display mode to configure
+    /// when to hide the search field. To choose a different display mode,
+    /// use ``navigationBarDrawer(displayMode:)`` instead.
     @available(iOS 15.0, watchOS 8.0, *)
     @available(macOS, unavailable)
     @available(tvOS, unavailable)
     public static let navigationBarDrawer: SearchFieldPlacement
 }
 
-/// A structure that defines ways in which search suggestions may be placed.
+/// The ways that searchable modifiers can show or hide search scopes.
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+public struct SearchScopeActivation {
+
+    /// The automatic activation of the scope bar.
+    ///
+    /// By default, this is ``SearchScopeActivation/onTextEntry``
+    /// in iOS and ``SearchScopeActivation/onSearchPresentation``
+    /// in macOS.
+    public static var automatic: SearchScopeActivation { get }
+
+    /// An activation where the system shows search scopes
+    /// when typing begins in the search field and hides
+    /// search scopes after search cancellation.
+    @available(tvOS, unavailable)
+    public static var onTextEntry: SearchScopeActivation { get }
+
+    /// An activation where the system shows search scopes after
+    /// presenting search and hides search scopes after search
+    /// cancellation.
+    @available(tvOS, unavailable)
+    public static var onSearchPresentation: SearchScopeActivation { get }
+}
+
+/// The ways that SwiftUI displays search suggestions.
 ///
-/// You can influence which modes search suggestions are displayed for by
-/// using the ``View/searchSuggestions(_:for:)`` modifier.
+/// You can influence which modes SwiftUI displays search suggestions for by
+/// using the ``View/searchSuggestions(_:for:)`` modifier:
 ///
 ///     enum FruitSuggestion: String, Identifiable {
 ///         case apple, banana, orange
 ///         var id: Self { self }
 ///     }
 ///
-///     @State var text = ""
-///     @State var suggestions: [FruitSuggestion] = []
+///     @State private var text = ""
+///     @State private var suggestions: [FruitSuggestion] = []
 ///
 ///     var body: some View {
 ///         MainContent()
@@ -28900,11 +29396,11 @@ public struct SearchFieldPlacement {
 ///
 /// In the above example, SwiftUI only displays search suggestions in
 /// a suggestions menu. You might want to do this when you want to
-/// render search suggestions in your own container, like inline with
+/// render search suggestions in a container, like inline with
 /// your own set of search results.
 ///
-/// Get the current search suggestion placement by querying the
-/// ``EnvironmentValues/searchSuggestionsPlacement`` in your
+/// You can get the current search suggestion placement by querying the
+/// ``EnvironmentValues/searchSuggestionsPlacement`` environment value in your
 /// search suggestions.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct SearchSuggestionsPlacement : Equatable {
@@ -28912,11 +29408,13 @@ public struct SearchSuggestionsPlacement : Equatable {
     /// Search suggestions render automatically based on the surrounding
     /// context.
     ///
-    /// In iOS and iPadOS, suggestions render as a list overlaying the main
-    /// content of the app. In macOS, suggestions render in a menu. In tvOS,
-    /// suggestions render as a row underneath the  search field. In
-    /// watchOS, suggestions render in a list pushed onto the
-    /// containing navigation stack.
+    /// The behavior varies by platform:
+    /// * In iOS and iPadOS, suggestions render as a list overlaying the main
+    ///   content of the app.
+    /// * In macOS, suggestions render in a menu.
+    /// * In tvOS, suggestions render as a row underneath the search field.
+    /// * In watchOS, suggestions render in a list pushed onto the containing
+    ///   navigation stack.
     public static var automatic: SearchSuggestionsPlacement { get }
 
     /// Search suggestions render inside of a menu attached to the search field.
@@ -30380,8 +30878,10 @@ public enum ShapeRole {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -30394,6 +30894,7 @@ public enum ShapeRole {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -31951,8 +32452,10 @@ extension SimultaneousGesture.Value : Hashable where First.Value : Hashable, Sec
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -31965,6 +32468,7 @@ extension SimultaneousGesture.Value : Hashable where First.Value : Hashable, Sec
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -32369,8 +32873,10 @@ public struct SnapshotData : Sendable {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -32383,6 +32889,7 @@ public struct SnapshotData : Sendable {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -32629,39 +33136,53 @@ public struct StackNavigationViewStyle : NavigationViewStyle {
 
 /// A property wrapper type that can read and write a value managed by SwiftUI.
 ///
-/// SwiftUI manages the storage of a property that you declare as state. When
-/// the value changes, SwiftUI updates the parts of the view hierarchy that
-/// depend on the value. Use state as the single source of truth for a given
-/// value stored in a view hierarchy.
-///
-/// A `State` instance isn't the value itself; it's a means of reading and
-/// writing the value. To access a state's underlying value, refer to it by
-/// its property name, which returns the ``State/wrappedValue`` property value.
-/// For example, you can read and update the `isPlaying` state property in a
-/// `PlayButton` view by referring to the property directly:
+/// Use state as the single source of truth for a given value type that you
+/// store in a view hierarchy. Create a state value in an ``App``, ``Scene``,
+/// or ``View`` by applying the `@State` attribute to a property declaration
+/// and providing an initial value. Declare state as private to prevent setting
+/// it in a memberwise initializer, which can conflict with the storage
+/// management that SwiftUI provides:
 ///
 ///     struct PlayButton: View {
-///         @State private var isPlaying: Bool = false
+///         @State private var isPlaying: Bool = false // Create the state.
 ///
 ///         var body: some View {
-///             Button(isPlaying ? "Pause" : "Play") {
-///                 isPlaying.toggle()
+///             Button(isPlaying ? "Pause" : "Play") { // Read the state.
+///                 isPlaying.toggle() // Write the state.
 ///             }
 ///         }
 ///     }
 ///
-/// If you pass a state property to a child view, SwiftUI updates the child
-/// any time the value changes in the parent, but the child can't modify the
-/// value. To enable the child view to modify the stored value, pass a
-/// ``Binding`` instead. You can get a binding to a state value by accessing
-/// the state's ``State/projectedValue``, which you get by prefixing the
+/// SwiftUI manages the property's storage. When the value changes, SwiftUI
+/// updates the parts of the view hierarchy that depend on the value.
+/// To access a state's underlying value, you use its ``wrappedValue`` property.
+/// However, as a shortcut Swift enables you to access the wrapped value by
+/// referring directly to the state instance. The above example reads and
+/// writes the `isPlaying` state property's wrapped value by referring to the
+/// property directly.
+///
+/// Declare state as private in the highest view in the view hierarchy that
+/// needs access to the value. Then share the state with any subviews that also
+/// need access, either directly for read-only access, or as a binding for
+/// read-write access. You can safely mutate state properties from any thread.
+///
+/// > Note: If you need to store a reference type, like an instance of a class,
+///   use a ``StateObject`` instead.
+///
+/// ### Share state with subviews
+///
+/// If you pass a state property to a subview, SwiftUI updates the subview
+/// any time the value changes in the container view, but the subview can't
+/// modify the value. To enable the subview to modify the state's stored value,
+/// pass a ``Binding`` instead. You can get a binding to a state value by
+/// accessing the state's ``projectedValue``, which you get by prefixing the
 /// property name with a dollar sign (`$`).
 ///
 /// For example, you can remove the `isPlaying` state from the play button in
-/// the example above, and instead make the button take a binding to the state:
+/// the above example, and instead make the button take a binding:
 ///
 ///     struct PlayButton: View {
-///         @Binding var isPlaying: Bool
+///         @Binding var isPlaying: Bool // Play button now receives a binding.
 ///
 ///         var body: some View {
 ///             Button(isPlaying ? "Pause" : "Play") {
@@ -32674,53 +33195,76 @@ public struct StackNavigationViewStyle : NavigationViewStyle {
 /// binding to the state using the dollar sign prefix:
 ///
 ///     struct PlayerView: View {
-///         var episode: Episode
-///         @State private var isPlaying: Bool = false
+///         @State private var isPlaying: Bool = false // Create the state here now.
 ///
 ///         var body: some View {
 ///             VStack {
-///                 Text(episode.title)
-///                     .foregroundStyle(isPlaying ? .primary : .secondary)
 ///                 PlayButton(isPlaying: $isPlaying) // Pass a binding.
+///
+///                 // ...
 ///             }
 ///         }
 ///     }
 ///
-/// Don't initialize a state property of a view at the point in the view
-/// hierarchy where you instantiate the view, because this can conflict with
-/// the storage management that SwiftUI provides. To avoid this, always
-/// declare state as private, and place it in the highest view in the view
-/// hierarchy that needs access to the value. Then share the state with any
-/// child views that also need access, either directly for read-only access,
-/// or as a binding for read-write access.
-///
-/// You can safely mutate state properties from any thread.
+/// Like you do for a ``StateObject``, declare ``State`` as private to prevent
+/// setting it in a memberwise initializer, which can conflict with the storage
+/// management that SwiftUI provides. Unlike a state object, always
+/// initialize state by providing a default value in the state's
+/// declaration, as in the above examples. Use state only for storage that's
+/// local to a view and its subviews.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen @propertyWrapper public struct State<Value> : DynamicProperty {
 
-    /// Creates the state with an initial wrapped value.
+    /// Creates a state property that stores an initial wrapped value.
     ///
-    /// Don't call this initializer directly. Instead, declare a property
-    /// with the ``State`` attribute, and provide an initial value:
+    /// You don't call this initializer directly. Instead, SwiftUI
+    /// calls it for you when you declare a property with the `@State`
+    /// attribute and provide an initial value:
     ///
-    ///     @State private var isPlaying: Bool = false
+    ///     struct MyView: View {
+    ///         @State private var isPlaying: Bool = false
     ///
-    /// - Parameter wrappedValue: An initial wrappedValue for a state.
+    ///         // ...
+    ///     }
+    ///
+    /// SwiftUI initializes the state's storage only once for each
+    /// container instance that you declare. In the above code, SwiftUI
+    /// creates `isPlaying` only the first time it initializes a particular
+    /// instance of `MyView`. On the other hand, each instance of `MyView`
+    /// creates a distinct instance of the state. For example, each of
+    /// the views in the following ``VStack`` has its own `isPlaying` value:
+    ///
+    ///     var body: some View {
+    ///         VStack {
+    ///             MyView()
+    ///             MyView()
+    ///         }
+    ///     }
+    ///
+    /// - Parameter value: An initial value to store in the state
+    ///   property.
     public init(wrappedValue value: Value)
 
-    /// Creates the state with an initial value.
+    /// Creates a state property that stores an initial value.
     ///
-    /// - Parameter value: An initial value of the state.
+    /// This initializer has the same behavior as the ``init(wrappedValue:)``
+    /// initializer. See that initializer for more information.
+    ///
+    /// - Parameter value: An initial value to store in the state
+    ///   property.
     public init(initialValue value: Value)
 
     /// The underlying value referenced by the state variable.
     ///
     /// This property provides primary access to the value's data. However, you
-    /// don't access `wrappedValue` directly. Instead, you refer to the property
-    /// variable created with the ``State`` attribute. In the following example,
-    /// the button's label depends on the value of `isPlaying` and its action
-    /// toggles the value of `isPlaying`. Both of these accesses implicitly
-    /// rely on the state property's wrapped value.
+    /// don't typically access `wrappedValue` explicitly. Instead, you gain
+    /// access to the wrapped value by referring to the property variable that
+    /// you create with the `@State` attribute.
+    ///
+    /// In the following example, the button's label depends on the value of
+    /// `isPlaying` and the button's action toggles the value of `isPlaying`.
+    /// Both of these accesses implicitly access the state property's wrapped
+    /// value:
     ///
     ///     struct PlayButton: View {
     ///         @State private var isPlaying: Bool = false
@@ -32736,11 +33280,14 @@ public struct StackNavigationViewStyle : NavigationViewStyle {
 
     /// A binding to the state value.
     ///
-    /// Use the projected value to pass a binding value down a view hierarchy.
-    /// To get the `projectedValue`, prefix the property variable with a dollar
-    /// sign (`$`). In the following example, `PlayerView` projects a binding
-    /// of the state property `isPlaying` to the `PlayButton` view using
-    /// `$isPlaying`:
+    /// Use the projected value to get a ``Binding`` to the stored value. The
+    /// binding provides a two-way connection to the stored value. To access
+    /// the `projectedValue`, prefix the property variable with a dollar
+    /// sign (`$`).
+    ///
+    /// In the following example, `PlayerView` projects a binding of the state
+    /// property `isPlaying` to the `PlayButton` view using `$isPlaying`. That
+    /// enables the play button to both read and write the value:
     ///
     ///     struct PlayerView: View {
     ///         var episode: Episode
@@ -32761,68 +33308,209 @@ public struct StackNavigationViewStyle : NavigationViewStyle {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension State where Value : ExpressibleByNilLiteral {
 
-    /// Creates a state without an initial value.
+    /// Creates a state property without an initial value.
+    ///
+    /// This initializer behaves like the ``init(wrappedValue:)`` initializer
+    /// with an input of `nil`. See that initializer for more information.
     @inlinable public init()
 }
 
 /// A property wrapper type that instantiates an observable object.
 ///
-/// Create a state object in a ``SwiftUI/View``, ``SwiftUI/App``, or
-/// ``SwiftUI/Scene`` by applying the `@StateObject` attribute to a property
-/// declaration and providing an initial value that conforms to the
+/// Use a state object as the single source of truth for a reference type that
+/// you store in a view hierarchy. Create a state object in an ``App``,
+/// ``Scene``, or ``View`` by applying the `@StateObject` attribute to a
+/// property declaration and providing an initial value that conforms to the
 /// <doc://com.apple.documentation/documentation/Combine/ObservableObject>
-/// protocol:
+/// protocol. Declare state objects as private to prevent setting them from a
+/// memberwise initializer, which can conflict with the storage management that
+/// SwiftUI provides:
 ///
-///     @StateObject var model = DataModel()
+///     class DataModel: ObservableObject {
+///         @Published var name = "Some Name"
+///         @Published var isEnabled = false
+///     }
 ///
-/// SwiftUI creates a new instance of the object only once for each instance of
-/// the structure that declares the object. When published properties of the
-/// observable object change, SwiftUI updates the parts of any view that depend
-/// on those properties:
+///     struct MyView: View {
+///         @StateObject private var model = DataModel() // Create the state object.
 ///
-///     Text(model.title) // Updates the view any time `title` changes.
+///         var body: some View {
+///             Text(model.name) // Updates when the data model changes.
+///             MySubView()
+///                 .environmentObject(model)
+///         }
+///     }
 ///
-/// You can pass the state object into a property that has the
-/// ``SwiftUI/ObservedObject`` attribute. You can alternatively add the object
-/// to the environment of a view hierarchy by applying the
-/// ``SwiftUI/View/environmentObject(_:)`` modifier:
+/// SwiftUI creates a new instance of the model object only once during the
+/// lifetime of the container that declares the state object. For example,
+/// SwiftUI doesn't create a new instance if a view's inputs change, but does
+/// create a new instance if the identity of a view changes. When published
+/// properties of the observable object change, SwiftUI updates any view that
+/// depends on those properties, like the ``Text`` view in the above example.
 ///
-///     ContentView()
-///         .environmentObject(model)
+/// > Note: If you need to store a value type, like a structure, string, or
+///   integer, use the ``State`` property wrapper instead.
 ///
-/// If you create an environment object as shown in the code above, you can
-/// read the object inside `ContentView` or any of its descendants
-/// using the ``SwiftUI/EnvironmentObject`` attribute:
+/// ### Share state objects with subviews
 ///
-///     @EnvironmentObject var model: DataModel
+/// You can pass a state object into a subview through a property that has the
+/// ``ObservedObject`` attribute. Alternatively, add the object to the
+/// environment of a view hierarchy by applying the
+/// ``View/environmentObject(_:)`` modifier to a view, like `MySubView` in the
+/// above code. You can then read the object inside `MySubView` or any of its
+/// descendants using the ``EnvironmentObject`` attribute:
 ///
-/// Get a ``SwiftUI/Binding`` to one of the state object's properties using the
-/// `$` operator. Use a binding when you want to create a two-way connection to
-/// one of the object's properties. For example, you can let a
-/// ``SwiftUI/Toggle`` control a Boolean value called `isEnabled` stored in the
-/// model:
+///     struct MySubView: View {
+///         @EnvironmentObject var model: DataModel
 ///
-///     Toggle("Enabled", isOn: $model.isEnabled)
+///         var body: some View {
+///             Toggle("Enabled", isOn: $model.isEnabled)
+///         }
+///     }
+///
+/// Get a ``Binding`` to the state object's properties using the dollar sign
+/// (`$`) operator. Use a binding when you want to create a two-way connection.
+/// In the above code, the ``Toggle`` controls the model's `isEnabled` value
+/// through a binding.
+///
+/// ### Initialize state objects using external data
+///
+/// When a state object's initial state depends on data that comes from
+/// outside its container, you can call the object's initializer
+/// explicitly from within its container's initializer. For example,
+/// suppose the data model from the previous example takes a `name`
+/// input during initialization and you want to use a value for that
+/// name that comes from outside the view. You can do this with
+/// a call to the state object's initializer inside an explicit initializer
+/// that you create for the view:
+///
+///     struct MyInitializableView: View {
+///         @StateObject private var model: DataModel
+///
+///         init(name: String) {
+///             // SwiftUI ensures that the following initialization uses the
+///             // closure only once during the lifetime of the view, so
+///             // later changes to the view's name input have no effect.
+///             _model = StateObject(wrappedValue: { DataModel(name: name) }())
+///         }
+///
+///         var body: some View {
+///             VStack {
+///                 Text("Name: \(model.name)")
+///             }
+///         }
+///     }
+///
+/// Use caution when doing this. SwiftUI only initializes a state object
+/// the first time you call its initializer in a given view. This
+/// ensures that the object provides stable storage even as the view's
+/// inputs change. However, it might result in unexpected behavior or
+/// unwanted side effects if you explicitly initialize the state object.
+///
+/// In the above example, if the `name` input to `MyInitializableView`
+/// changes, SwiftUI reruns the view's initializer with the new value. However,
+/// SwiftUI runs the autoclosure that you provide to the state object's
+/// initializer only the first time you call the state object's initializer, so
+/// the model's stored `name` value doesn't change.
+///
+/// Explicit state object initialization works well when the external data
+/// that the object depends on doesn't change for a given instance of the
+/// object's container. For example, you can create two views with different
+/// constant names:
+///
+///     var body: some View {
+///         VStack {
+///             MyInitializableView(name: "Ravi")
+///             MyInitializableView(name: "Maria")
+///         }
+///     }
+///
+/// > Important: Even for a configurable state object, you still declare it
+///   as private. This ensures that you can't accidentally set the parameter
+///   through a memberwise initializer of the view, because doing so can
+///   conflict with the framework's storage management and produce unexpected
+///   results.
+///
+/// ### Force reinitialization by changing view identity
+///
+/// If you want SwiftUI to reinitialize a state object when a view input
+/// changes, make sure that the view's identity changes at the same time.
+/// One way to do this is to bind the view's identity to the value that changes
+/// using the ``View/id(_:)`` modifier. For example, you can ensure that
+/// the identity of an instance of `MyInitializableView` changes when its
+/// `name` input changes:
+///
+///     MyInitializableView(name: name)
+///         .id(name) // Binds the identity of the view to the name property.
+///
+/// > NOTE: If your view appears inside a ``ForEach``, it implicitly receives an
+///   ``View/id(_:)`` modifier that uses the identifier of the corresponding
+///   data element.
+///
+/// If you need the view to reinitialize state based on changes in more than
+/// one value, you can combine the values into a single identifier using a
+/// <doc://com.apple.documentation/documentation/Swift/Hasher>. For example,
+/// if you want to update the data model in `MyInitializableView` when the
+/// values of either `name` or `isEnabled` change, you can combine both
+/// variables into a single hash:
+///
+///     var hash: Int {
+///         var hasher = Hasher()
+///         hasher.combine(name)
+///         hasher.combine(isEnabled)
+///         return hasher.finalize()
+///     }
+///
+/// Then apply the combined hash to the view as an identifier:
+///
+///     MyInitializableView(name: name, isEnabled: isEnabled)
+///         .id(hash)
+///
+/// Be mindful of the performance cost of reinitializing the state object every
+/// time the input changes. Also, changing view identity can have side
+/// effects. For example, SwiftUI doesn't automatically animate
+/// changes inside the view if the view's identity changes at the same time.
+/// Also, changing the identity resets _all_ state held by the view, including
+/// values that you manage as ``State``, ``FocusState``, ``GestureState``,
+/// and so on.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @frozen @propertyWrapper public struct StateObject<ObjectType> : DynamicProperty where ObjectType : ObservableObject {
 
     /// Creates a new state object with an initial wrapped value.
     ///
-    /// You don’t call this initializer directly. Instead, declare a property
-    /// with the `@StateObject` attribute in a ``SwiftUI/View``,
-    /// ``SwiftUI/App``, or ``SwiftUI/Scene``, and provide an initial value:
+    /// You typically don’t call this initializer directly. Instead, SwiftUI
+    /// calls it for you when you declare a property with the `@StateObject`
+    /// attribute in an ``App``, ``Scene``, or ``View`` and provide an initial
+    /// value:
     ///
     ///     struct MyView: View {
-    ///         @StateObject var model = DataModel()
+    ///         @StateObject private var model = DataModel()
     ///
     ///         // ...
     ///     }
     ///
     /// SwiftUI creates only one instance of the state object for each
-    /// container instance that you declare. In the code above, SwiftUI
-    /// creates `model` only the first time it initializes a particular instance
-    /// of `MyView`. On the other hand, each different instance of `MyView`
-    /// receives a distinct copy of the data model.
+    /// container instance that you declare. In the above code, SwiftUI
+    /// creates `model` only the first time it initializes a particular
+    /// instance of `MyView`. On the other hand, each instance of `MyView`
+    /// creates a distinct instance of the data model. For example, each of
+    /// the views in the following ``VStack`` has its own model storage:
+    ///
+    ///     var body: some View {
+    ///         VStack {
+    ///             MyView()
+    ///             MyView()
+    ///         }
+    ///     }
+    ///
+    /// ### Initialize using external data
+    ///
+    /// If the initial state of a state object depends on external data, you can
+    /// call this initializer directly. However, use caution when doing this,
+    /// because SwiftUI only initializes the object once during the lifetime of
+    /// the view --- even if you call the state object initializer more than
+    /// once --- which might result in unexpected behavior. For more information
+    /// and an example, see ``StateObject``.
     ///
     /// - Parameter thunk: An initial value for the state object.
     @inlinable public init(wrappedValue thunk: @autoclosure @escaping () -> ObjectType)
@@ -32830,35 +33518,37 @@ extension State where Value : ExpressibleByNilLiteral {
     /// The underlying value referenced by the state object.
     ///
     /// The wrapped value property provides primary access to the value's data.
-    /// However, you don't access `wrappedValue` directly. Instead, use the
-    /// property variable created with the `@StateObject` attribute:
+    /// However, you don't typically access it directly. Instead,
+    /// SwiftUI accesses this property for you when you refer to the variable
+    /// that you create with the `@StateObject` attribute:
     ///
-    ///     @StateObject var contact = Contact()
+    ///     @StateObject private var contact = Contact()
     ///
     ///     var body: some View {
-    ///         Text(contact.name) // Accesses contact's wrapped value.
+    ///         Text(contact.name) // Reads name from contact's wrapped value.
     ///     }
     ///
-    /// When you change a property of the wrapped value, you can access the new
-    /// value immediately. However, SwiftUI updates views displaying the value
-    /// asynchronously, so the user interface might not update immediately.
+    /// When you change a wrapped value, you can access the new
+    /// value immediately. However, SwiftUI updates views that display the value
+    /// asynchronously, so the interface might not update immediately.
     @MainActor public var wrappedValue: ObjectType { get }
 
     /// A projection of the state object that creates bindings to its
     /// properties.
     ///
-    /// Use the projected value to pass a binding value down a view hierarchy.
-    /// To get the projected value, prefix the property variable with `$`. For
-    /// example, you can get a binding to a model's `isEnabled` Boolean so that
-    /// a ``SwiftUI/Toggle`` view can control the value:
+    /// Use the projected value to get a ``Binding`` to a property of a state
+    /// object. To access the projected value, prefix the property name
+    /// with a dollar sign (`$`). For example, you can get a binding to a
+    /// model's `isEnabled` Boolean so that a ``Toggle`` can control the value:
     ///
     ///     struct MyView: View {
-    ///         @StateObject var model = DataModel()
+    ///         @StateObject private var model = DataModel()
     ///
     ///         var body: some View {
     ///             Toggle("Enabled", isOn: $model.isEnabled)
     ///         }
     ///     }
+    ///
     @MainActor public var projectedValue: ObservedObject<ObjectType>.Wrapper { get }
 }
 
@@ -34026,7 +34716,7 @@ public struct SubmitTriggers : OptionSet {
     /// placed by the searchable modifier will trigger the view model to submit
     /// its current search query.
     ///
-    ///     @StateObject var viewModel = ViewModel()
+    ///     @StateObject private var viewModel = ViewModel()
     ///
     ///     NavigationView {
     ///         SidebarView()
@@ -34478,8 +35168,10 @@ public struct SymbolVariants : Hashable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -34502,6 +35194,7 @@ public struct SymbolVariants : Hashable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -34620,7 +35313,7 @@ extension TabViewStyle where Self == DefaultTabViewStyle {
 /// of the circle:
 ///
 ///     struct TapGestureView: View {
-///         @State var tapped = false
+///         @State private var tapped = false
 ///
 ///         var tap: some Gesture {
 ///             TapGesture(count: 1)
@@ -35064,8 +35757,10 @@ extension Text {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -35078,6 +35773,7 @@ extension Text {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -35117,8 +35813,10 @@ extension Text {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -35131,6 +35829,7 @@ extension Text {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -35430,8 +36129,10 @@ extension Text {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -35454,6 +36155,7 @@ extension Text {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 }
@@ -35649,6 +36351,16 @@ extension Text {
     /// - Returns: Italic text.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func italic(_ isActive: Bool) -> Text
+
+    /// Modifies the font of the text to use the fixed-width variant
+    /// of the current font, if possible.
+    ///
+    /// - Parameter isActive: A Boolean value that indicates
+    ///   whether monospaced styling is added. Default value is `true`.
+    ///
+    /// - Returns: Monospaced text.
+    @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+    public func monospaced(_ isActive: Bool = true) -> Text
 
     /// Sets the font design of the text.
     ///
@@ -35974,8 +36686,10 @@ extension Text.DateStyle : Codable {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -35994,6 +36708,7 @@ extension Text.DateStyle : Codable {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -37546,8 +38261,10 @@ public enum TimelineScheduleMode {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -37560,6 +38277,7 @@ public enum TimelineScheduleMode {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -37673,8 +38391,10 @@ public struct TimelineView<Schedule, Content> where Schedule : TimelineSchedule 
             /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
             /// with each of these components.
             ///
-            /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-            ///   compile-time error in the future.
+            /// - Important: In your implementation of `hash(into:)`,
+            ///   don't call `finalize()` on the `hasher` instance provided,
+            ///   or replace it with a different instance.
+            ///   Doing so may become a compile-time error in the future.
             ///
             /// - Parameter hasher: The hasher to use when combining the components
             ///   of this instance.
@@ -37699,6 +38419,7 @@ public struct TimelineView<Schedule, Content> where Schedule : TimelineSchedule 
             ///
             /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
             ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+            ///   The compiler provides an implementation for `hashValue` for you.
             public var hashValue: Int { get }
         }
 
@@ -37751,9 +38472,28 @@ extension TimelineView : View where Content : View {
     ///     that you define.
     ///   - content: A closure that generates view content at the moments
     ///     indicated by the schedule. The closure takes an input of type
+    ///     ``TimelineViewDefaultContext`` that includes the date from the schedule that
+    ///     prompted the update, as well as a ``Context/Cadence-swift.enum``
+    ///     value that the view can use to customize its appearance.
+    public init(_ schedule: Schedule, @ViewBuilder content: @escaping (TimelineViewDefaultContext) -> Content)
+
+    /// Creates a new timeline view that uses the given schedule.
+    ///
+    /// - Parameters:
+    ///   - schedule: A schedule that produces a sequence of dates that
+    ///     indicate the instances when the view should update.
+    ///     Use a type that conforms to ``TimelineSchedule``, like
+    ///     ``TimelineSchedule/everyMinute``, or a custom timeline schedule
+    ///     that you define.
+    ///   - content: A closure that generates view content at the moments
+    ///     indicated by the schedule. The closure takes an input of type
     ///     ``Context`` that includes the date from the schedule that
     ///     prompted the update, as well as a ``Context/Cadence-swift.enum``
     ///     value that the view can use to customize its appearance.
+    @available(iOS, deprecated, introduced: 15.0, message: "Use TimelineViewDefaultContext for the type of the context parameter passed into TimelineView's content closure to resolve this warning. The new version of this initializer, using TimelineViewDefaultContext, improves compilation performance by using an independent generic type signature, which helps avoid unintended cyclical type dependencies.")
+    @available(macOS, deprecated, introduced: 12.0, message: "Use TimelineViewDefaultContext for the type of the context parameter passed into TimelineView's content closure to resolve this warning. The new version of this initializer, using TimelineViewDefaultContext, improves compilation performance by using an independent generic type signature, which helps avoid unintended cyclical type dependencies.")
+    @available(watchOS, deprecated, introduced: 8.0, message: "Use TimelineViewDefaultContext for the type of the context parameter passed into TimelineView's content closure to resolve this warning. The new version of this initializer, using TimelineViewDefaultContext, improves compilation performance by using an independent generic type signature, which helps avoid unintended cyclical type dependencies.")
+    @available(tvOS, deprecated, introduced: 15.0, message: "Use TimelineViewDefaultContext for the type of the context parameter passed into TimelineView's content closure to resolve this warning. The new version of this initializer, using TimelineViewDefaultContext, improves compilation performance by using an independent generic type signature, which helps avoid unintended cyclical type dependencies.")
     public init(_ schedule: Schedule, @ViewBuilder content: @escaping (TimelineView<Schedule, Content>.Context) -> Content)
 }
 
@@ -37775,6 +38515,21 @@ extension TimelineView.Context {
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension TimelineView.Context.Cadence : Hashable {
 }
+
+/// Information passed to a timeline view's content callback.
+///
+/// The context includes both the date from the schedule that triggered
+/// the callback, and a cadence that you can use to customize the appearance of
+/// your view. For example, you might choose to display the second hand of an
+/// analog clock only when the cadence is
+/// ``TimelineView/Context/Cadence-swift.enum/seconds`` or faster.
+///
+/// > Note: This type alias uses a specific concrete instance of
+/// ``TimelineView/Context`` that all timeline views can use.
+/// It does this to prevent introducing an unnecessary generic parameter
+/// dependency on the context type.
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+public typealias TimelineViewDefaultContext = TimelineView<EveryMinuteTimelineSchedule, Never>.Context
 
 /// A style that reflects the current tint color.
 ///
@@ -37901,7 +38656,7 @@ public struct Toggle<Label> : View where Label : View {
     ///       var name = ""
     ///     }
     ///
-    ///     @State var alarms = [
+    ///     @State private var alarms = [
     ///         Alarm(isOn: true, name: "Morning"),
     ///         Alarm(isOn: false, name: "Evening")
     ///     ]
@@ -38024,7 +38779,7 @@ extension Toggle where Label == Text {
     ///       var name = ""
     ///     }
     ///
-    ///     @State var alarms = [
+    ///     @State private var alarms = [
     ///         Alarm(isOn: true, name: "Morning"),
     ///         Alarm(isOn: false, name: "Evening")
     ///     ]
@@ -38060,7 +38815,7 @@ extension Toggle where Label == Text {
     ///       var name = ""
     ///     }
     ///
-    ///     @State var alarms = [
+    ///     @State private var alarms = [
     ///         Alarm(isOn: true, name: "Morning"),
     ///         Alarm(isOn: false, name: "Evening")
     ///     ]
@@ -38401,7 +39156,7 @@ extension ToggleStyle where Self == SwitchToggleStyle {
 ///
 /// The configuration structure's ``label-swift.property`` reflects the
 /// toggle's content, which might be the value that you supply to the
-/// `label` parameter of the ``Toggle/init(isOn:label:)-8sj6j`` initializer.
+/// `label` parameter of the ``Toggle/init(isOn:label:)`` initializer.
 /// Alternatively, it could be another view that SwiftUI builds from an
 /// initializer that takes a string input, like ``Toggle/init(_:isOn:)-8qx3l``.
 /// In either case, incorporate the label into the toggle's view to help
@@ -38526,8 +39281,14 @@ public protocol ToolbarContent {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @resultBuilder public struct ToolbarContentBuilder {
 
+    /// Builds an expression within the builder.
+    public static func buildExpression<Content>(_ content: Content) -> Content where Content : ToolbarContent
+
     public static func buildBlock<Content>(_ content: Content) -> some ToolbarContent where Content : ToolbarContent
 
+
+    /// Builds an expression within the builder.
+    public static func buildExpression<Content>(_ content: Content) -> Content where Content : CustomizableToolbarContent
 
     public static func buildBlock<Content>(_ content: Content) -> some CustomizableToolbarContent where Content : CustomizableToolbarContent
 
@@ -38997,7 +39758,7 @@ public struct ToolbarItemPlacement {
 /// The placement of a toolbar.
 ///
 /// Use this type in conjunction with modifiers like
-/// ``View/toolbarBackground(_:for:)-1k7vw`` and ``View/toolbar(_:for:)`` to
+/// ``View/toolbarBackground(_:for:)-5ybst`` and ``View/toolbar(_:for:)`` to
 /// customize the appearance of different bars managed by SwiftUI. Not all bars
 /// support all types of customizations.
 ///
@@ -39366,8 +40127,10 @@ extension Transaction {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -39390,6 +40153,7 @@ extension Transaction {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -40247,8 +41011,10 @@ extension View {
     ///         let name: String
     ///         let fileType: UTType
     ///     }
+    ///
     ///     struct ConfirmFileImport: View {
-    ///         @State var sheetDetail: FileDetails?
+    ///         @State private var sheetDetail: FileDetails?
+    ///
     ///         var body: some View {
     ///             Button("Show Action Sheet") {
     ///                 sheetDetail = FileDetails(name: "MyImageFile.png",
@@ -40437,7 +41203,7 @@ extension View {
     ///     }
     ///
     ///     struct ConfirmImportAlert: View {
-    ///         @State var alertDetails: FileInfo?
+    ///         @State private var alertDetails: FileInfo?
     ///         var body: some View {
     ///             Button("Show Alert") {
     ///                 alertDetails = FileInfo(name: "MyImageFile.png",
@@ -40701,26 +41467,56 @@ extension View {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
-    /// Sets the alignment of multiline text in this view.
+    /// Sets the alignment of a text view that contains multiple lines of text.
     ///
-    /// Use `multilineTextAlignment(_:)` to select an alignment for all of the
-    /// text in this view or view hierarchy.
+    /// Use this modifier to set an alignment for a multiline block of text.
+    /// For example, the modifier centers the contents of the following
+    /// ``Text`` view:
     ///
-    /// In the example below, the contents of the ``Text`` view are center
-    /// aligned. This also applies to the interpolated newline placed in the
-    /// middle of the text since "multiple lines" refers to all of the text
-    /// inside the view, regardless of any internal formatting or inclusion of
-    /// interpolated text.
-    ///
-    ///     Text("This is a block of text that will show up in a text element as multiple lines.\("\n") Here we have chosen to center this text.")
-    ///         .frame(width: 200, height: 200, alignment: .leading)
+    ///     Text("This is a block of text that shows up in a text element as multiple lines.\("\n") Here we have chosen to center this text.")
+    ///         .frame(width: 200)
     ///         .multilineTextAlignment(.center)
     ///
-    /// ![A screenshot showing the effect of text alignment in a
-    /// view.](SwiftUI-view-multilineTextAlignment.png)
+    /// The text in the above example spans more than one line because:
     ///
-    /// - Parameter alignment: A value that you use to left-, right-, or
-    ///   center-align the text within a view.
+    /// * The newline character introduces a line break.
+    /// * The frame modifier limits the space available to the text view, and
+    ///   by default a text view wraps lines that don't fit in the available
+    ///   width. As a result, the text before the explicit line break wraps to
+    ///   three lines, and the text after uses two lines.
+    ///
+    /// The modifier applies the alignment to the all the lines of text in
+    /// the view, regardless of why wrapping occurs:
+    ///
+    /// ![A block of text that spans 5 lines. The lines of text are center-aligned.](View-multilineTextAlignment-1-iOS)
+    ///
+    /// The modifier has no effect on a ``Text`` view that contains only one
+    /// line of text, because a text view has a width that exactly matches the
+    /// width of its widest line. If you want to align an entire text view
+    /// rather than its contents, set the aligment of its container, like a
+    /// ``VStack`` or a frame that you create with the
+    /// ``View/frame(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:alignment:)``
+    /// modifier.
+    ///
+    /// > Note: You can use this modifier to control the alignment of a ``Text``
+    ///   view that you create with the ``Text/init(_:style:)`` initializer
+    ///   to display localized dates and times, including when the view uses
+    ///   only a single line, but only when that view appears in a widget.
+    ///
+    /// The modifier also affects the content alignment of other text container
+    /// types, like ``TextEditor`` and ``TextField``. In those cases, the
+    /// modifier sets the alignment even when the view contains only a single
+    /// line because view's width isn't dictated by the width of the text it
+    /// contains.
+    ///
+    /// The modifier operates by setting the
+    /// ``EnvironmentValues/multilineTextAlignment`` value in the environment,
+    /// so it affects all the text containers in the modified view hierarchy.
+    /// For example, you can apply the modifier to a ``VStack`` to
+    /// configure all the text views inside the stack.
+    ///
+    /// - Parameter alignment: A value that you use to align multiple lines of
+    ///   text within a view.
     ///
     /// - Returns: A view that aligns the lines of multiline ``Text`` instances
     ///   it contains.
@@ -41931,7 +42727,7 @@ extension View {
     /// search field.
     ///
     /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - text: The text to display and edit in the search field.
@@ -41946,7 +42742,7 @@ extension View {
     /// search field.
     ///
     /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - text: The text to display and edit in the search field.
@@ -41961,7 +42757,7 @@ extension View {
     /// search field.
     ///
     /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - text: The text to display and edit in the search field.
@@ -43140,6 +43936,8 @@ extension View {
     /// To specify a ``Shape`` or ``InsettableShape``, use
     /// ``View/background(_:in:fillStyle:)-89n7j`` or
     /// ``View/background(_:in:fillStyle:)-20tq5``, respectively.
+    /// To configure the background of a presentation, like a sheet, use
+    /// ``View/presentationBackground(alignment:content:)``.
     ///
     /// - Parameters:
     ///   - alignment: The alignment that the modifier uses to position the
@@ -43180,6 +43978,8 @@ extension View {
     /// To specify a ``Shape`` or ``InsettableShape``, use
     /// ``View/background(_:in:fillStyle:)-89n7j`` or
     /// ``View/background(_:in:fillStyle:)-20tq5``, respectively.
+    /// To configure the background of a presentation, like a sheet, use
+    /// ``View/presentationBackground(_:)``.
     ///
     /// - Parameters:
     ///   - edges: The set of edges for which to ignore safe area insets
@@ -43239,6 +44039,8 @@ extension View {
     /// To specify a ``Shape`` or ``InsettableShape``, use
     /// ``View/background(_:in:fillStyle:)-89n7j`` or
     /// ``View/background(_:in:fillStyle:)-20tq5``, respectively.
+    /// To configure the background of a presentation, like a sheet, use
+    /// ``View/presentationBackground(_:)``.
     ///
     /// - Parameters:
     ///   - style: An instance of a type that conforms to ``ShapeStyle`` that
@@ -43723,7 +44525,8 @@ extension View {
     /// the action sheet shows to the user:
     ///
     ///     struct ShowPartDetail: View {
-    ///         @State var sheetDetail: InventoryItem?
+    ///         @State private var sheetDetail: InventoryItem?
+    ///
     ///         var body: some View {
     ///             Button("Show Part Details") {
     ///                 sheetDetail = InventoryItem(
@@ -43759,6 +44562,12 @@ extension View {
     ///
     /// ![A view showing a custom structure acting as a data source, providing
     /// data to a modal sheet.](SwiftUI-View-SheetItemContent.png)
+    ///
+    /// In vertically compact environments, such as iPhone in landscape
+    /// orientation, a sheet presentation automatically adapts to appear as a
+    /// full-screen cover. Use the ``View/presentationCompactAdaptation(_:)`` or
+    /// ``View/presentationCompactAdaptation(horizontal:vertical:)`` modifier to
+    /// override this behavior.
     ///
     /// - Parameters:
     ///   - item: A binding to an optional source of truth for the sheet.
@@ -43814,6 +44623,12 @@ extension View {
     /// software license agreement with a Dismiss
     /// button.](SwiftUI-View-SheetIsPresentingContent.png)
     ///
+    /// In vertically compact environments, such as iPhone in landscape
+    /// orientation, a sheet presentation automatically adapts to appear as a
+    /// full-screen cover. Use the ``View/presentationCompactAdaptation(_:)`` or
+    /// ``View/presentationCompactAdaptation(horizontal:vertical:)`` modifier to
+    /// override this behavior.
+    ///
     /// - Parameters:
     ///   - isPresented: A binding to a Boolean value that determines whether
     ///     to present the sheet that you create in the modifier's
@@ -43839,7 +44654,8 @@ extension View {
     /// "Present Full-Screen Cover With Data" button:
     ///
     ///     struct FullScreenCoverItemOnDismissContent: View {
-    ///         @State var coverData: CoverData?
+    ///         @State private var coverData: CoverData?
+    ///
     ///         var body: some View {
     ///             Button("Present Full-Screen Cover With Data") {
     ///                 coverData = CoverData(body: "Custom Data")
@@ -44097,7 +44913,7 @@ extension View {
     /// submission triggers that originate from search fields vended by
     /// searchable modifiers.
     ///
-    ///     @StateObject var viewModel = ViewModel()
+    ///     @StateObject private var viewModel = ViewModel()
     ///
     ///     NavigationView {
     ///         SidebarView()
@@ -47142,7 +47958,7 @@ extension View {
     /// dismiss the suggestion view.
     ///
     /// For more information about using search modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - suggestions: A view builder that produces content that
@@ -47158,7 +47974,7 @@ extension View {
     /// search field.
     ///
     /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - text: The text to display and edit in the search field.
@@ -47179,7 +47995,7 @@ extension View {
     /// search field.
     ///
     /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - text: The text to display and edit in the search field.
@@ -47200,7 +48016,7 @@ extension View {
     /// search field.
     ///
     /// For more information about using searchable modifiers, see
-    /// <doc:Adding-Search-to-Your-App>.
+    /// <doc:Adding-a-search-interface-to-your-app>.
     ///
     /// - Parameters:
     ///   - text: The text to display and edit in the search field.
@@ -47940,7 +48756,7 @@ extension View {
     /// would like scrollable content to immediately dismiss the keyboard if
     /// present when a scroll drag gesture begins.
     ///
-    ///     @State var text = ""
+    ///     @State private var text = ""
     ///
     ///     ScrollView {
     ///         TextField("Prompt", text: $text)
@@ -47967,6 +48783,64 @@ extension View {
     /// - Returns: A view that uses the specified keyboard dismissal mode.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func scrollDismissesKeyboard(_ mode: ScrollDismissesKeyboardMode) -> some View
+
+}
+
+extension View {
+
+    /// Configures the bounce behavior of scrollable views along the specified
+    /// axis.
+    ///
+    /// Use this modifier to indicate whether scrollable views bounce when
+    /// people scroll to the end of the view's content, taking into account the
+    /// relative sizes of the view and its content. For example, the following
+    /// ``ScrollView`` only enables bounce behavior if its content is large
+    /// enough to require scrolling:
+    ///
+    ///     ScrollView {
+    ///         Text("Small")
+    ///         Text("Content")
+    ///     }
+    ///     .scrollBounceBehavior(.basedOnSize)
+    ///
+    /// The modifier passes the scroll bounce mode through the ``Environment``,
+    /// which means that the mode affects any scrollable views in the modified
+    /// view hierarchy. Provide an axis to the modifier to constrain the kinds
+    /// of scrollable views that the mode affects. For example, all the scroll
+    /// views in the following example can access the mode value, but
+    /// only the two nested scroll views are affected, because only they use
+    /// horizontal scrolling:
+    ///
+    ///     ScrollView { // Defaults to vertical scrolling.
+    ///         ScrollView(.horizontal) {
+    ///             ShelfContent()
+    ///         }
+    ///         ScrollView(.horizontal) {
+    ///             ShelfContent()
+    ///         }
+    ///     }
+    ///     .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
+    ///
+    /// You can use this modifier to configure any kind of scrollable view,
+    /// including ``ScrollView``, ``List``, ``Table``, and ``TextEditor``:
+    ///
+    ///     List {
+    ///         Text("Hello")
+    ///         Text("World")
+    ///     }
+    ///     .scrollBounceBehavior(.basedOnSize)
+    ///
+    /// - Parameters:
+    ///   - behavior: The bounce behavior to apply to any scrollable views
+    ///     within the configured view. Use one of the ``ScrollBounceBehavior``
+    ///     values.
+    ///   - axes: The set of axes to apply `behavior` to. The default is
+    ///     ``Axis/vertical``.
+    ///
+    /// - Returns: A view that's configured with the specified scroll bounce
+    ///   behavior.
+    @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+    public func scrollBounceBehavior(_ behavior: ScrollBounceBehavior, axes: Axis.Set = [.vertical]) -> some View
 
 }
 
@@ -48115,6 +48989,64 @@ extension View {
     /// When the proxy value specified by the `id` parameter changes, the
     /// identity of the view — for example, its state — is reset.
     @inlinable public func id<ID>(_ id: ID) -> some View where ID : Hashable
+
+}
+
+extension View {
+
+    /// Tells a menu whether to dismiss after performing an action.
+    ///
+    /// Use this modifier to control the dismissal behavior of a menu.
+    /// In the example below, the menu doesn't dismiss after someone
+    /// chooses either the increase or decrease action:
+    ///
+    ///     Menu("Font size") {
+    ///         Button(action: increase) {
+    ///             Label("Increase", systemImage: "plus.magnifyingglass")
+    ///         }
+    ///         .menuActionDismissBehavior(.disabled)
+    ///
+    ///         Button("Reset", action: reset)
+    ///
+    ///         Button(action: decrease) {
+    ///             Label("Decrease", systemImage: "minus.magnifyingglass")
+    ///         }
+    ///         .menuActionDismissBehavior(.disabled)
+    ///     }
+    ///
+    /// You can use this modifier on any controls that present a menu, like a
+    /// ``Picker`` that uses the ``PickerStyle/menu`` style or a
+    /// ``ControlGroup``. For example, the code below creates a picker that
+    /// disables dismissal when someone selects one of the options:
+    ///
+    ///     Picker("Flavor", selection: $selectedFlavor) {
+    ///         ForEach(Flavor.allCases) { flavor in
+    ///             Text(flavor.rawValue.capitalized)
+    ///                 .tag(flavor)
+    ///         }
+    ///     }
+    ///     .pickerStyle(.menu)
+    ///     .menuActionDismissBehavior(.disabled)
+    ///
+    /// You can also use this modifier on context menus. The example below
+    /// creates a context menu that stays presented after someone selects an
+    /// action to run:
+    ///
+    ///     Text("Favorite Card Suit")
+    ///         .padding()
+    ///         .contextMenu {
+    ///             Button("♥️ - Hearts", action: increaseHeartsCount)
+    ///             Button("♣️ - Clubs", action: increaseClubsCount)
+    ///             Button("♠️ - Spades", action: increaseSpadesCount)
+    ///             Button("♦️ - Diamonds", action: increaseDiamondsCount)
+    ///         }
+    ///         .menuActionDismissBehavior(.disabled)
+    ///
+    /// - Parameter dismissal: The menu action dismissal behavior to apply.
+    ///
+    /// - Returns: A view that has the specified menu dismissal behavior.
+    @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+    public func menuActionDismissBehavior(_ behavior: MenuActionDismissBehavior) -> some View
 
 }
 
@@ -48344,8 +49276,8 @@ extension View {
     ///         var id: Self { self }
     ///     }
     ///
-    ///     @State var text = ""
-    ///     @State var suggestions: [FruitSuggestion] = []
+    ///     @State private var text = ""
+    ///     @State private var suggestions: [FruitSuggestion] = []
     ///
     ///     var body: some View {
     ///         MainContent()
@@ -48447,7 +49379,7 @@ extension View {
     /// its enclosing view's coordinate space:
     ///
     ///     struct ContentView: View {
-    ///         @State var location = CGPoint.zero
+    ///         @State private var location = CGPoint.zero
     ///
     ///         var body: some View {
     ///             VStack {
@@ -49614,7 +50546,7 @@ extension View {
 
 extension View {
 
-    /// Configures the view's document for purposes of navigaiton.
+    /// Configures the view's document for purposes of navigation.
     ///
     /// In iOS, iPadOS, this populates the title menu with a header
     /// previewing the document. In macOS, this populates a proxy icon.
@@ -51590,12 +52522,12 @@ extension View {
     /// Places an accessory View next to the Digital Crown on Apple Watch.
     ///
     /// Use this method to place a custom `View` next to the Digital Crown
-    /// on Apple Watch. Use ``View/digitalCrownAccessory(_ visibility:)`` to specify
+    /// on Apple Watch. Use ``View/digitalCrownAccessory(_:)`` to specify
     /// the visibility of your custom view.
     ///
     ///     struct ZoomingMapView: View {
     ///         // Width of the map displayed on screen in miles
-    ///         @State var zoomLevel: Int = 1.0
+    ///         @State private var zoomLevel: Int = 1.0
     ///
     ///         var body: some View {
     ///             CustomMap(width: .miles(zoomLevel))
@@ -51800,18 +52732,29 @@ extension View {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension View {
 
-    /// Adds a modifier for this view that fires an action when a specific
-    /// value changes.
+    /// Performs an action when a specified value changes.
     ///
-    /// You can use `onChange` to trigger a side effect as the result of a
-    /// value changing, such as an `Environment` key or a `Binding`.
+    /// Use this modifier to run a closure when a value like
+    /// an ``Environment`` value or a ``Binding`` changes.
+    /// For example, you can clear a cache when you notice
+    /// that the view's scene moves to the background:
     ///
-    /// `onChange` is called on the main thread. Avoid performing long-running
-    /// tasks on the main thread. If you need to perform a long-running task in
-    /// response to `value` changing, you should dispatch to a background queue.
+    ///     struct ContentView: View {
+    ///         @Environment(\.scenePhase) private var scenePhase
+    ///         @StateObject private var cache = DataCache()
     ///
-    /// The new value is passed into the closure. The previous value may be
-    /// captured by the closure to compare it to the new value. For example, in
+    ///         var body: some View {
+    ///             MyView()
+    ///                 .onChange(of: scenePhase) { newScenePhase in
+    ///                     if newScenePhase == .background {
+    ///                         cache.empty()
+    ///                     }
+    ///                 }
+    ///         }
+    ///     }
+    ///
+    /// SwiftUI passes the new value into the closure. You can also capture the
+    /// previous value to compare it to the new value. For example, in
     /// the following code example, `PlayerView` passes both the old and new
     /// values to the model.
     ///
@@ -51831,13 +52774,22 @@ extension View {
     ///         }
     ///     }
     ///
-    /// - Parameters:
-    ///   - value: The value to check against when determining whether
-    ///     to run the closure.
-    ///   - action: A closure to run when the value changes.
-    ///   - newValue: The new value that failed the comparison check.
+    /// The system calls the `action` closure on the main thread, so avoid
+    /// long-running tasks in the closure. If you need to perform such tasks,
+    /// dispatch to a background queue or use asynchronous methods that can
+    /// be suspended. For more information, see
+    /// [Concurrency](https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html).
     ///
-    /// - Returns: A view that fires an action when the specified value changes.
+    /// - Parameters:
+    ///   - value: The value to check when determining whether to run the
+    ///     closure. The value must conform to the
+    ///     <doc://com.apple.documentation/documentation/Swift/Equatable>
+    ///     protocol.
+    ///   - action: A closure to run when the value changes. The closure
+    ///     takes a `newValue` parameter that indicates the updated
+    ///     value.
+    ///
+    /// - Returns: A view that runs an action when the specified value changes.
     @inlinable public func onChange<V>(of value: V, perform action: @escaping (_ newValue: V) -> Void) -> some View where V : Equatable
 
 }
@@ -51857,7 +52809,7 @@ extension View {
     /// The following example shows how to add a quick action to
     /// pause and resume a workout, with the ``AccessibilityQuickActionStyle/prompt`` style.
     ///
-    ///     @State var isPaused = false
+    ///     @State private var isPaused = false
     ///
     ///     var body: some View {
     ///         WorkoutView(isPaused: $isPaused)
@@ -51871,7 +52823,7 @@ extension View {
     /// The following example shows how to add a quick action to
     /// play and pause music, with the ``AccessibilityQuickActionStyle/outline`` style.
     ///
-    ///     @State var isPlaying = false
+    ///     @State private var isPlaying = false
     ///
     ///     var body: some View {
     ///         PlayButton(isPlaying: $isPlaying)
@@ -51891,8 +52843,8 @@ extension View {
     /// The following example shows how to add a quick action to
     /// pause and resume a workout, with the ``AccessibilityQuickActionStyle/prompt`` style.
     ///
-    ///     @State var isPaused = false
-    ///     @State var isQuickActionActive = false
+    ///     @State private var isPaused = false
+    ///     @State private var isQuickActionActive = false
     ///
     ///     var body: some View {
     ///         WorkoutView(isPaused: $isPaused)
@@ -51906,8 +52858,8 @@ extension View {
     /// The following example shows how to add a quick action to
     /// play and pause music, with the ``AccessibilityQuickActionStyle/outline`` style.
     ///
-    ///     @State var isPlaying = false
-    ///     @State var isQuickActionActive = false
+    ///     @State private var isPlaying = false
+    ///     @State private var isQuickActionActive = false
     ///
     ///     var body: some View {
     ///         PlayButton(isPlaying: $isPlaying)
@@ -52575,7 +53527,7 @@ extension View {
     ///             }
     ///             .sheet(isPresented: $showSettings) {
     ///                 SettingsView()
-    ///                     .presentationDetents:(
+    ///                     .presentationDetents(
     ///                         [.medium, .large],
     ///                         selection: $settingsDetent
     ///                      )
@@ -52607,7 +53559,7 @@ extension View {
     ///             }
     ///             .sheet(isPresented: $showSettings) {
     ///                 SettingsView()
-    ///                     .presentationDetents:([.medium, .large])
+    ///                     .presentationDetents([.medium, .large])
     ///                     .presentationDragIndicator(.visible)
     ///             }
     ///         }
@@ -52615,6 +53567,172 @@ extension View {
     ///
     /// - Parameter visibility: The preferred visibility of the drag indicator.
     public func presentationDragIndicator(_ visibility: Visibility) -> some View
+
+}
+
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+extension View {
+
+    /// Controls whether people can interact with the view behind a
+    /// presentation.
+    ///
+    /// On many platforms, SwiftUI automatically disables the view behind a
+    /// sheet that you present, so that people can't interact with the backing
+    /// view until they dismiss the sheet. Use this modifier if you want to
+    /// enable interaction.
+    ///
+    /// The following example enables people to interact with the view behind
+    /// the sheet when the sheet is at the smallest detent, but not at the other
+    /// detents:
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showSettings = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Settings") {
+    ///                 showSettings = true
+    ///             }
+    ///             .sheet(isPresented: $showSettings) {
+    ///                 SettingsView()
+    ///                     .presentationDetents(
+    ///                         [.height(120), .medium, .large])
+    ///                     .presentationBackgroundInteraction(
+    ///                         .enabled(upThrough: .height(120)))
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - interaction: A specification of how people can interact with the
+    ///     view behind a presentation.
+    public func presentationBackgroundInteraction(_ interaction: PresentationBackgroundInteraction) -> some View
+
+
+    /// Specifies how to adapt a presentation to compact size classes.
+    ///
+    /// Some presentations adapt their appearance depending on the context. For
+    /// example, a sheet presentation over a vertically-compact view uses a
+    /// full-screen-cover appearance by default. Use this modifier to indicate
+    /// a custom adaptation preference. For example, the following code
+    /// uses a presentation adaptation value of ``PresentationAdaptation/none``
+    /// to request that the system not adapt the sheet in compact size classes:
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showSettings = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Settings") {
+    ///                 showSettings = true
+    ///             }
+    ///             .sheet(isPresented: $showSettings) {
+    ///                 SettingsView()
+    ///                     .presentationDetents([.medium, .large])
+    ///                     .presentationCompactAdaptation(.none)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// If you want to specify different adaptations for each dimension,
+    /// use the ``View/presentationCompactAdaptation(horizontal:vertical:)``
+    /// method instead.
+    ///
+    /// - Parameter adaptation: The adaptation to use in either a horizontally
+    ///   or vertically compact size class.
+    public func presentationCompactAdaptation(_ adaptation: PresentationAdaptation) -> some View
+
+
+    /// Specifies how to adapt a presentation to horizontally and vertically
+    /// compact size classes.
+    ///
+    /// Some presentations adapt their appearance depending on the context. For
+    /// example, a popover presentation over a horizontally-compact view uses a
+    /// sheet appearance by default. Use this modifier to indicate a custom
+    /// adaptation preference.
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showInfo = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Info") {
+    ///                 showInfo = true
+    ///             }
+    ///             .popover(isPresented: $showInfo) {
+    ///                 InfoView()
+    ///                     .presentationCompactAdaptation(
+    ///                         horizontal: .popover,
+    ///                         vertical: .sheet)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// If you want to specify the same adaptation for both dimensions,
+    /// use the ``View/presentationCompactAdaptation(_:)`` method instead.
+    ///
+    /// - Parameters:
+    ///   - horizontalAdaptation: The adaptation to use in a horizontally
+    ///     compact size class.
+    ///   - verticalAdaptation: The adaptation to use in a vertically compact
+    ///     size class. In a size class that is both horizontally and vertically
+    ///     compact, SwiftUI uses the `verticalAdaptation` value.
+    public func presentationCompactAdaptation(horizontal horizontalAdaptation: PresentationAdaptation, vertical verticalAdaptation: PresentationAdaptation) -> some View
+
+
+    /// Requests that the presentation have a specific corner radius.
+    ///
+    /// Use this modifier to change the corner radius of a presentation.
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showSettings = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Settings") {
+    ///                 showSettings = true
+    ///             }
+    ///             .sheet(isPresented: $showSettings) {
+    ///                 SettingsView()
+    ///                     .presentationDetents([.medium, .large])
+    ///                     .presentationCornerRadius(21)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// - Parameter cornerRadius: The corner radius, or `nil` to use the system
+    ///   default.
+    public func presentationCornerRadius(_ cornerRadius: CGFloat?) -> some View
+
+
+    /// Configures the behavior of swipe gestures on a presentation.
+    ///
+    /// By default, when a person swipes up on a scroll view in a resizable
+    /// presentation, the presentation grows to the next detent. A scroll view
+    /// embedded in the presentation only scrolls after the presentation
+    /// reaches its largest size. Use this modifier to control which action
+    /// takes precedence.
+    ///
+    /// For example, you can request that swipe gestures scroll content first,
+    /// resizing the sheet only after hitting the end of the scroll view, by
+    /// passing the ``PresentationContentInteraction/scrolls`` value to this
+    /// modifier:
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showSettings = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Settings") {
+    ///                 showSettings = true
+    ///             }
+    ///             .sheet(isPresented: $showSettings) {
+    ///                 SettingsView()
+    ///                     .presentationDetents([.medium, .large])
+    ///                     .presentationContentInteraction(.scrolls)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// People can always resize your presentation using the drag indicator.
+    ///
+    /// - Parameter behavior: The requested behavior.
+    public func presentationContentInteraction(_ behavior: PresentationContentInteraction) -> some View
 
 }
 
@@ -52907,6 +54025,80 @@ extension View {
 
 }
 
+@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+extension View {
+
+    /// Sets the presentation background of the enclosing sheet using a shape
+    /// style.
+    ///
+    /// The following example uses the ``Material/thick`` material as the sheet
+    /// background:
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showSettings = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Settings") {
+    ///                 showSettings = true
+    ///             }
+    ///             .sheet(isPresented: $showSettings) {
+    ///                 SettingsView()
+    ///                     .presentationBackground(.thickMaterial)
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// The `presentationBackground(_:)` modifier differs from the
+    /// ``View/background(_:ignoresSafeAreaEdges:)`` modifier in several key
+    /// ways. A presentation background:
+    ///
+    /// * Automatically fills the entire presentation.
+    /// * Allows views behind the presentation to show through translucent
+    ///   styles.
+    ///
+    /// - Parameter style: The shape style to use as the presentation
+    ///   background.
+    public func presentationBackground<S>(_ style: S) -> some View where S : ShapeStyle
+
+
+    /// Sets the presentation background of the enclosing sheet to a custom
+    /// view.
+    ///
+    /// The following example uses a yellow view as the sheet background:
+    ///
+    ///     struct ContentView: View {
+    ///         @State private var showSettings = false
+    ///
+    ///         var body: some View {
+    ///             Button("View Settings") {
+    ///                 showSettings = true
+    ///             }
+    ///             .sheet(isPresented: $showSettings) {
+    ///                 SettingsView()
+    ///                     .presentationBackground {
+    ///                         Color.yellow
+    ///                     }
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// The `presentationBackground(alignment:content:)` modifier differs from
+    /// the ``View/background(alignment:content:)`` modifier in several key
+    /// ways. A presentation background:
+    ///
+    /// * Automatically fills the entire presentation.
+    /// * Allows views behind the presentation to show through translucent
+    ///   areas of the `content`.
+    ///
+    /// - Parameters:
+    ///   - alignment: The alignment that the modifier uses to position the
+    ///     implicit ``ZStack`` that groups the background views. The default is
+    ///     ``Alignment/center``.
+    ///   - content: The view to use as the background of the presentation.
+    public func presentationBackground<V>(alignment: Alignment = .center, @ViewBuilder content: () -> V) -> some View where V : View
+
+}
+
 extension View {
 
     /// Sets the rename action in the environment to update focus state.
@@ -53173,7 +54365,7 @@ extension View {
     /// The following code implements these animations:
     ///
     ///     struct TransactionExample: View {
-    ///         @State var flag = false
+    ///         @State private var flag = false
     ///
     ///         var body: some View {
     ///             VStack(spacing: 50) {
@@ -53749,6 +54941,9 @@ extension View {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @resultBuilder public struct ViewBuilder {
 
+    /// Builds an expression within the builder.
+    public static func buildExpression<Content>(_ content: Content) -> Content where Content : View
+
     /// Builds an empty view from a block containing no statements.
     public static func buildBlock() -> EmptyView
 
@@ -54234,7 +55429,7 @@ public struct ViewSpacing {
 /// The progress views are fixed to a 100-point width.
 ///
 ///     struct UploadProgressView: View {
-///         @State var uploadProgress: Double
+///         var uploadProgress: Double
 ///
 ///         var body: some View {
 ///             ViewThatFits(in: .horizontal) {
@@ -54346,8 +55541,10 @@ public struct ViewSpacing {
     /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
     /// with each of these components.
     ///
-    /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-    ///   compile-time error in the future.
+    /// - Important: In your implementation of `hash(into:)`,
+    ///   don't call `finalize()` on the `hasher` instance provided,
+    ///   or replace it with a different instance.
+    ///   Doing so may become a compile-time error in the future.
     ///
     /// - Parameter hasher: The hasher to use when combining the components
     ///   of this instance.
@@ -54366,6 +55563,7 @@ public struct ViewSpacing {
     ///
     /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
     ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+    ///   The compiler provides an implementation for `hashValue` for you.
     public var hashValue: Int { get }
 }
 
@@ -55092,6 +56290,9 @@ public protocol WidgetBundle {
 @available(tvOS, unavailable)
 @resultBuilder public struct WidgetBundleBuilder {
 
+    /// Builds an expression within the builder.
+    public static func buildExpression<Content>(_ content: Content) -> Content where Content : Widget
+
     /// Builds an empty Widget from a block containing no statements, `{ }`.
     public static func buildBlock() -> some Widget
 
@@ -55231,80 +56432,219 @@ extension WidgetConfiguration {
 
 /// A scene that presents a group of identically structured windows.
 ///
-/// Use a `WindowGroup` as a container for a view hierarchy presented by your
-/// app. The hierarchy that you declare as the group's content serves as a
+/// Use a `WindowGroup` as a container for a view hierarchy that your app
+/// presents. The hierarchy that you declare as the group's content serves as a
 /// template for each window that the app creates from that group:
 ///
 ///     @main
 ///     struct Mail: App {
 ///         var body: some Scene {
 ///             WindowGroup {
-///                 MailViewer() // Declare a view hierarchy here.
+///                 MailViewer() // Define a view hierarchy for the window.
 ///             }
 ///         }
 ///     }
 ///
 /// SwiftUI takes care of certain platform-specific behaviors. For example,
-/// on platforms that support it, like macOS and iPadOS, users can open more
-/// than one window from the group simultaneously. In macOS, users
+/// on platforms that support it, like macOS and iPadOS, people can open more
+/// than one window from the group simultaneously. In macOS, people
 /// can gather open windows together in a tabbed interface. Also in macOS,
 /// window groups automatically provide commands for standard window
 /// management.
 ///
-/// Every window created from the group maintains independent state. For
-/// example, for each new window created from the group the system allocates new
-/// storage for any ``State`` or ``StateObject`` variables instantiated by the
-/// scene's view hierarchy.
+/// > Important: To enable an iPadOS app to simultaneously display multiple
+/// windows, be sure to include the
+/// <doc://com.apple.documentation/documentation/bundleresources/information_property_list/uiapplicationscenemanifest/uiapplicationsupportsmultiplescenes>
+/// key with a value of `true` in the
+/// <doc://com.apple.documentation/documentation/bundleresources/information_property_list/uiapplicationscenemanifest>
+/// dictionary of your app's Information Property List.
 ///
-/// You typically use a window group for the main interface of an app that isn't
-/// document-based. For document-based apps, use a ``DocumentGroup`` instead.
+/// Every window in the group maintains independent state. For example, the
+/// system allocates new storage for any ``State`` or ``StateObject`` variables
+/// instantiated by the scene's view hierarchy for each window that it creates.
 ///
-/// A `WindowGroup` can optionally be defined to present data of a given type
-/// that conforms to both
-/// <doc://com.apple.documentation/documentation/Swift/Hashable>
-/// and <doc://com.apple.documentation/documentation/Swift/Codable>.
+/// For document-based apps, use ``DocumentGroup`` to define windows instead.
 ///
-/// When used in conjunction with the ``EnvironmentValues/openWindow`` action,
-/// a window for the group will be opened, and the root view passed a binding
-/// to the presented value.
+/// ### Open windows programmatically
 ///
-/// If a window already exists whose binding has the same value as that which is
-/// being presented, then that window will be brought to the front instead.
+/// If you initialize a window group with an identifier, a presentation type,
+/// or both, you can programmatically open a window from the group. For example,
+/// you can give the mail viewer scene from the previous example an identifier:
 ///
-/// The value of the binding will be persisted for the purposes of state
-/// restoration, and decoded when  the window is restored. The binding will then
-/// be set to the decoded value. If there is an error during the decoding
-/// process, the binding will be set to either the default value or `nil`.
-///
-/// In general, consider using lightweight data for your presentation value.
-/// For structured model values that conform to
-/// <doc://com.apple.documentation/documentation/Swift/Identifiable>,
-/// the value's identifier works well.
-///
-/// For example, you can define a button which opens the specified note item
-/// in a new window.
-///
-///     @main
-///     struct Notes: App {
-///         var body: some Scene {
-///             ...
-///             WindowGroup(for: Note.ID.self) { $noteID in
-///                 ...
-///             }
-///         }
+///     WindowGroup(id: "mail-viewer") { // Identify the window group.
+///         MailViewer()
 ///     }
 ///
-///     struct NewNoteWindow: View {
-///         var note: Note
+/// Elsewhere in your code, you can use the ``EnvironmentValues/openWindow``
+/// action from the environment to create a new window from the group:
+///
+///     struct NewViewerButton: View {
 ///         @Environment(\.openWindow) private var openWindow
 ///
 ///         var body: some View {
-///             Button("Open Note In New Window") {
-///                 openWindow(value: note.id)
+///             Button("Open new mail viewer") {
+///                 openWindow(id: "mail-viewer") // Match the group's identifier.
 ///             }
 ///         }
 ///     }
 ///
+/// Be sure to use unique strings for identifiers that you apply to window
+/// groups in your app.
+///
+/// ### Present data in a window
+///
+/// If you initialize a window group with a presentation type, you can pass
+/// data of that type to the window when you open it. For example, you can
+/// define a second window group for the Mail app that displays a specified
+/// message:
+///
+///     @main
+///     struct Mail: App {
+///         var body: some Scene {
+///             WindowGroup {
+///                 MailViewer(id: "mail-viewer")
+///             }
+///
+///             // A window group that displays messages.
+///             WindowGroup(for: Message.ID.self) { $messageID in
+///                 MessageDetail(messageID: messageID)
+///             }
+///         }
+///     }
+///
+/// When you call the ``EnvironmentValues/openWindow`` action with a
+/// value, SwiftUI finds the window group with the matching type
+/// and passes a binding to the value into the window group's content closure.
+/// For example, you can define a button that opens a message by passing
+/// the message's identifier:
+///
+///     struct NewMessageButton: View {
+///         var message: Message
+///         @Environment(\.openWindow) private var openWindow
+///
+///         var body: some View {
+///             Button("Open message") {
+///                 openWindow(value: message.id)
+///             }
+///         }
+///     }
+///
+/// Be sure that the type you present conforms to both the
+/// <doc://com.apple.documentation/documentation/Swift/Hashable>
+/// and <doc://com.apple.documentation/documentation/Swift/Codable> protocols.
+/// Also, prefer lightweight data for the presentation value.
+/// For model values that conform to the
+/// <doc://com.apple.documentation/documentation/Swift/Identifiable> protocol,
+/// the value's identifier works well as a presentation type, as the above
+/// example demonstrates.
+///
+/// If a window with a binding to the same value that you pass to the
+/// `openWindow` action already appears in the user interface, the system
+/// brings the existing window to the front rather than opening a new window.
+/// If SwiftUI doesn't have a value to provide --- for example, when someone
+/// opens a window by choosing File > New Window from the macOS menu bar ---
+/// SwiftUI passes a binding to a `nil` value instead. To avoid receiving a
+/// `nil` value, you can optionally specify a default value in your window
+/// group initializer. For example, for the message viewer, you can present
+/// a new empty message:
+///
+///     WindowGroup(for: Message.ID.self) { $messageID in
+///         MessageDetail(messageID: messageID)
+///     } defaultValue: {
+///         model.makeNewMessage().id // A new message that your model stores.
+///     }
+///
+/// SwiftUI persists the value of the binding for the purposes of state
+/// restoration, and reapplies the same value when restoring the window. If the
+/// restoration process results in an error, SwiftUI sets the binding to the
+/// default value if you provide one, or `nil` otherwise.
+///
+/// ### Title your app's windows
+///
+/// To help people distinguish among windows from different groups,
+/// include a title as the first parameter in the group's initializer:
+///
+///     WindowGroup("Message", for: Message.ID.self) { $messageID in
+///         MessageDetail(messageID: messageID)
+///     }
+///
+/// SwiftUI uses this title when referring to the window in:
+///
+/// * The list of new windows that someone can open using the File > New menu.
+/// * The window's title bar.
+/// * The list of open windows that the Window menu displays.
+///
+/// If you don't provide a title for a window, the system refers to the window
+/// using the app's name instead.
+///
+/// > Note: You can override the title that SwiftUI uses for a window in the
+///   window's title bar and the menu's list of open windows by adding one of
+///   the ``View/navigationTitle(_:)-avgj`` modifiers to the window's content.
+///   This enables you to customize and dynamically update the title for each
+///   individual window instance.
+///
+/// ### Distinguish windows that present like data
+///
+/// To programmatically distinguish between windows that present the same type
+/// of data, like when you use a
+/// <doc://com.apple.documentation/documentation/Foundation/UUID>
+/// as the identifier for more than one model type, add the `id` parameter
+/// to the group's initializer to provide a unique string identifier:
+///
+///     WindowGroup("Message", id: "message", for: UUID.self) { $uuid in
+///         MessageDetail(uuid: uuid)
+///     }
+///     WindowGroup("Account", id: "account-info", for: UUID.self) { $uuid in
+///         AccountDetail(uuid: uuid)
+///     }
+///
+/// Then use both the identifer and a value to open the window:
+///
+///     struct ActionButtons: View {
+///         var messageID: UUID
+///         var accountID: UUID
+///
+///         @Environment(\.openWindow) private var openWindow
+///
+///         var body: some View {
+///             HStack {
+///                 Button("Open message") {
+///                     openWindow(id: "message", value: messageID)
+///                 }
+///                 Button("Edit account information") {
+///                     openWindow(id: "account-info", value: accountID)
+///                 }
+///             }
+///         }
+///     }
+///
+/// ### Dismiss a window programmatically
+///
+/// The system provides people with platform-appropriate controls to dismiss a
+/// window. You can also dismiss windows programmatically by calling the
+/// ``EnvironmentValues/dismiss`` action from within the window's view
+/// hierarchy. For example, you can include a button in the account detail
+/// view from the previous example that dismisses the view:
+///
+///     struct AccountDetail: View {
+///         var uuid: UUID?
+///         @Environment(\.dismiss) private var dismiss
+///
+///         var body: some View {
+///             VStack {
+///                 // ...
+///
+///                 Button("Dismiss") {
+///                     dismiss()
+///                 }
+///             }
+///         }
+///     }
+///
+/// The dismiss action doesn't close the window if you call it from a
+/// modal --- like a sheet or a popover --- that you present
+/// from the window. In that case, the action dismisses the modal presentation
+/// instead.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct WindowGroup<Content> : Scene where Content : View {
 
@@ -55320,13 +56660,17 @@ public struct WindowGroup<Content> : Scene where Content : View {
     ///     of the group.
     public init(id: String, @ViewBuilder content: () -> Content)
 
-    /// Creates a window group with a localized title and an identifier.
+    /// Creates a window group with a text view title and an identifier.
     ///
-    /// The window group uses the given view as a template to form the content
-    /// of each window in the group.
+    /// The window group uses the specified content as a
+    /// template to create each window in the group.
     /// The system uses the title to distinguish the window group in the user
     /// interface, such as in the name of commands associated with the group.
-    /// The system ignores any text styling in the title.
+    ///
+    /// > Important: The system ignores any text styling that you apply to
+    ///   the ``Text`` view title, like bold or italics. However, you can use
+    ///   the formatting controls that the view offers, like for localization,
+    ///   dates, and numerical representations.
     ///
     /// - Parameters:
     ///   - title: The ``Text`` view to use for the group's title.
@@ -55336,11 +56680,11 @@ public struct WindowGroup<Content> : Scene where Content : View {
     ///     of the group.
     public init(_ title: Text, id: String, @ViewBuilder content: () -> Content)
 
-    /// Creates a window group with a key for localized title string and an
+    /// Creates a window group with a localized title string and an
     /// identifier.
     ///
-    /// The window group uses the given view as a template to form the content
-    /// of each window in the group.
+    /// The window group uses the specified content as a
+    /// template to create each window in the group.
     /// The system uses the title to distinguish the window group in the user
     /// interface, such as in the name of commands associated with the group.
     ///
@@ -55354,8 +56698,8 @@ public struct WindowGroup<Content> : Scene where Content : View {
 
     /// Creates a window group with a title string and an identifier.
     ///
-    /// The window group uses the given view as a template to form the content
-    /// of each window in the group.
+    /// The window group uses the specified content as a
+    /// template to create each window in the group.
     /// The system uses the title to distinguish the window group in the user
     /// interface, such as in the name of commands associated with the group.
     ///
@@ -55376,13 +56720,17 @@ public struct WindowGroup<Content> : Scene where Content : View {
     ///   instance of the group.
     public init(@ViewBuilder content: () -> Content)
 
-    /// Creates a window group with a localized title.
+    /// Creates a window group with a text view title.
     ///
     /// The window group uses the given view as a
     /// template to form the content of each window in the group.
     /// The system uses the title to distinguish the window group in the user
     /// interface, such as in the name of commands associated with the group.
-    /// The system ignores any text styling in the title.
+    ///
+    /// > Important: The system ignores any text styling that you apply to
+    ///   the ``Text`` view title, like bold or italics. However, you can use
+    ///   the formatting controls that the view offers, like for localization,
+    ///   dates, and numerical representations.
     ///
     /// - Parameters:
     ///   - title: The ``Text`` view to use for the group's title.
@@ -55390,10 +56738,10 @@ public struct WindowGroup<Content> : Scene where Content : View {
     ///     of the group.
     public init(_ title: Text, @ViewBuilder content: () -> Content)
 
-    /// Creates a window group with a key for localized title string.
+    /// Creates a window group with a localized title string.
     ///
-    /// The window group uses the given view as a template to form the content
-    /// of each window in the group.
+    /// The window group uses the specified content as a
+    /// template to create each window in the group.
     /// The system uses the title to distinguish the window group in the user
     /// interface, such as in the name of commands associated with the group.
     ///
@@ -55405,8 +56753,8 @@ public struct WindowGroup<Content> : Scene where Content : View {
 
     /// Creates a window group with a title string.
     ///
-    /// The window group uses the given view as a template to form the content
-    /// of each window in the group.
+    /// The window group uses the specified content as a
+    /// template to create each window in the group.
     /// The system uses the title to distinguish the window group in the user
     /// interface, such as in the name of commands associated with the group.
     ///
@@ -55687,6 +57035,9 @@ extension Optional : Gesture where Wrapped : Gesture {
 
     /// The type representing the gesture's value.
     public typealias Value = Wrapped.Value
+
+    /// The type of gesture representing the body of `Self`.
+    public typealias Body = Never
 }
 
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -55706,7 +57057,6 @@ extension CGPoint {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Optional : View where Wrapped : View {
 
-    /// The type of gesture representing the body of `Self`.
     public typealias Body = Never
 }
 
@@ -55757,8 +57107,10 @@ extension NSUserActivity {
         /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
         /// with each of these components.
         ///
-        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
-        ///   compile-time error in the future.
+        /// - Important: In your implementation of `hash(into:)`,
+        ///   don't call `finalize()` on the `hasher` instance provided,
+        ///   or replace it with a different instance.
+        ///   Doing so may become a compile-time error in the future.
         ///
         /// - Parameter hasher: The hasher to use when combining the components
         ///   of this instance.
@@ -55771,6 +57123,7 @@ extension NSUserActivity {
         ///
         /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
         ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        ///   The compiler provides an implementation for `hashValue` for you.
         public var hashValue: Int { get }
     }
 
@@ -55809,6 +57162,8 @@ extension UIColor {
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Optional : ToolbarContent where Wrapped : ToolbarContent {
+
+    public typealias Body = Never
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
