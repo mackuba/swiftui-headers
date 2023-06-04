@@ -28539,6 +28539,7 @@ public protocol NSViewControllerRepresentable : View where Self.Body == Never {
 
     typealias Context = NSViewControllerRepresentableContext<Self>
 
+    @available(macOS 13.0, *)
     typealias LayoutOptions
 }
 
@@ -28773,6 +28774,7 @@ public protocol NSViewRepresentable : View where Self.Body == Never {
 
     typealias Context = NSViewRepresentableContext<Self>
 
+    @available(macOS 13.0, *)
     typealias LayoutOptions
 }
 
@@ -42114,7 +42116,7 @@ extension TabViewStyle where Self == DefaultTabViewStyle {
 ///         private let currencyStyle = Decimal.FormatStyle.Currency(code:"USD")
 ///
 ///         var body: some View {
-///             Table {
+///             Table(of: Purchase.self) {
 ///                 TableColumn("Base price") { purchase in
 ///                     Text(purchase.price, format: currencyStyle)
 ///                 }
@@ -42172,38 +42174,51 @@ public struct Table<Value, Rows, Columns> : View where Value == Rows.TableRowVal
 @available(watchOS, unavailable)
 extension Table {
 
-    /// Creates a table with the given columns and rows.
-    ///
-    /// - Parameters
-    ///   - columns: The columns to display in the table.
-    ///   - rows: The rows to display in the table.
-    public init(@TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
-
-    /// Creates a table with the given columns and rows that supports selecting
-    /// zero or one row.
+    /// Creates a table with the given columns and rows that generates its contents using values of the
+    /// given type.
     ///
     /// - Parameters:
+    ///   - valueType: The type of value used to derive the table's contents.
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    public init(of valueType: Value.Type, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
+
+    /// Creates a table with the given columns and rows that supports selecting
+    /// zero or one row that generates its data using values of the given type.
+    ///
+    /// - Parameters:
+    ///   - valueType: The type of value used to derive the table's contents.
     ///   - selection: A binding to the optional selected row ID.
     ///   - columns: The columns to display in the table.
     ///   - rows: The rows to display in the table.
-    public init(selection: Binding<Value.ID?>, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
+    public init(of valueType: Value.Type, selection: Binding<Value.ID?>, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
 
     /// Creates a table with the given columns and rows that supports selecting
-    /// multiple rows.
+    /// multiple rows that generates its data using values of the given type.
     ///
     /// - Parameters:
+    ///   - valueType: The type of value used to derive the table's contents.
     ///   - selection: A binding to a set that identifies the selected rows IDs.
     ///   - columns: The columns to display in the table.
     ///   - rows: The rows to display in the table.
-    public init(selection: Binding<Set<Value.ID>>, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
+    public init(of valueType: Value.Type, selection: Binding<Set<Value.ID>>, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
 
     /// Creates a sortable table with the given columns and rows.
     ///
-    /// - Parameters
+    /// - Parameters:
     ///   - sortOrder: A binding to the ordered sorting of columns.
     ///   - columns: The columns to display in the table.
     ///   - rows: The rows to display in the table.
     public init<Sort>(sortOrder: Binding<[Sort]>, @TableColumnBuilder<Value, Sort> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows) where Sort : SortComparator, Columns.TableRowValue == Sort.Compared
+
+    /// Creates a sortable table with the given columns and rows.
+    ///
+    /// - Parameters:
+    ///   - valueType: The type of value used to derive the table's contents.
+    ///   - sortOrder: A binding to the ordered sorting of columns.
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    public init<Sort>(of valueType: Value.Type, sortOrder: Binding<[Sort]>, @TableColumnBuilder<Value, Sort> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows) where Sort : SortComparator, Columns.TableRowValue == Sort.Compared
 
     /// Creates a sortable table with the given columns and rows that supports
     /// selecting zero or one row.
@@ -42216,6 +42231,17 @@ extension Table {
     public init<Sort>(selection: Binding<Value.ID?>, sortOrder: Binding<[Sort]>, @TableColumnBuilder<Value, Sort> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows) where Sort : SortComparator, Columns.TableRowValue == Sort.Compared
 
     /// Creates a sortable table with the given columns and rows that supports
+    /// selecting zero or one row.
+    ///
+    /// - Parameters:
+    ///   - valueType: The type of value used to derive the table's contents.
+    ///   - selection: A binding to the optional selected row ID.
+    ///   - sortOrder: A binding to the ordered sorting of columns.
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    public init<Sort>(of valueType: Value.Type, selection: Binding<Value.ID?>, sortOrder: Binding<[Sort]>, @TableColumnBuilder<Value, Sort> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows) where Sort : SortComparator, Columns.TableRowValue == Sort.Compared
+
+    /// Creates a sortable table with the given columns and rows that supports
     /// selecting multiple rows.
     ///
     /// - Parameters:
@@ -42224,6 +42250,60 @@ extension Table {
     ///   - columns: The columns to display in the table.
     ///   - rows: The rows to display in the table.
     public init<Sort>(selection: Binding<Set<Value.ID>>, sortOrder: Binding<[Sort]>, @TableColumnBuilder<Value, Sort> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows) where Sort : SortComparator, Columns.TableRowValue == Sort.Compared
+
+    /// Creates a sortable table with the given columns and rows that supports
+    /// selecting multiple rows.
+    ///
+    /// - Parameters:
+    ///   - valueType: The type of value used to derive the table's contents.
+    ///   - selection: A binding to a set that identifies selected rows ids.
+    ///   - sortOrder: A binding to the ordered sorting of columns.
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    public init<Sort>(of valueType: Value.Type, selection: Binding<Set<Value.ID>>, sortOrder: Binding<[Sort]>, @TableColumnBuilder<Value, Sort> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows) where Sort : SortComparator, Columns.TableRowValue == Sort.Compared
+}
+
+@available(iOS 16.0, macOS 12.0, *)
+@available(tvOS, unavailable)
+@available(watchOS, unavailable)
+extension Table {
+
+    /// Creates a table with the given columns and rows.
+    ///
+    /// - Parameters:
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    @available(iOS, introduced: 16.0, deprecated: 16.2, renamed: "init(of:columns:rows:)", message: "Please specify the Value type of the Table by adding the `of valueType:` parameter. Including this explicit type parameter improves compilation performance and diagnostic messages for this initializer, by avoiding the need to infer a shared `Value` type from the bodies of the `columns:` and `rows:` closures. This warning will become an error in a future release.")
+    @available(macOS, introduced: 12.0, deprecated: 13.1, renamed: "init(of:columns:rows:)", message: "Please specify the Value type of the Table by adding the `of valueType:` parameter. Including this explicit type parameter improves compilation performance and diagnostic messages for this initializer, by avoiding the need to infer a shared `Value` type from the bodies of the `columns:` and `rows:` closures. This warning will become an error in a future release.")
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public init(@TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
+
+    /// Creates a table with the given columns and rows that supports selecting
+    /// zero or one row.
+    ///
+    /// - Parameters:
+    ///   - selection: A binding to the optional selected row ID.
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    @available(iOS, introduced: 16.0, deprecated: 16.2, renamed: "init(of:selection:columns:rows:)", message: "Please specify the Value type of the Table by adding the `of valueType:` parameter. Including this explicit type parameter improves compilation performance and diagnostic messages for this initializer, by avoiding the need to infer a shared `Value` type from the bodies of the `columns:` and `rows:` closures. This warning will become an error in a future release.")
+    @available(macOS, introduced: 12.0, deprecated: 13.1, renamed: "init(of:selection:columns:rows:)", message: "Please specify the Value type of the Table by adding the `of valueType:` parameter. Including this explicit type parameter improves compilation performance and diagnostic messages for this initializer, by avoiding the need to infer a shared `Value` type from the bodies of the `columns:` and `rows:` closures. This warning will become an error in a future release.")
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public init(selection: Binding<Value.ID?>, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
+
+    /// Creates a table with the given columns and rows that supports selecting
+    /// multiple rows.
+    ///
+    /// - Parameters:
+    ///   - selection: A binding to a set that identifies the selected rows IDs.
+    ///   - columns: The columns to display in the table.
+    ///   - rows: The rows to display in the table.
+    @available(iOS, introduced: 16.0, deprecated: 16.2, renamed: "init(of:selection:columns:rows:)", message: "Please specify the Value type of the Table by adding the `of valueType:` parameter. Including this explicit type parameter improves compilation performance and diagnostic messages for this initializer, by avoiding the need to infer a shared `Value` type from the bodies of the `columns:` and `rows:` closures. This warning will become an error in a future release.")
+    @available(macOS, introduced: 12.0, deprecated: 13.1, renamed: "init(of:selection:columns:rows:)", message: "Please specify the Value type of the Table by adding the `of valueType:` parameter. Including this explicit type parameter improves compilation performance and diagnostic messages for this initializer, by avoiding the need to infer a shared `Value` type from the bodies of the `columns:` and `rows:` closures. This warning will become an error in a future release.")
+    @available(tvOS, unavailable)
+    @available(watchOS, unavailable)
+    public init(selection: Binding<Set<Value.ID>>, @TableColumnBuilder<Value, Never> columns: () -> Columns, @TableRowBuilder<Value> rows: () -> Rows)
 }
 
 @available(iOS 16.0, macOS 12.0, *)
