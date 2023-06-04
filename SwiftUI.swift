@@ -3152,7 +3152,7 @@ extension AnyGradient {
 ///
 ///         var body: some View {
 ///             let layout = dynamicTypeSize <= .medium ?
-///                 AnyLayout(HStack()) : AnyLayout(VStack())
+///                 AnyLayout(HStackLayout()) : AnyLayout(VStackLayout())
 ///
 ///             layout {
 ///                 Text("First label")
@@ -3161,6 +3161,11 @@ extension AnyGradient {
 ///         }
 ///     }
 ///
+/// The types that you use with `AnyLayout` must conform to the ``Layout``
+/// protocol. The above example chooses between the ``HStackLayout`` and
+/// ``VStackLayout`` types, which are versions of the built-in ``HStack``
+/// and ``VStack`` containers that conform to the protocol. You can also
+/// use custom layout types that you define.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct AnyLayout : Layout {
 
@@ -3739,7 +3744,7 @@ extension AnyTransition {
     public static func move(edge: Edge) -> AnyTransition
 }
 
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension AnyTransition {
 
     /// Creates a transition that when added to a view will animate the
@@ -10569,7 +10574,7 @@ extension DynamicViewContent {
     ///
     /// - Returns: A view that calls `action` when elements are inserted into
     ///   the original view.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T], Int) -> Void) -> some DynamicViewContent where T : Transferable
 
 }
@@ -18107,6 +18112,10 @@ extension GraphicsContext.GradientOptions : Sendable {
 /// The lower-right contains the word world. The cells of the grid
 /// have minimal vertical or horizontal spacing.](Grid-1-iOS)
 ///
+/// > Note: If you need a grid that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``GridLayout`` instead.
+///
 /// ### Multicolumn cells
 ///
 /// If you provide a view rather than a ``GridRow`` as an element in the
@@ -18426,28 +18435,34 @@ public struct GridItem {
     public init(_ size: GridItem.Size = .flexible(), spacing: CGFloat? = nil, alignment: Alignment? = nil)
 }
 
-/// A layout that arranges other views in a two dimensional layout.
+/// A grid that you can use in conditional layouts.
+///
+/// This layout container behaves like a ``Grid``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``Grid`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct GridLayout {
 
-    /// The alignment of children.
+    /// The alignment of subviews.
     public var alignment: Alignment
 
-    /// The horizontal distance between adjacent children, or nil if
-    /// the stack should choose a default distance for each pair of
-    /// children.
+    /// The horizontal distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default horizonal distances between
+    /// subviews.
     public var horizontalSpacing: CGFloat?
 
-    /// The vertical distance between adjacent children, or nil if
-    /// the stack should choose a default distance for each pair of
-    /// children.
+    /// The vertical distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default vertical distances between
+    /// subviews.
     public var verticalSpacing: CGFloat?
 
-    /// Creates a grid with the specified spacing, alignment, and child
-    /// views.
+    /// Creates a grid with the specified spacing and alignment.
     ///
     /// - Parameters:
-    ///   - alignment: The guide for aligning the child views within the
+    ///   - alignment: The guide for aligning subviews within the
     ///     space allocated for a given cell. The default is
     ///     ``Alignment/center``.
     ///   - horizontalSpacing: The horizontal distance between each cell, given
@@ -19459,12 +19474,12 @@ public struct GroupedListStyle : ListStyle {
     public init()
 }
 
-/// A view that arranges its children in a horizontal line.
+/// A view that arranges its subviews in a horizontal line.
 ///
 /// Unlike ``LazyHStack``, which only renders the views when your app needs to
 /// display them onscreen, an `HStack` renders the views all at once, regardless
 /// of whether they are on- or offscreen. Use the regular `HStack` when you have
-/// a small number of child views or don't want the delayed rendering behavior
+/// a small number of subviews or don't want the delayed rendering behavior
 /// of the "lazy" version.
 ///
 /// The following example shows a simple horizontal stack of five text views:
@@ -19486,6 +19501,9 @@ public struct GroupedListStyle : ListStyle {
 /// ![Five text views, named Item 1 through Item 5, arranged in a
 /// horizontal row.](SwiftUI-HStack-simple.png)
 ///
+/// > Note: If you need a horizontal stack that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``HStackLayout`` instead.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct HStack<Content> : View where Content : View {
 
@@ -19493,7 +19511,7 @@ public struct GroupedListStyle : ListStyle {
     ///
     /// - Parameters:
     ///   - alignment: The guide for aligning the subviews in this stack. This
-    ///     guide has the same vertical screen coordinate for every child view.
+    ///     guide has the same vertical screen coordinate for every subview.
     ///   - spacing: The distance between adjacent subviews, or `nil` if you
     ///     want the stack to choose a default distance for each pair of
     ///     subviews.
@@ -19507,26 +19525,31 @@ public struct GroupedListStyle : ListStyle {
     public typealias Body = Never
 }
 
-/// A layout that arranges its children in a horizontal line.
+/// A horizontal container that you can use in conditional layouts.
+///
+/// This layout container behaves like an ``HStack``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``HStack`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct HStackLayout : Layout {
 
-    /// The vertical alignment of children.
+    /// The vertical alignment of subviews.
     public var alignment: VerticalAlignment
 
-    /// The distance between adjacent children, or `nil` if the stack should
-    /// choose a default distance for each pair of children.
+    /// The distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default distances between subviews.
     public var spacing: CGFloat?
 
-    /// Creates an instance with the given spacing and vertical alignment.
+    /// Creates a horizontal stack with the specified spacing and vertical
+    /// alignment.
     ///
     /// - Parameters:
     ///     - alignment: The guide for aligning the subviews in this stack. It
-    ///       has the same vertical screen coordinate for all children.
-    ///     - spacing: The distance between adjacent subviews, or `nil` if you
-    ///       want the stack to choose a default distance for each pair of
-    ///       subviews.
-    ///     - content: A view builder that creates the content of this stack.
+    ///       has the same vertical screen coordinate for all subviews.
+    ///     - spacing: The distance between adjacent subviews. Set this value
+    ///       to `nil` to use default distances between subviews.
     @inlinable public init(alignment: VerticalAlignment = .center, spacing: CGFloat? = nil)
 
     /// The type defining the data to animate.
@@ -25525,6 +25548,24 @@ extension LocalizedStringKey.StringInterpolation {
     public mutating func appendInterpolation(_ interval: DateInterval)
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension LocalizedStringKey.StringInterpolation {
+
+    /// Appends a timer interval to a string interpolation.
+    ///
+    /// Don't call this method directly; it's used by the compiler when
+    /// interpreting string interpolations.
+    ///
+    /// - Parameters:
+    ///     - timerInterval: The interval between where to run the timer.
+    ///     - pauseTime: If present, the date at which to pause the timer.
+    ///         The default is `nil` which indicates to never pause.
+    ///     - countsDown: Whether to count up or down. The default is `true`.
+    ///     - showsHours: Whether to include an hours component if there are
+    ///         more than 60 minutes left on the timer. The default is `true`.
+    public mutating func appendInterpolation(timerInterval: ClosedRange<Date>, pauseTime: Date? = nil, countsDown: Bool = true, showsHours: Bool = true)
+}
+
 extension LocalizedStringKey.StringInterpolation {
 
     /// Appends the localized string resource to a string interpolation.
@@ -28453,7 +28494,7 @@ public struct NavigationSplitViewVisibility : Equatable, Codable {
     /// - Parameters:
     ///   - lhs: A value to compare.
     ///   - rhs: Another value to compare.
-    public static func == (a: NavigationSplitViewVisibility, b: NavigationSplitViewVisibility) -> Bool
+    public static func == (lhs: NavigationSplitViewVisibility, rhs: NavigationSplitViewVisibility) -> Bool
 
     /// Encodes this value into the given encoder.
     ///
@@ -31367,7 +31408,7 @@ extension ProgressView {
     ///     }
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countdown` parameter to
+    /// the date range to the end. You can use the `countsDown` parameter to
     /// create a progress view that fills as time passes. In this example, the
     /// progress view begins 80% percent complete:
     ///
@@ -31376,7 +31417,7 @@ extension ProgressView {
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countdown: false) {
+    ///             ProgressView(interval: start...end, countsDown: false) {
     ///                 Text("Timer")
     ///             }
     ///         }
@@ -31386,13 +31427,13 @@ extension ProgressView {
     /// automatically updates to describe the current time remaining.
     ///
     /// - Parameters:
-    ///     - interval: The date range over which the view should progress.
-    ///     - countdown: If `true`, the view empties as time passes. The
+    ///     - timerInterval: The date range over which the view should progress.
+    ///     - countsDown: If `true`, the view empties as time passes. The
     ///       default is `true`.
     ///     - label: A view that describes the purpose of the progress view.
     ///     - currentValueLabel: A view that displays the current value of the
     ///       timer.
-    public init(interval: ClosedRange<Date>, countdown: Bool = true, @ViewBuilder label: () -> Label, @ViewBuilder currentValueLabel: () -> CurrentValueLabel)
+    public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label, @ViewBuilder currentValueLabel: () -> CurrentValueLabel)
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -31410,12 +31451,12 @@ extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end)
+    ///             ProgressView(timerInterval: start...end)
     ///         }
     ///     }
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countdown` parameter to
+    /// the date range to the end. You can use the `countsDown` parameter to
     /// create a progress view that fills as time passes. In this example, the
     /// progress view begins 80% percent complete:
     ///
@@ -31424,7 +31465,7 @@ extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countdown: false) {
+    ///             ProgressView(timerInterval: start...end, countsDown: false) {
     ///                 Text("Timer")
     ///             }
     ///         }
@@ -31434,11 +31475,11 @@ extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
     /// automatically updates to describe the current time remaining.
     ///
     /// - Parameters:
-    ///     - interval: The date range over which the view should progress.
-    ///     - countdown: If `true`, the view empties as time passes. The
+    ///     - timerInterval: The date range over which the view should progress.
+    ///     - countsDown: If `true`, the view empties as time passes. The
     ///       default is `true`.
     ///     - label: A view that describes the purpose of the progress view.
-    public init(interval: ClosedRange<Date>, countdown: Bool = true, @ViewBuilder label: () -> Label)
+    public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label)
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -31456,7 +31497,7 @@ extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDat
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end)
+    ///             ProgressView(timerInterval: start...end)
     ///         }
     ///     }
     ///
@@ -31470,7 +31511,7 @@ extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDat
     ///             let currentDate = Date()
     ///             let start = currentDate.addingTimeInterval(-150)
     ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countdown: false) {
+    ///             ProgressView(timerInterval: start...end, countsDown: false) {
     ///                 Text("Timer")
     ///             }
     ///         }
@@ -31480,10 +31521,10 @@ extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDat
     /// automatically updates to describe the current time remaining.
     ///
     /// - Parameters:
-    ///     - interval: The date range over which the view should progress.
-    ///     - countdown: If `true`, the view empties as time passes. The
+    ///     - timerInterval: The date range over which the view should progress.
+    ///     - countsDown: If `true`, the view empties as time passes. The
     ///       default is `true`.
-    public init(interval: ClosedRange<Date>, countdown: Bool = true)
+    public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true)
 }
 
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -42131,6 +42172,29 @@ extension Text {
     public init(_ interval: DateInterval)
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+extension Text {
+
+    /// Creates an instance that displays a timer counting within the provided
+    /// interval.
+    ///
+    ///     Text(
+    ///         timerInterval: Date.now...Date(timeInterval: 12 * 60, since: .now))
+    ///         pauseTime: Date.now + (10 * 60))
+    ///
+    /// The example above shows a text that displays a timer counting down
+    /// from "12:00" and will pause when reaching "10:00".
+    ///
+    /// - Parameters:
+    ///     - timerInterval: The interval between where to run the timer.
+    ///     - pauseTime: If present, the date at which to pause the timer.
+    ///         The default is `nil` which indicates to never pause.
+    ///     - countsDown: Whether to count up or down. The default is `true`.
+    ///     - showsHours: Whether to include an hours component if there are
+    ///         more than 60 minutes left on the timer. The default is `true`.
+    public init(timerInterval: ClosedRange<Date>, pauseTime: Date? = nil, countsDown: Bool = true, showsHours: Bool = true)
+}
+
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Text {
 
@@ -48061,12 +48125,12 @@ extension UserInterfaceSizeClass : Equatable {
 extension UserInterfaceSizeClass : Hashable {
 }
 
-/// A view that arranges its children in a vertical line.
+/// A view that arranges its subviews in a vertical line.
 ///
 /// Unlike ``LazyVStack``, which only renders the views when your app needs to
-/// display them onscreen, a `VStack` renders the views all at once, regardless
+/// display them, a `VStack` renders the views all at once, regardless
 /// of whether they are on- or offscreen. Use the regular `VStack` when you have
-/// a small number of child views or don't want the delayed rendering behavior
+/// a small number of subviews or don't want the delayed rendering behavior
 /// of the "lazy" version.
 ///
 /// The following example shows a simple vertical stack of 10 text views:
@@ -48088,6 +48152,9 @@ extension UserInterfaceSizeClass : Hashable {
 /// ![Ten text views, named Item 1 through Item 10, arranged in a
 /// vertical line.](SwiftUI-VStack-simple.png)
 ///
+/// > Note: If you need a vertical stack that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``VStackLayout`` instead.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct VStack<Content> : View where Content : View {
 
@@ -48095,7 +48162,7 @@ extension UserInterfaceSizeClass : Hashable {
     ///
     /// - Parameters:
     ///   - alignment: The guide for aligning the subviews in this stack. This
-    ///     guide has the same vertical screen coordinate for every child view.
+    ///     guide has the same vertical screen coordinate for every subview.
     ///   - spacing: The distance between adjacent subviews, or `nil` if you
     ///     want the stack to choose a default distance for each pair of
     ///     subviews.
@@ -48109,24 +48176,31 @@ extension UserInterfaceSizeClass : Hashable {
     public typealias Body = Never
 }
 
-/// A layout that arranges its children in a horizontal line.
+/// A vertical container that you can use in conditional layouts.
+///
+/// This layout container behaves like a ``VStack``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``VStack`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct VStackLayout : Layout {
 
-    /// The horizontal alignment of children.
+    /// The horizontal alignment of subviews.
     public var alignment: HorizontalAlignment
 
-    /// The distance between adjacent children, or nil if the stack should
-    /// choose a default distance for each pair of children.
+    /// The distance between adjacent subviews.
+    ///
+    /// Set this value to `nil` to use default distances between subviews.
     public var spacing: CGFloat?
 
-    /// Creates an instance with the given `spacing` and Y axis `alignment`.
+    /// Creates a vertical stack with the specified spacing and horizontal
+    /// alignment.
     ///
     /// - Parameters:
-    ///     - alignment: the guide that will have the same horizontal screen
-    ///       coordinate for all children.
-    ///     - spacing: the distance between adjacent children, or nil if the
-    ///       stack should choose a default distance for each pair of children.
+    ///     - alignment: The guide for aligning the subviews in this stack. It
+    ///       has the same horizontal screen coordinate for all subviews.
+    ///     - spacing: The distance between adjacent subviews. Set this value
+    ///       to `nil` to use default distances between subviews.
     @inlinable public init(alignment: HorizontalAlignment = .center, spacing: CGFloat? = nil)
 
     /// The type defining the data to animate.
@@ -53626,126 +53700,81 @@ extension View {
 @available(watchOS, unavailable)
 extension View {
 
-    /// Adds an item-based context menu to a view.
+    /// Adds an item-based context menu to the view.
     ///
-    /// You can add an item-based context menu to a container that supports
-    /// selection, like a ``List`` or a ``Table``. In the closure that you
-    /// use to define the menu, you receive a collection of items that
-    /// depends on the selection state of the container and the location where
-    /// the person clicks or taps to activate the menu. The collection contains:
+    /// Use an item-based context menu with a container that supports selection,
+    /// such as a `List` or `Table`. The modifier's closure will be invoked by
+    /// the container to construct a context menu for the current context.
     ///
-    /// * The selected item or items, when people initiate the context menu
-    ///   from any selected item.
-    /// * Nothing, if people tap or click to activate the context menu from
-    ///   an empty part of the container. This is true even when one or more
-    ///   items is currently selected.
+    /// The following example shows a `List` that supports an empty area menu, a
+    /// single-item menu, and a multi-item menu.
     ///
-    /// You can vary the menu contents according to the number of selected
-    /// items. For example, the following code has a list that defines an
-    /// empty area menu, a single item menu, and a multi-item menu:
-    ///
-    ///     struct ContextMenuItemExample: View {
-    ///         var items: [Item]
-    ///         @State private var selection = Set<Item.ID>()
-    ///
-    ///         var body: some View {
-    ///             List(selection: $selection) {
-    ///                 ForEach(items) { item in
-    ///                     Text(item.name)
-    ///                 }
-    ///             }
-    ///             .contextMenu(forSelectionType: Item.ID.self) { items in
-    ///                 if items.isEmpty { // Empty area menu.
-    ///                     Button("New Item") { }
-    ///
-    ///                 } else if items.count == 1 { // Single item menu.
-    ///                     Button("Copy") { }
-    ///                     Button("Delete", role: .destructive) { }
-    ///
-    ///                 } else { // Multi-item menu.
-    ///                     Button("Copy") { }
-    ///                     Button("New Folder With Selection") { }
-    ///                     Button("Delete Selected", role: .destructive) { }
-    ///                 }
-    ///             }
+    ///     List(selection: $selection) {
+    ///         // ...
+    ///     }
+    ///     .contextMenu(forSelectionType: ItemID.self) { items in
+    ///         if items.isEmpty {
+    ///             // Empty area menu
+    ///             Button("New Item") { ... }
+    ///         } else if items.count == 1 {
+    ///             // Single-item menu
+    ///             Button("Copy") { ... }
+    ///             Button("Delete", role: .destructive) { ... }
+    ///         } else {
+    ///             // Multi-item menu
+    ///             Button("Copy") { ... }
+    ///             Button("New Folder With Selection") { ... }
+    ///             Button("Delete Selected", role: .destructive) { ... }
     ///         }
     ///     }
     ///
-    /// The above example assumes that the `Item` type conforms to the
-    /// <doc://com.apple.documentation/documentation/Swift/Identifiable>
-    /// protocol, and relies on the associated `ID` type for both selection
-    /// and context menu presentation.
+    /// ### Primary Actions
     ///
-    /// If you add the modifier to a view hierarchy that doesn't have a
-    /// container that supports selection, the context menu never activates.
-    /// To add a context menu that doesn't depend on selection behavior, use
-    /// ``View/contextMenu(menuItems:)``. To add a context menu to a specific
-    /// row in a table, use ``TableRowContent/contextMenu(menuItems:)``.
+    /// Context menus can be created with a custom primary action. In macOS,
+    /// a single click on a row in a selectable container selects that row,
+    /// and you double click to perform the primary action. In iOS and iPadOS,
+    /// tapping on the row is enough to trigger the primary action. To select
+    /// a row without performing an action, either enter edit mode or hold
+    /// shift or command on a keyboard while tapping the row.
     ///
-    /// - Parameters:
-    ///   - itemType: The identifier type of the items. Ensure that this
-    ///     matches the container's selection type.
-    ///   - menu: A closure that produces the menu. A single parameter to the
-    ///     closure contains the set of items to act on. An empty set indicates
-    ///     menu activation over the empty area of the selectable container,
-    ///     while a non-empty set indicates menu activation over selected items.
-    ///     Use controls like ``Button``, ``Picker``, and ``Toggle`` to define
-    ///     the menu items. You can also create submenus using ``Menu``, or
-    ///     group items with ``Section``. You can deactivate the context menu
-    ///     by returning nothing from the closure.
+    /// In the example below, double clicking the row on macOS will open a
+    /// new window viewing the selection.
     ///
-    /// - Returns: A view that can display an item-based context menu.
-    public func contextMenu<I, M>(forSelectionType itemType: I.Type = I.self, @ViewBuilder menu: @escaping (Set<I>) -> M) -> some View where I : Hashable, M : View
-
-}
-
-extension View {
-
-    /// Adds an item-based context action to the view.
+    ///     @Environment(\.openWindow) private var openWindow
     ///
-    /// Use this modifier on a container that supports selection, like
-    /// a ``List`` or ``Table``. The container invokes the modifier's closure
-    /// when someone initiates a primary action, like a double click or a tap,
-    /// on the container's current selection. For example, the following list
-    /// prints the set of selected items to the console:
-    ///
-    ///     struct ContextActionExample: View {
-    ///         var items: [Item]
-    ///         @State private var selection = Set<Item.ID>()
-    ///
-    ///         var body: some View {
-    ///             List(selection: $selection) {
-    ///                 ForEach(items) { item in
-    ///                     Text(item.name)
-    ///                 }
+    ///     List(selection: $selection) {
+    ///         // ...
+    ///     }
+    ///     .contextMenu(forSelectionType: ItemID.self) { items in
+    ///         if !items.isEmpty {
+    ///             Button("Open in New Window") {
+    ///                 openItemsInWindow(items)
     ///             }
-    ///             .contextAction(forSelectionType: Item.ID.self) { items in
-    ///                 for item in items {
-    ///                     print(item.name)
-    ///                 }
-    ///             }
+    ///         }
+    ///     } primaryAction: { items in
+    ///         openItemsInWindow(items)
+    ///     }
+    ///
+    ///     func openItemsInWindow(_ items: Set<ItemID>) {
+    ///         for item in items {
+    ///             openWindow(value: item)
     ///         }
     ///     }
     ///
-    /// The above example assumes that the `Item` type conforms to the
-    /// <doc://com.apple.documentation/documentation/Swift/Identifiable>
-    /// protocol, and relies on the associated `ID` type for both selection
-    /// and the context action.
+    /// > Note: using this modifier without a selectable container as a
+    ///   descendant will result in no menu being shown when the menu gesture
+    ///   activates.
     ///
-    /// To add a context menu instead of an action, use
-    /// ``View/contextMenu(forSelectionType:menu:)`` instead.
-    ///
-    /// - Parameters:
-    ///   - itemType: The identifier type of the items. Ensure this matches
-    ///     the selection type of the associated container.
-    ///   - action: The closure to invoke when someone initiates the
-    ///     collection's selection action.
-    ///
-    /// - Returns: A view that executes an action in response to an input event.
-    @available(iOS 16.0, macOS 13.0, *)
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public func contextAction<I>(forSelectionType type: I.Type = I.self, action: @escaping (Set<I>) -> Void) -> some View where I : Hashable
+    /// - Parameter itemType: The identifier type of the items. This must match
+    ///   the selection type of the container that will present the menu.
+    /// - Parameter menu: A view that produces the menu. The parameter is a set
+    ///   of the items the menu should act on. If the set is empty, the menu was
+    ///   activated over the empty area of the selectable container.
+    /// - Parameter primaryAction: The action to perform on primary interaction
+    ///   of the items.
+    /// - Returns: A view that sets the item-based contextual menu for this
+    ///   view.
+    public func contextMenu<I, M>(forSelectionType itemType: I.Type = I.self, @ViewBuilder menu: @escaping (Set<I>) -> M, primaryAction: ((Set<I>) -> Void)? = nil) -> some View where I : Hashable, M : View
 
 }
 
@@ -63524,50 +63553,6 @@ extension View {
 
 }
 
-extension View {
-
-    /// Defines a region of the window in which default focus is evaluated by
-    /// assigning a value to a given focus state binding.
-    ///
-    /// By default, SwiftUI evaluates default focus when the window first
-    /// appears, and when a focus state binding update moves focus
-    /// automatically, but not when responding to user-driven navigation
-    /// commands.
-    ///
-    /// Clients can override the default behavior by specifying an evaluation
-    /// priority of ``DefaultFocusEvaluationPriority/userInitiated``, which
-    /// causes SwiftUI to use the client's preferred default focus in response
-    /// to user-driven focus navigation as well as automatic changes.
-    ///
-    /// In the following example, focus automatically goes to the second of the
-    /// two text fields when the view is first presented in the window.
-    ///
-    ///     WindowGroup {
-    ///         VStack {
-    ///             TextField(...)
-    ///                 .focused($focusedField, equals: .firstField)
-    ///             TextField(...)
-    ///                 .focused($focusedField, equals: .secondField)
-    ///         }
-    ///         .defaultFocus($focusedField, .secondField)
-    ///     }
-    ///
-    /// - Parameters:
-    ///   - binding: A focus state binding to update when evaluating default
-    ///     focus in the modified view hierarchy.
-    ///   - value: The value to set the binding to during evaluation.
-    ///   - priority: An indication of how to prioritize the preferred default
-    ///     focus target when focus moves into the modified view hierarchy.
-    ///     The default value is `automatic`, which means the preference will
-    ///     be given priority when focus is being initialized or relocated
-    ///     programmatically, but not when responding to user-directed
-    ///     navigation commands.
-    /// - Returns: The modified view.
-    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-    public func defaultFocus<V>(_ binding: FocusState<V>.Binding, _ value: V, priority: DefaultFocusEvaluationPriority = .automatic) -> some View where V : Hashable
-
-}
-
 @available(iOS 14.0, macOS 11.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
@@ -65601,13 +65586,13 @@ extension WindowGroup {
     public init<S, D, C>(_ title: S, for type: D.Type = D.self, @ViewBuilder content: @escaping (Binding<D>) -> C, defaultValue: @escaping () -> D) where Content == PresentedWindowContent<D, C>, S : StringProtocol, D : Decodable, D : Encodable, D : Hashable, C : View
 }
 
-/// A view that overlays its children, aligning them in both axes.
+/// A view that overlays its subviews, aligning them in both axes.
 ///
-/// The `ZStack` assigns each successive child view a higher z-axis value than
-/// the one before it, meaning later children appear "on top" of earlier ones.
+/// The `ZStack` assigns each successive subview a higher z-axis value than
+/// the one before it, meaning later subviews appear "on top" of earlier ones.
 ///
 /// The following example creates a `ZStack` of 100 x 100 point ``Rectangle``
-/// views filled with one of six colors, offsetting each successive child view
+/// views filled with one of six colors, offsetting each successive subview
 /// by 10 points so they don't completely overlap:
 ///
 ///     let colors: [Color] =
@@ -65630,9 +65615,9 @@ extension WindowGroup {
 /// seen.](SwiftUI-ZStack-offset-rectangles.png)
 ///
 /// The `ZStack` uses an ``Alignment`` to set the x- and y-axis coordinates of
-/// each child, defaulting to a ``Alignment/center`` alignment. In the following
+/// each subview, defaulting to a ``Alignment/center`` alignment. In the following
 /// example, the `ZStack` uses a ``Alignment/bottomLeading`` alignment to lay
-/// out two children, a red 100 x 50 point rectangle below, and a blue 50 x 100
+/// out two subviews, a red 100 x 50 point rectangle below, and a blue 50 x 100
 /// point rectangle on top. Because of the alignment value, both rectangles
 /// share a bottom-left corner with the `ZStack` (in locales where left is the
 /// leading side).
@@ -65654,6 +65639,9 @@ extension WindowGroup {
 /// The rectangles share their bottom left point with the containing green
 /// square.](SwiftUI-ZStack-alignment.png)
 ///
+/// > Note: If you need a version of this stack that conforms to the ``Layout``
+/// protocol, like when you want to create a conditional layout using
+/// ``AnyLayout``, use ``ZStackLayout`` instead.
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct ZStack<Content> : View where Content : View {
 
@@ -65672,14 +65660,19 @@ extension WindowGroup {
     public typealias Body = Never
 }
 
-/// A layout that overlays its children, aligning them in both axes.
+/// An overlaying container that you can use in conditional layouts.
+///
+/// This layout container behaves like a ``ZStack``, but conforms to the
+/// ``Layout`` protocol so you can use it in the conditional layouts that you
+/// construct with ``AnyLayout``. If you don't need a conditional layout, use
+/// ``ZStack`` instead.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen public struct ZStackLayout : Layout {
 
-    /// The alignment of children.
+    /// The alignment of subviews.
     public var alignment: Alignment
 
-    /// Creates an instance with the given alignment.
+    /// Creates a stack with the specified alignment.
     ///
     /// - Parameters:
     ///   - alignment: The guide for aligning the subviews in this stack
