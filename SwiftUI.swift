@@ -654,7 +654,10 @@ public struct AccessibilityQuickActionPromptStyle : AccessibilityQuickActionStyl
 
 /// A type that describes the presentation style of an
 /// accessibility quick action.
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@available(watchOS 9.0, *)
+@available(iOS, unavailable)
+@available(macOS, unavailable)
+@available(tvOS, unavailable)
 public protocol AccessibilityQuickActionStyle {
 }
 
@@ -4810,7 +4813,7 @@ extension BackgroundTask {
     /// Connectivity framework.
     public static var watchConnectivity: BackgroundTask<Void, Void> { get }
 
-    /// A background task used to recieve critical alerts from paired
+    /// A background task used to receive critical alerts from paired
     /// bluetooth accessories.
     public static var bluetoothAlert: BackgroundTask<Void, Void> { get }
 }
@@ -6184,17 +6187,18 @@ public struct CircularGaugeStyle : GaugeStyle {
     public typealias Body = some View
 }
 
-/// A progress view that visually indicates its progress using a circular
-/// gauge.
+/// A progress view that uses a circular gauge to indicate the partial
+/// completion of an activity.
 ///
-/// On watchOS, and in widgets and complications, a circular progress view will
-/// appear as an `accessoryCircularCapacity` styled gauge. If the progress
-/// view is indeterminate, the gauge will be empty.
+/// On watchOS, and in widgets and complications, a circular progress view
+/// appears as a gauge with the ``GaugeStyle/accessoryCircularCapacity``
+/// style. If the progress view is indeterminate, the gauge is empty.
 ///
 /// In cases where no determinate circular progress view style is available,
-/// an indeterminate style will be used.
+/// circular progress views use an indeterminate style.
 ///
-/// You can also use ``ProgressViewStyle/circular`` to construct this style.
+/// Use ``ProgressViewStyle/circular`` to construct the circular progress view
+/// style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct CircularProgressViewStyle : ProgressViewStyle {
 
@@ -6406,6 +6410,7 @@ extension Color {
     public init(_ name: String, bundle: Bundle? = nil)
 }
 
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Color : Transferable {
 
     /// One group of colors–constant colors–created with explicitly specified
@@ -7385,6 +7390,7 @@ extension ContentSizeCategory {
 ///
 /// Content transitions only take effect within the context of an
 /// ``Animation`` block.
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct ContentTransition : Equatable {
 
     /// The identity content transition, which indicates that content changes
@@ -7786,7 +7792,10 @@ extension CustomizableToolbarContent {
     ///
     /// Use the ``CustomizableToolbarContent/defaultCustomization(_:options:)``
     /// modifier providing either a `defaultVisibility` or `options` instead.
-    @available(*, deprecated, message: "Please provide either a visibility or customization options")
+    @available(iOS, introduced: 16.0, deprecated: 16.0, message: "Please provide either a visibility or customization options")
+    @available(macOS, introduced: 13.0, deprecated: 13.0, message: "Please provide either a visibility or customization options")
+    @available(tvOS, introduced: 16.0, deprecated: 16.0, message: "Please provide either a visibility or customization options")
+    @available(watchOS, introduced: 9.0, deprecated: 9.0, message: "Please provide either a visibility or customization options")
     public func defaultCustomization() -> some CustomizableToolbarContent
 
 }
@@ -7813,7 +7822,8 @@ public struct DefaultButtonStyle : PrimitiveButtonStyle {
     public typealias Body = some View
 }
 
-/// The default type of current value label for a date-relative progress view.
+/// The default type of the current value label when used by a date-relative
+/// progress view.
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct DefaultDateProgressLabel : View {
 
@@ -7938,7 +7948,7 @@ public struct DefaultPickerStyle : PickerStyle {
 /// The default progress view style in the current context of the view being
 /// styled.
 ///
-/// You can also use ``ProgressViewStyle/automatic`` to construct this style.
+/// Use ``ProgressViewStyle/automatic`` to construct this style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct DefaultProgressViewStyle : ProgressViewStyle {
 
@@ -8612,6 +8622,7 @@ extension DynamicViewContent {
     ///             .dropDestination(for: Profile.self) { receivedProfiles, offset in
     ///                 profiles.insert(contentsOf: receivedProfiles, at: offset)
     ///             }
+    ///         }
     ///     }
     ///
     /// - Parameters:
@@ -12187,6 +12198,10 @@ extension Font {
     /// Sets the weight of the font.
     public func weight(_ weight: Font.Weight) -> Font
 
+    /// Sets the width of the font.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func width(_ width: Font.Width) -> Font
+
     /// Adds bold styling to the font.
     public func bold() -> Font
 
@@ -12300,6 +12315,57 @@ extension Font {
         ///   - lhs: A value to compare.
         ///   - rhs: Another value to compare.
         public static func == (a: Font.Weight, b: Font.Weight) -> Bool
+
+        /// The hash value.
+        ///
+        /// Hash values are not guaranteed to be equal across different executions of
+        /// your program. Do not save hash values to use during a future execution.
+        ///
+        /// - Important: `hashValue` is deprecated as a `Hashable` requirement. To
+        ///   conform to `Hashable`, implement the `hash(into:)` requirement instead.
+        public var hashValue: Int { get }
+    }
+
+    /// A width to use for fonts that have multiple widths.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public struct Width : Hashable {
+
+        public var value: CGFloat
+
+        public static let compressed: Font.Width
+
+        public static let condensed: Font.Width
+
+        public static let standard: Font.Width
+
+        public static let expanded: Font.Width
+
+        public init(_ value: CGFloat)
+
+        /// Hashes the essential components of this value by feeding them into the
+        /// given hasher.
+        ///
+        /// Implement this method to conform to the `Hashable` protocol. The
+        /// components used for hashing must be the same as the components compared
+        /// in your type's `==` operator implementation. Call `hasher.combine(_:)`
+        /// with each of these components.
+        ///
+        /// - Important: Never call `finalize()` on `hasher`. Doing so may become a
+        ///   compile-time error in the future.
+        ///
+        /// - Parameter hasher: The hasher to use when combining the components
+        ///   of this instance.
+        public func hash(into hasher: inout Hasher)
+
+        /// Returns a Boolean value indicating whether two values are equal.
+        ///
+        /// Equality is the inverse of inequality. For any values `a` and `b`,
+        /// `a == b` implies that `a != b` is `false`.
+        ///
+        /// - Parameters:
+        ///   - lhs: A value to compare.
+        ///   - rhs: Another value to compare.
+        public static func == (a: Font.Width, b: Font.Width) -> Bool
 
         /// The hash value.
         ///
@@ -18226,12 +18292,12 @@ extension Image.Interpolation : Hashable {
 ///     }
 ///
 ///     private func createAwardView(forUser: String, date: Date) -> some View {
-///         return VStack {
-///              Image(systemName: "trophy")
-///                .resizable()
-///                .frame(width: 200, height: 200)
-///                .frame(maxWidth: .infinity, maxHeight: .infinity)
-///                .shadow(color: .mint, radius: 5)
+///         VStack {
+///             Image(systemName: "trophy")
+///                 .resizable()
+///                 .frame(width: 200, height: 200)
+///                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+///                 .shadow(color: .mint, radius: 5)
 ///             Text(playerName)
 ///                 .font(.largeTitle)
 ///             Text(achievementDate.formatted())
@@ -18252,6 +18318,13 @@ extension Image.Interpolation : Hashable {
 /// renderer to rasterize a new image each time the subscriber receives an
 /// update.
 ///
+/// - Important: `ImageRenderer` output only includes views that SwiftUI renders,
+/// such as text, images, shapes, and composite views of these types. It
+/// does not render views provided by native platform frameworks (AppKit and
+/// UIKit) such as web views, media players, and some controls. For these views,
+/// `ImageRenderer` displays a placeholder image, similar to the behavior of
+/// ``View/drawingGroup(opaque:colorMode:)``.
+///
 /// ### Rendering to a PDF context
 ///
 /// The ``render(rasterizationScale:renderer:)`` method renders the specified
@@ -18263,8 +18336,10 @@ extension Image.Interpolation : Hashable {
 /// view hierarchy, such as text, symbol images, lines, shapes, and fills.
 ///
 /// The following example uses the `createAwardView(forUser:date:)` method from
-/// the previous example, and exports its contents as a one-page PDF to the file
-/// URL `renderURL`:
+/// the previous example, and exports its contents as an 800-by-600 point PDF to
+/// the file URL `renderURL`. It uses the `size` parameter sent to the
+/// rendering closure to center the `trophyAndDate` view vertically and
+/// horizontally on the page.
 ///
 ///     var body: some View {
 ///         let trophyAndDate = createAwardView(forUser: playerName,
@@ -18272,18 +18347,22 @@ extension Image.Interpolation : Hashable {
 ///         VStack {
 ///             trophyAndDate
 ///             Button("Save Achievement") {
-///                 if let consumer = CGDataConsumer(url: renderURL as CFURL),
-///                    let pdfContext = CGContext(consumer: consumer, mediaBox: nil, nil) {
-///                     let renderer = ImageRenderer(content: trophyAndDate)
-///                     renderer.render { size, renderer in
-///                         let options: [CFString: Any] = [
-///                             kCGPDFContextMediaBox: CGRect(origin: .zero, size: size)
-///                         ]
-///                         pdfContext.beginPDFPage(options as CFDictionary)
-///                         renderer(pdfContext)
-///                         pdfContext.endPDFPage()
-///                         pdfContext.closePDF()
+///                 let renderer = ImageRenderer(content: trophyAndDate)
+///                 renderer.render { size, renderer in
+///                     var mediaBox = CGRect(origin: .zero,
+///                                           size: CGSize(width: 800, height: 600))
+///                     guard let consumer = CGDataConsumer(url: renderURL as CFURL),
+///                           let pdfContext =  CGContext(consumer: consumer,
+///                                                       mediaBox: &mediaBox, nil)
+///                     else {
+///                         return
 ///                     }
+///                     pdfContext.beginPDFPage(nil)
+///                     pdfContext.translateBy(x: mediaBox.size.width / 2 - size.width / 2,
+///                                            y: mediaBox.size.height / 2 - size.height / 2)
+///                     renderer(pdfContext)
+///                     pdfContext.endPDFPage()
+///                     pdfContext.closePDF()
 ///                 }
 ///             }
 ///         }
@@ -18934,8 +19013,8 @@ extension LabelStyleConfiguration.Icon : View {
 ///             MyCustomView(value: $value)
 ///         }
 ///         Picker("Selected Value", selection: $selection) {
-///             PickerOption("Option 1", 1)
-///             PickerOption("Option 2", 2)
+///             Text("Option 1").tag(1)
+///             Text("Option 2").tag(2)
 ///         }
 ///     }
 ///
@@ -19027,8 +19106,8 @@ extension LabelStyleConfiguration.Icon : View {
 ///             MyCustomView(value: $value)
 ///         }
 ///         Picker("Selected Value", selection: $selection) {
-///             PickerOption("Option 1", 1)
-///             PickerOption("Option 2", 2)
+///             Text("Option 1").tag(1)
+///             Text("Option 2").tag(2)
 ///         }
 ///     }
 ///     .labels(.hidden)
@@ -20767,6 +20846,22 @@ public enum LegibilityWeight : Hashable {
     public var hashValue: Int { get }
 }
 
+/// A type-erased widget configuration.
+///
+/// You don't use this type directly. Instead SwiftUI creates this type on
+/// your behalf.
+@available(iOS 16.1, macOS 13.0, watchOS 9.1, *)
+@available(tvOS, unavailable)
+@frozen public struct LimitedAvailabilityConfiguration : WidgetConfiguration {
+
+    /// The type of widget configuration representing the body of
+    /// this configuration.
+    ///
+    /// When you create a custom widget, Swift infers this type from your
+    /// implementation of the required `body` property.
+    public typealias Body = Never
+}
+
 /// A gauge style that displays bar that fills from leading to trailing
 /// edges as the gauge's current value increases.
 ///
@@ -20854,7 +20949,7 @@ public struct LinearGaugeStyle : GaugeStyle {
 
 /// A progress view that visually indicates its progress using a horizontal bar.
 ///
-/// You can also use ``ProgressViewStyle/linear`` to construct this style.
+/// Use ``ProgressViewStyle/linear`` to construct this style.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct LinearProgressViewStyle : ProgressViewStyle {
 
@@ -23652,6 +23747,22 @@ extension NavigationLink where Destination == _WKStoryboardContent {
     public init<V>(destinationName: String, tag: V, selection: Binding<V?>, @ViewBuilder label: () -> Label) where V : Hashable
 }
 
+/// A picker style represented by a navigation link that presents the options
+/// by pushing a List-style picker view.
+///
+/// In navigation stacks, prefer the default ``PickerStyle/menu`` style.
+/// Consider the navigation link style when you have a large number of
+/// options or your design is better expressed by pushing onto a stack.
+///
+/// You can also use ``PickerStyle/navigationLink`` to construct this style.
+@available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
+@available(macOS, unavailable)
+public struct NavigationLinkPickerStyle : PickerStyle {
+
+    /// Creates a navigation link picker style.
+    public init()
+}
+
 /// A type-erased list of data representing the content of a navigation stack.
 ///
 /// You can manage the state of a ``NavigationStack`` by initializing the stack
@@ -25508,6 +25619,22 @@ extension PickerStyle where Self == DefaultPickerStyle {
     public static var automatic: DefaultPickerStyle { get }
 }
 
+@available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
+@available(macOS, unavailable)
+extension PickerStyle where Self == NavigationLinkPickerStyle {
+
+    /// A picker style represented by a navigation link that presents the options
+    /// by pushing a List-style picker view.
+    ///
+    /// In navigation stacks, prefer the default ``PickerStyle/menu`` style.
+    /// Consider the navigation link style when you have a large number of
+    /// options or your design is better expressed by pushing onto a stack.
+    ///
+    /// To apply this style to a picker, or to a view that contains pickers,
+    /// use the ``View/pickerStyle(_:)`` modifier.
+    public static var navigationLink: NavigationLinkPickerStyle { get }
+}
+
 /// A set of view types that may be pinned to the bounds of a scroll view.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct PinnedScrollableViews : OptionSet {
@@ -26287,9 +26414,9 @@ public struct PrimitiveButtonStyleConfiguration {
     public func trigger()
 }
 
-/// A view that shows the progress towards completion of a task.
+/// A view that shows the progress toward completion of a task.
 ///
-/// Use a progress view to show that a task is making progress towards
+/// Use a progress view to show that a task is incomplete but advancing toward
 /// completion. A progress view can show both determinate (percentage complete)
 /// and indeterminate (progressing or not) types of progress.
 ///
@@ -26302,14 +26429,22 @@ public struct PrimitiveButtonStyleConfiguration {
 /// a determinate `ProgressView`. The progress view uses its default total of
 /// `1.0`, and because `progress` starts with an initial value of `0.5`,
 /// the progress view begins half-complete. A "More" button below the progress
-/// view allows the user to increment the progress in 5% increments:
+/// view allows people to increment the progress in increments of five percent:
 ///
-///     @State private var progress = 0.5
+///     struct LinearProgressDemoView: View {
+///         @State private var progress = 0.5
 ///
-///     VStack {
-///         ProgressView(value: progress)
-///         Button("More", action: { progress += 0.05 })
+///         var body: some View {
+///             VStack {
+///                 ProgressView(value: progress)
+///                 Button("More") { progress += 0.05 }
+///             }
+///         }
 ///     }
+///
+/// ![A horizontal bar that represents progress, with a More button
+/// placed underneath. The progress bar is at 50 percent from the leading
+/// edge.](ProgressView-1-macOS)
 ///
 /// To create an indeterminate progress view, use an initializer that doesn't
 /// take a progress value:
@@ -26318,33 +26453,84 @@ public struct PrimitiveButtonStyleConfiguration {
 ///         ProgressView()
 ///     }
 ///
+/// ![An indeterminate progress view, presented as a spinning set of gray lines
+/// emanating from the center of a circle, with opacity varying from fully
+/// opaque to transparent. An animation rotates which line is most opaque,
+/// creating the spinning effect.](ProgressView-2-macOS)
+///
+/// You can also create a progress view that covers a closed range of
+/// <doc://com.apple.documentation/documentation/Foundation/Date> values. As long
+/// as the current date is within the range, the progress view automatically
+/// updates, filling or depleting the progress view as it nears the end of the
+/// range. The following example shows a five-minute timer whose start time is
+/// that of the progress view's initialization:
+///
+///     struct DateRelativeProgressDemoView: View {
+///         let workoutDateRange = Date()...Date().addingTimeInterval(5*60)
+///
+///         var body: some View {
+///              ProgressView(timerInterval: workoutDateRange) {
+///                  Text("Workout")
+///              }
+///         }
+///     }
+///
+/// ![A horizontal progress view that shows a bar partially filled with as it
+/// counts a five-minute duration.](ProgressView-3-macOS)
+///
 /// ### Styling progress views
 ///
 /// You can customize the appearance and interaction of progress views by
 /// creating styles that conform to the ``ProgressViewStyle`` protocol. To set a
 /// specific style for all progress view instances within a view, use the
 /// ``View/progressViewStyle(_:)`` modifier. In the following example, a custom
-/// style adds a dark blue shadow to all progress views within the enclosing
+/// style adds a rounded pink border to all progress views within the enclosing
 /// ``VStack``:
 ///
-///     struct ShadowedProgressViews: View {
+///     struct BorderedProgressViews: View {
 ///         var body: some View {
 ///             VStack {
-///                 ProgressView(value: 0.25)
-///                 ProgressView(value: 0.75)
+///                 ProgressView(value: 0.25) { Text("25% progress") }
+///                 ProgressView(value: 0.75) { Text("75% progress") }
 ///             }
-///             .progressViewStyle(DarkBlueShadowProgressViewStyle())
+///             .progressViewStyle(PinkBorderedProgressViewStyle())
 ///         }
 ///     }
 ///
-///     struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
+///     struct PinkBorderedProgressViewStyle: ProgressViewStyle {
 ///         func makeBody(configuration: Configuration) -> some View {
 ///             ProgressView(configuration)
-///                 .shadow(color: Color(red: 0, green: 0, blue: 0.6),
-///                         radius: 4.0, x: 1.0, y: 2.0)
+///                 .padding(4)
+///                 .border(.pink, width: 3)
+///                 .cornerRadius(4)
 ///         }
 ///     }
 ///
+/// ![Two horizontal progress views, one at 25 percent complete and the other at 75 percent,
+/// each rendered with a rounded pink border.](ProgressView-4-macOS)
+///
+/// SwiftUI provides two built-in progress view styles,
+/// ``ProgressViewStyle/linear`` and ``ProgressViewStyle/circular``, as well as
+/// an automatic style that defaults to the most appropriate style in the
+/// current context. The following example shows a circular progress view that
+/// starts at 60 percent completed.
+///
+///     struct CircularProgressDemoView: View {
+///         @State private var progress = 0.6
+///
+///         var body: some View {
+///             VStack {
+///                 ProgressView(value: progress)
+///                     .progressViewStyle(.circular)
+///             }
+///         }
+///     }
+///
+/// ![A ring shape, filled to 60 percent completion with a blue
+/// tint.](ProgressView-5-macOS)
+///
+/// On platforms other than macOS, the circular style may appear as an
+/// indeterminate indicator instead.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct ProgressView<Label, CurrentValueLabel> : View where Label : View, CurrentValueLabel : View {
 
@@ -26375,46 +26561,52 @@ public struct ProgressView<Label, CurrentValueLabel> : View where Label : View, 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension ProgressView {
 
-    /// Creates a progress view for showing continuous progress with time.
+    /// Creates a progress view for showing continuous progress as time passes,
+    /// with descriptive and current progress labels.
     ///
-    /// Use this method to create a view that shows continuous progress within a
-    /// date range. In the example below, the progress view is initialized with
-    /// a range of `start...end` and so
-    /// the progress view begins half-complete.
+    /// Use this initializer to create a view that shows continuous progress
+    /// within a date range. The following example initializes a progress view
+    /// with a range of `start...end`, where `start` is 30 seconds in the past
+    /// and `end` is 90 seconds in the future. As a result, the progress view
+    /// begins at 25 percent complete. This example also provides custom views
+    /// for a descriptive label (Progress) and a current value label that shows
+    /// the date range.
     ///
-    ///     struct NowPlayingDetails: View {
+    ///     struct ContentView: View {
+    ///         let start = Date().addingTimeInterval(-30)
+    ///         let end = Date().addingTimeInterval(90)
+    ///
     ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end)
-    ///         }
+    ///             ProgressView(interval: start...end,
+    ///                          countsDown: false) {
+    ///                 Text("Progress")
+    ///             } currentValueLabel: {
+    ///                 Text(start...end)
+    ///              }
+    ///          }
     ///     }
+    ///
+    /// ![A horizontal bar that represents progress, partially filled in from
+    /// the leading edge. The title, Progress, appears above the bar, and the
+    /// date range, 1:43 to 1:45 PM, appears below the bar. These values represent
+    /// the time progress began and when it ends, given a current time of
+    /// 1:44.](ProgressView-6-macOS)
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countsDown` parameter to
-    /// create a progress view that fills as time passes. In this example, the
-    /// progress view begins 80% percent complete:
+    /// the date range to the end, but you can use the `countsDown` parameter to
+    /// create a progress view that fills as time passes, as the above example
+    /// demonstrates.
     ///
-    ///     struct TimerView: View {
-    ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(interval: start...end, countsDown: false) {
-    ///                 Text("Timer")
-    ///             }
-    ///         }
-    ///     }
-    ///
-    /// By default, the progress view will be labeled with text that
-    /// automatically updates to describe the current time remaining.
+    /// > Note: Date-relative progress views, such as those created with this
+    ///   initializer, don't support custom styles.
     ///
     /// - Parameters:
     ///     - timerInterval: The date range over which the view should progress.
-    ///     - countsDown: If `true`, the view empties as time passes. The
-    ///       default is `true`.
-    ///     - label: A view that describes the purpose of the progress view.
+    ///     - countsDown: A Boolean value that determines whether the view
+    ///       empties or fills as time passes. If `true` (the default), the
+    ///       view empties.
+    ///     - label: An optional view that describes the purpose of the progress
+    ///       view.
     ///     - currentValueLabel: A view that displays the current value of the
     ///       timer.
     public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label, @ViewBuilder currentValueLabel: () -> CurrentValueLabel)
@@ -26423,91 +26615,96 @@ extension ProgressView {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension ProgressView where CurrentValueLabel == DefaultDateProgressLabel {
 
-    /// Creates a progress view for showing continuous progress with time.
+    /// Creates a progress view for showing continuous progress as time passes,
+    /// with a descriptive label.
     ///
-    /// Use this method to create a view that shows continuous progress within a
-    /// date range. In the example below, the progress view is initialized with
-    /// a range of `start...end` and so
-    /// the progress view begins half-complete.
+    /// Use this initializer to create a view that shows continuous progress
+    /// within a date range. The following example initializes a progress view
+    /// with a range of `start...end`, where `start` is 30 seconds in the past
+    /// and `end` is 90 seconds in the future. As a result, the progress view
+    /// begins at 25 percent complete. This example also provides a custom
+    /// descriptive label.
     ///
-    ///     struct NowPlayingDetails: View {
+    ///     struct ContentView: View {
+    ///         let start = Date().addingTimeInterval(-30)
+    ///         let end = Date().addingTimeInterval(90)
+    ///
     ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end)
+    ///             ProgressView(interval: start...end,
+    ///                          countsDown: false) {
+    ///                 Text("Progress")
+    ///              }
     ///         }
     ///     }
+    ///
+    /// ![A horizontal bar that represents progress, partially filled in from
+    /// the leading edge. The title, Progress, appears above the bar, and the
+    /// elapsed time, 0:34, appears below the bar.](ProgressView-7-macOS)
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countsDown` parameter to
-    /// create a progress view that fills as time passes. In this example, the
-    /// progress view begins 80% percent complete:
+    /// the date range to the end, but you can use the `countsDown` parameter to
+    /// create a progress view that fills as time passes, as the above example
+    /// demonstrates.
     ///
-    ///     struct TimerView: View {
-    ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end, countsDown: false) {
-    ///                 Text("Timer")
-    ///             }
-    ///         }
-    ///     }
+    /// The progress view provided by this initializer uses a text label that
+    /// automatically updates to describe the current time remaining. To provide
+    /// a custom label to show the current value, use
+    /// ``init(value:total:label:currentValueLabel:)`` instead.
     ///
-    /// By default, the progress view will be labeled with text that
-    /// automatically updates to describe the current time remaining.
+    /// > Note: Date-relative progress views, such as those created with this
+    ///   initializer, don't support custom styles.
     ///
     /// - Parameters:
-    ///     - timerInterval: The date range over which the view should progress.
-    ///     - countsDown: If `true`, the view empties as time passes. The
-    ///       default is `true`.
-    ///     - label: A view that describes the purpose of the progress view.
+    ///     - timerInterval: The date range over which the view progresses.
+    ///     - countsDown: A Boolean value that determines whether the view
+    ///       empties or fills as time passes. If `true` (the default), the
+    ///       view empties.
+    ///     - label: An optional view that describes the purpose of the progress
+    ///       view.
     public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true, @ViewBuilder label: () -> Label)
 }
 
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension ProgressView where Label == EmptyView, CurrentValueLabel == DefaultDateProgressLabel {
 
-    /// Creates a progress view for showing continuous progress with time.
+    /// Creates a progress view for showing continuous progress as time passes.
     ///
-    /// Use this method to create a view that shows continuous progress within a
-    /// date range. In the example below, the progress view is initialized with
-    /// a range of `start...end` and so
-    /// the progress view begins half-complete.
+    /// Use this initializer to create a view that shows continuous progress
+    /// within a date range. The following example initializes a progress view
+    /// with a range of `start...end`, where `start` is 30 seconds in the past
+    /// and `end` is 90 seconds in the future. As a result, the progress view
+    /// begins at 25 percent complete.
     ///
-    ///     struct NowPlayingDetails: View {
+    ///     struct ContentView: View {
+    ///         let start = Date().addingTimeInterval(-30)
+    ///         let end = Date().addingTimeInterval(90)
+    ///
     ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end)
+    ///             ProgressView(interval: start...end
+    ///                          countsDown: false)
     ///         }
     ///     }
+    ///
+    /// ![A horizontal bar that represents progress, partially filled in from
+    /// the leading edge. The elapsed time, 0:34, appears below the
+    /// bar.](ProgressView-8-macOS)
     ///
     /// By default, the progress view empties as time passes from the start of
-    /// the date range to the end. You can use the `countdown` parameter to
-    /// create a progress view that fills as time passes. In this example, the
-    /// progress view begins 80 percent complete:
+    /// the date range to the end, but you can use the `countsDown` parameter to
+    /// create a progress view that fills as time passes, as the above example
+    /// demonstrates.
     ///
-    ///     struct TimerView: View {
-    ///         var body: some View {
-    ///             let currentDate = Date()
-    ///             let start = currentDate.addingTimeInterval(-150)
-    ///             let end = currentDate.addingTimeInterval(150)
-    ///             ProgressView(timerInterval: start...end, countsDown: false) {
-    ///                 Text("Timer")
-    ///             }
-    ///         }
-    ///     }
+    /// The progress view provided by this initializer omits a descriptive
+    /// label and provides a text label that automatically updates to describe
+    /// the current time remaining. To provide custom views for these labels,
+    /// use ``init(value:total:label:currentValueLabel:)`` instead.
     ///
-    /// By default, the progress view will be labeled with text that
-    /// automatically updates to describe the current time remaining.
+    /// > Note: Date-relative progress views, such as those created with this
+    ///   initializer, don't support custom styles.
     ///
     /// - Parameters:
-    ///     - timerInterval: The date range over which the view should progress.
-    ///     - countsDown: If `true`, the view empties as time passes. The
-    ///       default is `true`.
+    ///     - timerInterval: The date range over which the view progresses.
+    ///     - countsDown: If `true` (the default), the view empties as time passes.
     public init(timerInterval: ClosedRange<Date>, countsDown: Bool = true)
 }
 
@@ -26680,19 +26877,28 @@ extension ProgressView {
     /// ``ProgressViewStyle`` to create an instance of the styled progress view.
     /// This is useful for custom progress view styles that only modify the
     /// current progress view style, as opposed to implementing a brand new
-    /// style.
+    /// style. Because this modifier style can't know how the current style
+    /// represents progress, avoid making assumptions about the view's contents,
+    /// such as whether it uses bars or other shapes.
     ///
-    /// For example, the following style adds a dark blue shadow to the progress
-    /// view, but otherwise preserves the progress view's current style:
+    /// The following example shows a style that adds a rounded pink border to a
+    /// progress view, but otherwise preserves the progress view's current
+    /// style:
     ///
-    ///     struct DarkBlueShadowProgressViewStyle: ProgressViewStyle {
+    ///     struct PinkBorderedProgressViewStyle: ProgressViewStyle {
     ///         func makeBody(configuration: Configuration) -> some View {
     ///             ProgressView(configuration)
-    ///                 .shadow(color: Color(red: 0, green: 0, blue: 0.6),
-    ///                         radius: 4.0, x: 1.0, y: 2.0)
+    ///                 .padding(4)
+    ///                 .border(.pink, width: 3)
+    ///                 .cornerRadius(4)
     ///         }
     ///     }
     ///
+    /// ![Two horizontal progress views, one at 25 percent complete and the
+    /// other at 75 percent, each rendered with a rounded pink
+    /// border.](ProgressView-4-macOS)
+    ///
+    /// - Note: Progress views in widgets don't apply custom styles.
     public init(_ configuration: ProgressViewStyleConfiguration) where Label == ProgressViewStyleConfiguration.Label, CurrentValueLabel == ProgressViewStyleConfiguration.CurrentValueLabel
 }
 
@@ -26734,15 +26940,15 @@ extension ProgressViewStyle where Self == LinearProgressViewStyle {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension ProgressViewStyle where Self == CircularProgressViewStyle {
 
-    /// A progress view that visually indicates its progress using a circular
-    /// gauge.
+    /// The style of a progress view that uses a circular gauge to indicate the
+    /// partial completion of an activity.
     ///
-    /// On watchOS, and in widgets and complications, a circular progress view will
-    /// appear as an `accessoryCircularCapacity` styled gauge. If the progress
-    /// view is indeterminate, the gauge will be empty.
+    /// On watchOS, and in widgets and complications, a circular progress view
+    /// appears as a gauge with the ``GaugeStyle/accessoryCircularCapacity``
+    /// style. If the progress view is indeterminate, the gauge is empty.
     ///
     /// In cases where no determinate circular progress view style is available,
-    /// an indeterminate style will be used.
+    /// circular progress views use an indeterminate style.
     public static var circular: CircularProgressViewStyle { get }
 }
 
@@ -35408,6 +35614,14 @@ extension Text {
     /// - Returns: Text that uses the font weight you specify.
     public func fontWeight(_ weight: Font.Weight?) -> Text
 
+    /// Sets the font width of the text.
+    ///
+    /// - Parameter width: One of the available font widths.
+    ///
+    /// - Returns: Text that uses the font width you specify, if available.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func fontWidth(_ width: Font.Width?) -> Text
+
     /// Applies a bold font weight to the text.
     ///
     /// - Returns: Bold text.
@@ -35435,6 +35649,14 @@ extension Text {
     /// - Returns: Italic text.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func italic(_ isActive: Bool) -> Text
+
+    /// Sets the font design of the text.
+    ///
+    /// - Parameter design: One of the available font designs.
+    ///
+    /// - Returns: Text that uses the font design you specify.
+    @available(iOS 16.1, macOS 13.0, tvOS 16.1, watchOS 9.1, *)
+    public func fontDesign(_ design: Font.Design?) -> Text
 
     /// Modifies the text view's font to use fixed-width digits, while leaving
     /// other characters proportionally spaced.
@@ -38596,6 +38818,7 @@ extension ToolbarItem where ID == () {
     public init(placement: ToolbarItemPlacement = .automatic, @ViewBuilder content: () -> Content)
 }
 
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension ToolbarItem : CustomizableToolbarContent where ID == String {
 
     /// Creates a toolbar item with the specified placement and content,
@@ -40736,16 +40959,27 @@ extension View {
 
     /// Sets the specified style to render backgrounds within the view.
     ///
-    /// The following examples sets the ``ShapeStyle/background`` style
-    /// to draw symbol backgrounds when enabled:
+    /// The following example uses this modifier to set the
+    /// ``EnvironmentValues/backgroundStyle`` environment value to a
+    /// ``ShapeStyle/blue`` color that includes a subtle ``Color/gradient``.
+    /// SwiftUI fills the ``Circle`` shape that acts as a background element
+    /// with this style:
     ///
     ///     Image(systemName: "swift")
-    ///         .backgroundStyle(.blue)
-    ///         .symbolVariant(.background)
+    ///         .padding()
+    ///         .background(in: Circle())
+    ///         .backgroundStyle(.blue.gradient)
     ///
-    /// To restore the default background style, set
-    /// the ``EnvironmentValues/backgroundStyle`` environment value to
-    /// `nil` using the ``View/environment(_:_:)`` modifer.
+    /// ![An image of the Swift logo inside a circle that's blue with a slight
+    /// linear gradient. The blue color is slightly lighter at the top of the
+    /// circle and slightly darker at the bottom.](View-backgroundStyle-1-iOS)
+    ///
+    /// To restore the default background style, set the
+    /// ``EnvironmentValues/backgroundStyle`` environment value to
+    /// `nil` using the ``View/environment(_:_:)`` modifer:
+    ///
+    ///     .environment(\.backgroundStyle, nil)
+    ///
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     @inlinable public func backgroundStyle<S>(_ style: S) -> some View where S : ShapeStyle
 
@@ -41446,12 +41680,8 @@ extension View {
     ///         Button("Select", action: selectFolders)
     ///         Button("New Folder", action: createFolder)
     ///         Picker("Appearance", selection: $appearance) {
-    ///             PickerOption(value: .icons) {
-    ///                 Label("Icons", systemImage: "square.grid.2x2")
-    ///             }
-    ///             PickerOption(value: .list) {
-    ///                 Label("List", systemImage: "list.bullet")
-    ///             }
+    ///             Label("Icons", systemImage: "square.grid.2x2").tag(Appearance.icons)
+    ///             Label("List", systemImage: "list.bullet").tag(Appearance.list)
     ///         }
     ///     } label: {
     ///         Label("Settings", systemImage: "ellipsis.circle")
@@ -41463,9 +41693,9 @@ extension View {
     /// ``PickerStyle/menu`` style with a priority-based order:
     ///
     ///     Picker("Flavor", selection: $selectedFlavor) {
-    ///         PickerOption("Chocolate", value: .chocolate)
-    ///         PickerOption("Vanilla", value: .vanilla)
-    ///         PickerOption("Strawberry", value: .strawberry)
+    ///         Text("Chocolate").tag(Flavor.chocolate)
+    ///         Text("Vanilla").tag(Flavor.vanilla)
+    ///         Text("Strawberry").tag(Flavor.strawberry)
     ///     }
     ///     .pickerStyle(.menu)
     ///     .menuOrder(.priority)
@@ -43917,8 +44147,7 @@ extension View {
 
 }
 
-@available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-@available(macOS, unavailable)
+@available(iOS 13.0, macOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension View {
 
     /// Hides the navigation bar for this view.
@@ -44049,7 +44278,6 @@ extension View {
     ///
     /// - Parameter hidesBackButton: A Boolean value that indicates whether to
     ///   hide the back button. The default value is `true`.
-    @available(macOS, unavailable)
     public func navigationBarBackButtonHidden(_ hidesBackButton: Bool = true) -> some View
 
 }
@@ -45265,7 +45493,7 @@ extension View {
     /// container that supports selection, like a ``List`` or a ``Table``, and
     /// to distinguish between menu activation on a selection and
     /// activation in an empty area of the container, use
-    /// ``View/contextMenu(forSelectionType:menu:)``.
+    /// ``View/contextMenu(forSelectionType:menu:primaryAction:)``.
     ///
     /// - Parameter menuItems: A closure that produces the menu's contents. You
     ///   can deactivate the context menu by returning nothing from the closure.
@@ -45842,17 +46070,21 @@ extension View {
     /// Presents an alert when a given condition is true, using a localized
     /// string key for the title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert("An error occurred.", isPresented: $didFail) {
+    ///                 .alert(
+    ///                     "Login failed.",
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 }
     ///         }
@@ -45891,18 +46123,22 @@ extension View {
     /// Presents an alert when a given condition is true, using a string
     /// variable as a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
-    ///         var title: String
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert(title, isPresented: $didFail) {
+    ///                 .alert(
+    ///                     alertTitle,
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 }
     ///         }
@@ -45935,19 +46171,22 @@ extension View {
     /// Presents an alert when a given condition is true, using a text view for
     /// the title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
     ///                 .alert(
-    ///                     Text("An error occurred."), isPresented: $didFail
+    ///                     Text(alertTitle),
+    ///                     isPresented: $didFail
     ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 }
     ///         }
@@ -45984,20 +46223,24 @@ extension View {
     /// Presents an alert with a message when a given condition is true, using
     /// a localized string key for a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert("An error occurred.", isPresented: $didFail) {
+    ///                 .alert(
+    ///                     "Login failed.",
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 } message: {
-    ///                     Text("Please ensure your credentials are correct.")
+    ///                     Text("Please check your credentials and try again.")
     ///                 }
     ///         }
     ///     }
@@ -46038,21 +46281,25 @@ extension View {
     /// Presents an alert with a message when a given condition is true using
     /// a string variable as a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
-    ///         var title: String
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
-    ///                 .alert(title, isPresented: $didFail) {
+    ///                 .alert(
+    ///                     alertTitle,
+    ///                     isPresented: $didFail
+    ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 } message: {
-    ///                     Text("Please ensure your credentials are correct.")
+    ///                     Text("Please check your credentials and try again.")
     ///                 }
     ///         }
     ///     }
@@ -46087,22 +46334,25 @@ extension View {
     /// Presents an alert with a message when a given condition is true using
     /// a text view as a title.
     ///
-    /// In the example below, a button conditionally presents an alert depending
-    /// upon the value of a bound Boolean variable. When the Boolean value is
-    /// set to `true`, the system displays an alert with an "OK" action.
+    /// In the example below, a login form conditionally presents an alert by
+    /// setting the `didFail` state variable. When the form sets the value to
+    /// to `true`, the system displays an alert with an "OK" action.
     ///
-    ///     struct LoginView: View {
-    ///         @Binding var didFail: Bool
+    ///     struct Login: View {
+    ///         @State private var didFail = false
+    ///         let alertTitle: String = "Login failed."
+    ///
     ///         var body: some View {
     ///             LoginForm(didFail: $didFail)
     ///                 .alert(
-    ///                     Text("An error occurred."), isPresented: $didFail
+    ///                     Text(alertTitle),
+    ///                     isPresented: $didFail
     ///                 ) {
     ///                     Button("OK") {
-    ///                         // Handle acknowledgement.
+    ///                         // Handle the acknowledgement.
     ///                     }
     ///                 } message: {
-    ///                     Text("Please ensure your credentials are correct.")
+    ///                    Text("Please check your credentials and try again.")
     ///                 }
     ///         }
     ///     }
@@ -46153,27 +46403,29 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 "Saving Failed.", isPresented: $didError,
+    ///                 "Save failed.",
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
     ///             }
     ///         }
@@ -46229,27 +46481,30 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         var title: String
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 title, isPresented: $didError, presenting: details
-    ///             ) { detail in
+    ///                 alertTitle,
+    ///                 isPresented: $didError,
+    ///                 presenting: details
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
     ///             }
     ///         }
@@ -46299,28 +46554,30 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         var title: String
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
-    ///         var body: some View {
-    ///             Button("Save File") {
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
+    ///             var body: some View {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 Text("Saving Failed."), isPresented: $didError,
+    ///                 Text(alertTitle),
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
     ///             }
     ///         }
@@ -46374,30 +46631,32 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 "Saving Failed.", isPresented: $didError,
+    ///                 "Save failed.",
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
-    ///             } message: { detail in
-    ///                 Text(detail.error)
+    ///             } message: { details in
+    ///                 Text(details.error)
     ///             }
     ///         }
     ///     }
@@ -46456,30 +46715,33 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         var title: String
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 title, isPresented: $didError, presenting: details
-    ///             ) { detail in
+    ///                 alertTitle,
+    ///                 isPresented: $didError,
+    ///                 presenting: details
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
-    ///             } message: { detail in
-    ///                 Text(detail.error)
+    ///             } message: { details in
+    ///                 Text(details.error)
     ///             }
     ///         }
     ///     }
@@ -46532,30 +46794,33 @@ extension View {
     ///     struct SaveDetails: Identifiable {
     ///         let name: String
     ///         let error: String
+    ///         let id = UUID()
     ///     }
-    ///     struct SaveView: View {
-    ///         @State var didError = false
-    ///         @State var details: SaveDetails?
+    ///
+    ///     struct SaveButton: View {
+    ///         @State private var didError = false
+    ///         @State private var details: SaveDetails?
+    ///         let alertTitle: String = "Save failed."
+    ///
     ///         var body: some View {
-    ///             Button("Save File") {
+    ///             Button("Save") {
     ///                 details = model.save(didError: $didError)
     ///             }
     ///             .alert(
-    ///                 Text("Saving Failed."), isPresented: $didError,
+    ///                 Text(alertTitle),
+    ///                 isPresented: $didError,
     ///                 presenting: details
-    ///             ) { detail in
+    ///             ) { details in
     ///                 Button(role: .destructive) {
-    ///                     // Handle delete action.
+    ///                     // Handle the deletion.
     ///                 } label: {
-    ///                     Text("""
-    ///                     Delete \(detail.name)
-    ///                     """)
+    ///                     Text("Delete \(details.name)")
     ///                 }
     ///                 Button("Retry") {
-    ///                     // handle retry action.
+    ///                     // Handle the retry action.
     ///                 }
-    ///             } message: { detail in
-    ///                 Text(detail.error)
+    ///             } message: { details in
+    ///                 Text(details.error)
     ///             }
     ///         }
     ///     }
@@ -46599,17 +46864,18 @@ extension View {
 
     /// Presents an alert when an error is present.
     ///
-    /// In the example below, a button conditionally presents an alert depending
+    /// In the example below, a form conditionally presents an alert depending
     /// upon the value of an error. When the error value isn't `nil`, the system
     /// presents an alert with an "OK" action.
     ///
     /// The title of the alert is inferred from the error's `errorDescription`.
     ///
-    ///     struct TicketPurchaseView: View {
-    ///         @Binding var error: TicketPurchaseError?
-    ///         @State var showAlert = false
+    ///     struct TicketPurchase: View {
+    ///         @State private var error: TicketPurchaseError? = nil
+    ///         @State private var showAlert = false
+    ///
     ///         var body: some View {
-    ///             TicketForm(error: $error)
+    ///             TicketForm(showAlert: $showAlert, error: $error)
     ///                 .alert(isPresented: $showAlert, error: error) {
     ///                     Button("OK") {
     ///                         // Handle acknowledgement.
@@ -46652,25 +46918,24 @@ extension View {
 
     /// Presents an alert with a message when an error is present.
     ///
-    /// In the example below, a button conditionally presents an alert depending
+    /// In the example below, a form conditionally presents an alert depending
     /// upon the value of an error. When the error value isn't `nil`, the system
     /// presents an alert with an "OK" action.
     ///
     /// The title of the alert is inferred from the error's `errorDescription`.
     ///
-    ///     struct TicketPurchaseView: View {
-    ///         @Binding var error: TicketPurchaseError?
-    ///         @State var showAlert = false
+    ///     struct TicketPurchase: View {
+    ///         @State private var error: TicketPurchaseError? = nil
+    ///         @State private var showAlert = false
+    ///
     ///         var body: some View {
-    ///             TicketForm(error: $error)
-    ///                 .alert(isPresented: $showAlert, error: error) {
+    ///             TicketForm(showAlert: $showAlert, error: $error)
+    ///                 .alert(isPresented: $showAlert, error: error) { _ in
     ///                     Button("OK") {
     ///                         // Handle acknowledgement.
     ///                     }
     ///                 } message: { error in
-    ///                     // Here, recommendation is a property of the
-    ///                     // TicketPurchaseError type.
-    ///                     Text(error.recommendation)
+    ///                     Text(error.recoverySuggestion ?? "Try again later.")
     ///                 }
     ///         }
     ///     }
@@ -47268,6 +47533,17 @@ extension View {
     public func fontWeight(_ weight: Font.Weight?) -> some View
 
 
+    /// Sets the font width of the text in this view.
+    ///
+    /// - Parameter width: One of the available font widths.
+    ///   Providing `nil` removes the effect of any font width
+    ///   modifier applied higher in the view hierarchy.
+    ///
+    /// - Returns: A view that uses the font width you specify.
+    @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+    public func fontWidth(_ width: Font.Width?) -> some View
+
+
     /// Applies a bold font weight to the text in this view.
     ///
     /// - Parameter isActive: A Boolean value that indicates
@@ -47286,6 +47562,17 @@ extension View {
     /// - Returns: A View with italic text.
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public func italic(_ isActive: Bool = true) -> some View
+
+
+    /// Sets the font design of the text in this view.
+    ///
+    /// - Parameter design: One of the available font designs.
+    ///   Providing `nil` removes the effect of any font design
+    ///   modifier applied higher in the view hierarchy.
+    ///
+    /// - Returns: A view that uses the font design you specify.
+    @available(iOS 16.1, macOS 13.0, tvOS 16.1, watchOS 9.1, *)
+    public func fontDesign(_ design: Font.Design?) -> some View
 
 
     /// Sets the spacing, or kerning, between characters for the text in this view.
@@ -49450,7 +49737,7 @@ extension View {
     ///     elapse before the gesture succeeds.
     ///     - maximumDistance: The maximum distance that the fingers or cursor
     ///     performing the long press can move before the gesture fails.
-    ///     - action: The action to perform when a long press is recognizes
+    ///     - action: The action to perform when a long press is recognized.
     ///     - onPressingChanged:  A closure to run when the pressing state of the
     ///     gesture changes, passing the current state as a parameter.
     @available(tvOS, unavailable)
@@ -50499,7 +50786,7 @@ extension View {
 extension View {
 
     /// Tells a view that acts as a cell in a grid to span the specified
-    /// number of rows.
+    /// number of columns.
     ///
     /// By default, each view that you put into the content closure of a
     /// ``GridRow`` corresponds to exactly one column of the grid. Apply the
@@ -50542,7 +50829,7 @@ extension View {
     /// from the middle columnn that holds the labeled
     /// checkbox.](View-gridCellColumns-1-macOS)
     ///
-    /// > Important: When you tell a cell to span multiple rows, the grid
+    /// > Important: When you tell a cell to span multiple columns, the grid
     /// changes the merged cell to use anchor alignment, rather than the
     /// usual alignment guides. For information about the behavior of
     /// anchor alignment, see ``View/gridCellAnchor(_:)``.
@@ -51555,7 +51842,10 @@ extension View {
 
 }
 
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@available(watchOS 9.0, *)
+@available(iOS, unavailable)
+@available(macOS, unavailable)
+@available(tvOS, unavailable)
 extension View {
 
     /// Adds a quick action to be shown by the system when active.
@@ -54810,6 +55100,25 @@ public protocol WidgetBundle {
     /// through unmodified.
     public static func buildBlock<Content>(_ content: Content) -> some Widget where Content : Widget
 
+}
+
+@available(iOS 14.0, macOS 11.0, watchOS 9.0, *)
+@available(tvOS, unavailable)
+extension WidgetBundleBuilder {
+
+    /// Provides support for "if" statements in multi-statement closures,
+    /// producing an optional widget that is visible only when the condition
+    /// evaluates to `true`.
+    ///
+    /// "if" statement in a ``WidgetBundleBuilder`` are limited to only
+    /// `#available()` clauses.
+    public static func buildOptional(_ widget: (Widget & _LimitedAvailabilityWidgetMarker)?) -> some Widget
+
+
+    /// Provides support for "if" statements with `#available()` clauses in
+    /// multi-statement closures, producing conditional content for the "then"
+    /// branch, i.e. the conditionally-available branch.
+    public static func buildLimitedAvailability(_ widget: some Widget) -> Widget & _LimitedAvailabilityWidgetMarker
 }
 
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, *)
