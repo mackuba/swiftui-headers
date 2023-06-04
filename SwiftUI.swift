@@ -10569,19 +10569,14 @@ extension EnvironmentValues {
     public var accessibilityQuickActionsEnabled: Bool { get }
 }
 
-@available(watchOS 8.0, *)
-@available(iOS, unavailable)
-@available(macOS, unavailable)
-@available(tvOS, unavailable)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
 extension EnvironmentValues {
 
-    /// A Boolean value that indicates whether the display currently requires
+    /// A Boolean value that indicates whether the display or environment currently requires
     /// reduced luminance.
     ///
-    /// The system typically sets this value to `true` on watchOS when the user
-    /// lowers their wrist, but the display remains on. When you detect this
-    /// condition, lower the overall brightness of your view. For example,
-    /// you can change large, filled shapes to be stroked, and choose
+    /// When you detect this condition, lower the overall brightness of your view.
+    /// For example, you can change large, filled shapes to be stroked, and choose
     /// less bright colors:
     ///
     ///     @Environment(\.isLuminanceReduced) var isLuminanceReduced
@@ -10596,13 +10591,14 @@ extension EnvironmentValues {
     ///         }
     ///     }
     ///
-    /// In addition to the changes that you make, the system might also
+    /// In addition to the changes that you make, the system could also
     /// dim the display to achieve a suitable brightness. By reacting to
     /// `isLuminanceReduced`, you can preserve contrast and readability
     /// while helping to satisfy the reduced brightness requirement.
     ///
-    /// > Note: Starting in watchOS 8, the system keeps your view visible
-    /// on wrist down by default. If you want the system to blur the screen
+    /// > Note: On watchOS, the system typically sets this value to `true` when the user
+    /// lowers their wrist, but the display remains on. Starting in watchOS 8, the system keeps your
+    /// view visible on wrist down by default. If you want the system to blur the screen
     /// instead, as it did in earlier versions of watchOS, set the value for the
     /// <doc://com.apple.documentation/documentation/BundleResources/Information_Property_List/WKSupportsAlwaysOnDisplay>
     /// key in your app's
@@ -37539,8 +37535,7 @@ extension TimelineView : View where Content : View {
     public init(_ schedule: Schedule, @ViewBuilder content: @escaping (TimelineView<Schedule, Content>.Context) -> Content)
 }
 
-@available(watchOS 8.0, *)
-@available(iOS, unavailable)
+@available(iOS 16.0, watchOS 8.0, *)
 @available(macOS, unavailable)
 @available(tvOS, unavailable)
 extension TimelineView.Context {
