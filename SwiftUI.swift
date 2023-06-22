@@ -3129,7 +3129,8 @@ extension AnimatablePair : Sendable where First : Sendable, Second : Sendable {
 ///             }
 ///             .padding()
 ///         }
-///     }
+///
+/// @Video(source: "animation-01-overview-easein.mp4", poster: "animation-01-overview-easein.png", alt: "A video that shows a circle enlarging then shrinking to its original size using an ease-in animation.")
 ///
 /// When the value of `scale` changes, the modifier
 /// ``View/scaleEffect(_:anchor:)-pmi7`` resizes ``Circle`` according to the
@@ -3168,6 +3169,8 @@ extension AnimatablePair : Sendable where First : Sendable, Second : Sendable {
 ///         }
 ///     }
 ///
+/// @Video(source: "animation-02-overview-easein-repeat.mp4", poster: "animation-02-overview-easein-repeat.png", alt: "A video that shows a circle that repeats the ease-in animation three times: enlarging, then shrinking, then enlarging again. The animation reverses causing the circle to shrink, then enlarge, then shrink to its original size.")
+///
 /// A view can also perform an animation when a binding value changes. To
 /// specify the animation type on a binding, call its ``Binding/animation(_:)``
 /// method. For example, the view in the following code performs a
@@ -3188,6 +3191,8 @@ extension AnimatablePair : Sendable where First : Sendable, Second : Sendable {
 ///             }
 ///         }
 ///     }
+///
+/// @Video(source: "animation-03-overview-binding.mp4", poster: "animation-03-overview-binding.png", alt: "A video that shows a box truck that moves from the leading edge of a view to the trailing edge. The box truck then returns to the view's leading edge.")
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct Animation : Equatable, Sendable {
 
@@ -3383,6 +3388,8 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-16-repeat-count.mp4", poster: "animation-16-repeat-count.png", alt: "A video that shows a box truck moving from the leading edge of a view to the trailing edge, and back again before looping in the opposite direction.")
+    ///
     /// The first time the animation runs, the truck moves from the leading
     /// edge to the trailing edge of the view. The second time the animation
     /// runs, the truck moves from the trailing edge to the leading edge
@@ -3433,6 +3440,8 @@ extension Animation {
     ///                 }
     ///         }
     ///     }
+    ///
+    /// @Video(source: "animation-17-repeat-forever.mp4", poster: "animation-17-repeat-forever.png", alt: "A video that shows a gear that continuously rotates clockwise.")
     ///
     /// - Parameter autoreverses: A Boolean value that indicates whether the
     /// animation sequence plays in reverse after playing forward.
@@ -3496,10 +3505,12 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-13-easeineaseout-duration.mp4", poster: "animation-13-easeineaseout-duration.png", alt: "A video that shows a circle enlarging for one second, then shrinking for another second to its original size using an ease-in ease-out animation.")
+    ///
     /// - Parameter duration: The length of time, expressed in seconds, that
     /// the animation takes to complete.
     ///
-    /// - Returns: An easing animation.
+    /// - Returns: An ease-in ease-out animation with a specified duration.
     public static func easeInOut(duration: TimeInterval) -> Animation
 
     /// An animation that combines the behaviors of in and out easing
@@ -3533,7 +3544,9 @@ extension Animation {
     ///         }
     ///     }
     ///
-    /// - Returns: An easing animation.
+    /// @Video(source: "animation-12-easeineaseout.mp4", poster: "animation-12-easeineaseout.png", alt: "A video that shows a circle enlarging, then shrinking to its original size using an ease-in ease-out animation.")
+    ///
+    /// - Returns: An ease-in ease-out animation with the default duration.
     public static var easeInOut: Animation { get }
 
     /// An animation with a specified duration that starts slowly and then
@@ -3568,10 +3581,12 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-09-easein-duration.mp4", poster: "animation-09-easein-duration.png", alt: "A video that shows a circle enlarging for one second, then shrinking for another second to its original size using an ease-in animation.")
+    ///
     /// - Parameter duration: The length of time, expressed in seconds, that
     /// the animation takes to complete.
     ///
-    /// - Returns: An easing animation.
+    /// - Returns: An ease-in animation with a specified duration.
     public static func easeIn(duration: TimeInterval) -> Animation
 
     /// An animation that starts slowly and then increases speed towards the
@@ -3604,7 +3619,9 @@ extension Animation {
     ///         }
     ///     }
     ///
-    /// - Returns: An easing animation.
+    /// @Video(source: "animation-08-easein.mp4", poster: "animation-08-easein.png", alt: "A video that shows a circle enlarging, then shrinking to its original size using an ease-in animation.")
+    ///
+    /// - Returns: An ease-in animation with the default duration.
     public static var easeIn: Animation { get }
 
     /// An animation with a specified duration that starts quickly and then
@@ -3639,10 +3656,12 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-09-easein-duration.mp4", poster: "animation-09-easein-duration.png", alt: "A video that shows a circle enlarging for one second, then shrinking for another second to its original size using an ease-in animation.")
+    ///
     /// - Parameter duration: The length of time, expressed in seconds, that
     /// the animation takes to complete.
     ///
-    /// - Returns: An easing animation.
+    /// - Returns: An ease-out animation with a specified duration.
     public static func easeOut(duration: TimeInterval) -> Animation
 
     /// An animation that starts quickly and then slows towards the end of the
@@ -3675,7 +3694,9 @@ extension Animation {
     ///         }
     ///     }
     ///
-    /// - Returns: An easing animation.
+    /// @Video(source: "animation-10-easeout.mp4", poster: "animation-10-easeout.png", alt: "A video that shows a circle enlarging, then shrinking to its original size using an ease-out animation.")
+    ///
+    /// - Returns: An ease-out animation with the default duration.
     public static var easeOut: Animation { get }
 
     /// An animation that moves at a constant speed during a specified
@@ -3692,23 +3713,22 @@ extension Animation {
     /// animation for a default length of time.
     ///
     /// The following code shows an example of using linear animation with a
-    /// duration of one second to animate the movement of a line as it moves
-    /// between the leading and trailing edges of the view.
+    /// duration of two seconds to animate the movement of a circle as it moves
+    /// between the leading and trailing edges of the view. The color of the
+    /// circle also animates from red to blue as it moves across the view.
     ///
-    ///     struct LinearWithDurationContentView: View {
-    ///         @State private var alignment = HorizontalAlignment.leading
+    ///     struct ContentView: View {
+    ///         @State private var isActive = false
     ///
     ///         var body: some View {
-    ///             VStack(alignment: alignment) {
-    ///                 Rectangle()
-    ///                     .frame(width: 2)
-    ///                     .animation(.linear(duration: 1.0), value: alignment)
+    ///             VStack(alignment: isActive ? .trailing : .leading) {
+    ///                 Circle()
+    ///                     .fill(isActive ? Color.red : Color.blue)
+    ///                     .frame(width: 50, height: 50)
     ///
     ///                 Button("Animate") {
-    ///                     if alignment == .leading {
-    ///                         alignment = .trailing
-    ///                     } else {
-    ///                         alignment = .leading
+    ///                     withAnimation(.linear(duration: 2.0)) {
+    ///                         isActive.toggle()
     ///                     }
     ///                 }
     ///                 .frame(maxWidth: .infinity)
@@ -3716,10 +3736,12 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-07-linear-duration.mp4", poster: "animation-07-linear-duration.png", alt: "A video that shows a circle moving from the leading edge of the view to the trailing edge. The color of the circle also changes from red to blue as it moves across the view. Then the circle moves from the trailing edge back to the leading edge while also changing colors from blue to red.")
+    ///
     /// - Parameter duration: The length of time, expressed in seconds, that
     /// the animation takes to complete.
     ///
-    /// - Returns: A linear animation.
+    /// - Returns: A linear animation with a specified duration.
     public static func linear(duration: TimeInterval) -> Animation
 
     /// An animation that moves at a constant speed.
@@ -3731,23 +3753,22 @@ extension Animation {
     /// as with an activity indicator.
     ///
     /// The following code shows an example of using linear animation to
-    /// animate the movement of a line as it moves between the leading and
-    /// trailing edges of the view.
+    /// animate the movement of a circle as it moves between the leading and
+    /// trailing edges of the view. The circle also animates its color change
+    /// as it moves across the view.
     ///
     ///     struct ContentView: View {
-    ///         @State private var alignment = HorizontalAlignment.leading
+    ///         @State private var isActive = false
     ///
     ///         var body: some View {
-    ///             VStack(alignment: alignment) {
-    ///                 Rectangle()
-    ///                     .frame(width: 2)
-    ///                     .animation(.linear, value: alignment)
+    ///             VStack(alignment: isActive ? .trailing : .leading) {
+    ///                 Circle()
+    ///                     .fill(isActive ? Color.red : Color.blue)
+    ///                     .frame(width: 50, height: 50)
     ///
     ///                 Button("Animate") {
-    ///                     if alignment == .leading {
-    ///                         alignment = .trailing
-    ///                     } else {
-    ///                         alignment = .leading
+    ///                     withAnimation(.linear) {
+    ///                         isActive.toggle()
     ///                     }
     ///                 }
     ///                 .frame(maxWidth: .infinity)
@@ -3755,10 +3776,12 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-06-linear.mp4", poster: "animation-06-linear.png", alt: "A video that shows a circle moving from the leading edge of the view to the trailing edge. The color of the circle also changes from red to blue as it moves across the view. Then the circle moves from the trailing edge back to the leading edge while also changing colors from blue to red.")
+    ///
     /// The `linear` animation has a default duration of 0.35 seconds. To
     /// specify a different duration, use ``linear(duration:)``.
     ///
-    /// - Returns: A linear animation.
+    /// - Returns: A linear animation with the default duration.
     public static var linear: Animation { get }
 
     /// An animation created from a cubic Bézier timing curve.
@@ -3802,6 +3825,8 @@ extension Animation {
     ///             }
     ///         }
     ///     }
+    ///
+    /// @Video(source: "animation-14-timing-curve.mp4", poster: "animation-14-timing-curve.png", alt: "A video that shows a circle shrinking then growing to its original size using a timing curve animation. The first control point of the time curve is (0.1, 0.75) and the second is (0.85, 0.35).")
     ///
     /// - Parameters:
     ///   - p1x: The x-coordinate of the first control point of the cubic
@@ -3859,6 +3884,8 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-04-default-flip.mp4", poster: "animation-04-default-flip.png", alt: "A video that shows the word Hello flip horizontally so that its letters appear backwards. Then it flips in reverse so that the word Hello appears correctly.")
+    ///
     /// To use the `default` animation when adding the ``View/animation(_:value:)``
     /// view modifier, specify it explicitly as the animation type. For
     /// instance, the following code shows an example of the `default`
@@ -3883,6 +3910,8 @@ extension Animation {
     ///             }
     ///         }
     ///     }
+    ///
+    /// @Video(source: "animation-05-default-spin.mp4", poster: "animation-05-default-spin.png", alt: "A video that shows the word Hello spinning clockwise for one full rotation, that is, 360 degrees. Then Hello spins counterclockwise for one full rotation.")
     ///
     /// A `default` animation instance is only equal to other `default`
     /// animation instances (using `==`), and not equal to other animation
@@ -3977,6 +4006,8 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-15-delay.mp4", poster: "animation-15-delay.png", alt: "A video that shows two capsules side by side that animate using the ease-in ease-out animation. The capsule on the left is short, while the capsule on the right is tall. As they animate, the short capsule grows upwards to match the height of the tall capsule. Then the tall capsule shrinks to match the original height of the short capsule. Then the capsule on the left shrinks to its original height, followed by the capsule on the right growing to its original height.")
+    ///
     /// - Parameter delay: The number of seconds to delay the start of the
     /// animation.
     /// - Returns: An animation with a delayed start.
@@ -4017,9 +4048,11 @@ extension Animation {
     ///         }
     ///     }
     ///
+    /// @Video(source: "animation-18-speed.mp4", poster: "animation-18-speed.png", alt: "A video that shows two capsules side by side that animate using the ease-in ease-out animation. The capsule on the left is short, while the capsule on the right is tall. They animate for half a second with the short capsule growing upwards to match the height of the tall capsule. Then the tall capsule shrinks to match the original height of the short capsule. For another half second, the capsule on the left shrinks to its original height, followed by the capsule on the right growing to its original height.")
+    ///
     /// Setting `speed` to a lower number slows the animation, extending its
     /// duration. For example, a one-second animation with a speed of `0.25`
-    /// takes four times longer to complete, which is four seconds.
+    /// takes four seconds to complete.
     ///
     ///     struct ContentView: View {
     ///         @State private var adjustBy = 100.0
@@ -4044,6 +4077,8 @@ extension Animation {
     ///             }
     ///         }
     ///     }
+    ///
+    /// @Video(source: "animation-19-speed-slow.mp4", poster: "animation-19-speed-slow.png", alt: "A video that shows two capsules side by side that animate using the ease-in ease-out animation. The capsule on the left is short, while the right-side capsule is tall. They animate for four seconds with the short capsule growing upwards to match the height of the tall capsule. Then the tall capsule shrinks to match the original height of the short capsule. For another four seconds, the capsule on the left shrinks to its original height, followed by the capsule on the right growing to its original height.")
     ///
     /// - Parameter speed: The speed at which SwiftUI performs the animation.
     /// - Returns: An animation with the adjusted speed.
@@ -4230,12 +4265,145 @@ public struct AnimationCompletionCriteria : Hashable, Sendable {
     public var hashValue: Int { get }
 }
 
-/// Contextual values that can be used by a custom animation.
+/// Contextual values that a custom animation can use to manage state and
+/// access a view's environment.
+///
+/// The system provides an `AnimationContext` to a ``CustomAnimation`` instance
+/// so that the animation can store and retrieve values in an instance of
+/// ``AnimationState``. To access these values, use the context's
+/// ``AnimationContext/state`` property.
+///
+/// For more convenient access to state, create an ``AnimationStateKey`` and
+/// extend `AnimationContext` to include a computed property that gets and
+/// sets the ``AnimationState`` value. Then use this property instead of
+/// ``AnimationContext/state`` to retrieve the state of a custom animation. For
+/// example, the following code creates an animation state key named
+/// `PausableState`. Then the code extends `AnimationContext` to include the
+/// `pausableState` property:
+///
+///     private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {
+///         var paused = false
+///         var pauseTime: TimeInterval = 0.0
+///
+///         static var defaultValue: Self { .init() }
+///     }
+///
+///     extension AnimationContext {
+///         fileprivate var pausableState: PausableState<Value> {
+///             get { state[PausableState<Value>.self] }
+///             set { state[PausableState<Value>.self] = newValue }
+///         }
+///     }
+///
+/// To access the pausable state, the custom animation `PausableAnimation` uses
+/// the `pausableState` property instead of the ``AnimationContext/state``
+/// property:
+///
+///     struct PausableAnimation: CustomAnimation {
+///         let base: Animation
+///
+///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+///             let paused = context.environment.animationPaused
+///
+///             let pausableState = context.pausableState
+///             var pauseTime = pausableState.pauseTime
+///             if pausableState.paused != paused {
+///                 pauseTime = time - pauseTime
+///                 context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)
+///             }
+///
+///             let effectiveTime = paused ? pauseTime : time - pauseTime
+///             let result = base.animate(value: value, time: effectiveTime, context: &context)
+///             return result
+///         }
+///     }
+///
+/// The animation can also retrieve environment values of the view that created
+/// the animation. To retrieve a view's environment value, use the context's
+/// ``AnimationContext/environment`` property. For instance, the following code
+/// creates a custom ``EnvironmentKey`` named `AnimationPausedKey`, and the
+/// view `PausableAnimationView` uses the key to store the paused state:
+///
+///     struct AnimationPausedKey: EnvironmentKey {
+///         static let defaultValue = false
+///     }
+///
+///     extension EnvironmentValues {
+///         var animationPaused: Bool {
+///             get { self[AnimationPausedKey.self] }
+///             set { self[AnimationPausedKey.self] = newValue }
+///         }
+///     }
+///
+///     struct PausableAnimationView: View {
+///         @State private var paused = false
+///
+///         var body: some View {
+///             VStack {
+///                 ...
+///             }
+///             .environment(\.animationPaused, paused)
+///         }
+///     }
+///
+/// Then the custom animation `PausableAnimation` retrieves the paused state
+/// from the view's environment using the ``AnimationContext/environment``
+/// property:
+///
+///     struct PausableAnimation: CustomAnimation {
+///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+///             let paused = context.environment.animationPaused
+///             ...
+///         }
+///     }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 public struct AnimationContext<Value> where Value : VectorArithmetic {
 
-    /// The animation's current state, which can be read from and written to by
-    /// the custom animation.
+    /// The current state of a custom animation.
+    ///
+    /// An instance of ``CustomAnimation`` uses this property to read and
+    /// write state values as the animation runs.
+    ///
+    /// An alternative to using the `state` property in a custom animation is
+    /// to create an ``AnimationStateKey`` type and extend ``AnimationContext``
+    /// with a custom property that returns the state as a custom type. For
+    /// example, the following code creates a state key named `PausableState`.
+    /// It's convenient to store state values in the key type, so the
+    /// `PausableState` structure includes properties for the stored state
+    /// values `paused` and `pauseTime`.
+    ///
+    ///     private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {
+    ///         var paused = false
+    ///         var pauseTime: TimeInterval = 0.0
+    ///
+    ///         static var defaultValue: Self { .init() }
+    ///     }
+    ///
+    /// To provide access the pausable state, the following code extends
+    /// `AnimationContext` to include the `pausableState` property. This
+    /// property returns an instance of the custom `PausableState` structure
+    /// stored in ``AnimationContext/state``, and it can also store a new
+    /// `PausableState` instance in `state`.
+    ///
+    ///     extension AnimationContext {
+    ///         fileprivate var pausableState: PausableState<Value> {
+    ///             get { state[PausableState<Value>.self] }
+    ///             set { state[PausableState<Value>.self] = newValue }
+    ///         }
+    ///     }
+    ///
+    /// Now a custom animation can use the `pausableState` property instead of
+    /// the ``AnimationContext/state`` property as a convenient way to read and
+    /// write state values as the animation runs.
+    ///
+    ///     struct PausableAnimation: CustomAnimation {
+    ///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+    ///             let pausableState = context.pausableState
+    ///             var pauseTime = pausableState.pauseTime
+    ///             ...
+    ///         }
+    ///     }
+    ///
     public var state: AnimationState<Value>
 
     /// Set this to `true` to indicate that an animation is logically complete.
@@ -4248,108 +4416,265 @@ public struct AnimationContext<Value> where Value : VectorArithmetic {
     /// returning `nil`).
     public var isLogicallyComplete: Bool
 
-    /// The current environment of the view where the custom animation was
-    /// created.
+    /// The current environment of the view that created the custom animation.
+    ///
+    /// An instance of ``CustomAnimation`` uses this property to read
+    /// environment values from the view that created the animation. To learn
+    /// more about environment values including how to define custom
+    /// environment values, see ``EnvironmentValues``.
     public var environment: EnvironmentValues { get }
 
-    /// Create a new context from this one, but with the specified state.
+    /// Creates a new context from another one with a state that you provide.
+    ///
+    /// Use this method to create a new context that contains the state that
+    /// you provide and view environment values from the original context.
+    ///
+    /// - Parameter state: The initial state for the new context.
+    /// - Returns: A new context that contains the specified state.
     public func withState<T>(_ state: AnimationState<T>) -> AnimationContext<T> where T : VectorArithmetic
 }
 
 /// A container that stores the state for a custom animation.
 ///
-/// This type is used to store state in an `AnimationContext` and can also be
-/// used to store the state of a child animation in a custom animation modifier.
+/// An ``AnimationContext`` uses this type to store state for a
+/// ``CustomAnimation``. To retrieve the stored state of a context, you can
+/// use the ``AnimationContext/state`` property. However, a more convenient
+/// way to access the animation state is to define an ``AnimationStateKey``
+/// and extend ``AnimationContext`` with a computed property that gets
+/// and sets the animation state, as shown in the following code:
+///
+///     private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {
+///         static var defaultValue: Self { .init() }
+///     }
+///
+///     extension AnimationContext {
+///         fileprivate var pausableState: PausableState<Value> {
+///             get { state[PausableState<Value>.self] }
+///             set { state[PausableState<Value>.self] = newValue }
+///         }
+///     }
+///
+/// When creating an ``AnimationStateKey``, it's convenient to define the
+/// state values that your custom animation needs. For example, the following
+/// code adds the properties `paused` and `pauseTime` to the `PausableState`
+/// animation state key:
+///
+///     private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {
+///         var paused = false
+///         var pauseTime: TimeInterval = 0.0
+///
+///         static var defaultValue: Self { .init() }
+///     }
+///
+/// To access the pausable state in a `PausableAnimation`, the follow code
+/// calls `pausableState` instead of using the context's
+/// ``AnimationContext/state`` property. And because the animation state key
+/// `PausableState` defines properties for state values, the custom animation
+/// can read and write those values.
+///
+///     struct PausableAnimation: CustomAnimation {
+///         let base: Animation
+///
+///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+///             let paused = context.environment.animationPaused
+///
+///             let pausableState = context.pausableState
+///             var pauseTime = pausableState.pauseTime
+///             if pausableState.paused != paused {
+///                 pauseTime = time - pauseTime
+///                 context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)
+///             }
+///
+///             let effectiveTime = paused ? pauseTime : time - pauseTime
+///             let result = base.animate(value: value, time: effectiveTime, context: &context)
+///             return result
+///         }
+///     }
+///
+/// ### Storing state for secondary animations
+///
+/// A custom animation can also use `AnimationState` to store the state of a
+/// secondary animation. For example, the following code creates an
+/// ``AnimationStateKey`` that includes the property `secondaryState`, which a
+/// custom animation can use to store other state:
+///
+///     private struct TargetState<Value: VectorArithmetic>: AnimationStateKey {
+///         var timeDelta = 0.0
+///         var valueDelta = Value.zero
+///         var secondaryState: AnimationState<Value>? = .init()
+///
+///         static var defaultValue: Self { .init() }
+///     }
+///
+///     extension AnimationContext {
+///         fileprivate var targetState: TargetState<Value> {
+///             get { state[TargetState<Value>.self] }
+///             set { state[TargetState<Value>.self] = newValue }
+///         }
+///     }
+///
+/// The custom animation `TargetAnimation` uses `TargetState` to store state
+/// data in `secondaryState` for another animation that runs as part of the
+/// target animation.
+///
+///     struct TargetAnimation: CustomAnimation {
+///         var base: Animation
+///         var secondary: Animation
+///
+///         func animate<V: VectorArithmetic>(value: V, time: Double, context: inout AnimationContext<V>) -> V? {
+///             var targetValue = value
+///             if let secondaryState = context.targetState.secondaryState {
+///                 var secondaryContext = context
+///                 secondaryContext.state = secondaryState
+///                 let secondaryValue = value - context.targetState.valueDelta
+///                 let result = secondary.animate(
+///                     value: secondaryValue, time: time - context.targetState.timeDelta,
+///                     context: &secondaryContext)
+///                 if let result = result {
+///                     context.targetState.secondaryState = secondaryContext.state
+///                     targetValue = result + context.targetState.valueDelta
+///                 } else {
+///                     context.targetState.secondaryState = nil
+///                 }
+///             }
+///             let result = base.animate(value: targetValue, time: time, context: &context)
+///             if let result = result {
+///                 targetValue = result
+///             } else if context.targetState.secondaryState == nil {
+///                 return nil
+///             }
+///             return targetValue
+///     }
+///
+///         func shouldMerge<V: VectorArithmetic>(previous: Animation, value: V, time: Double, context: inout AnimationContext<V>) -> Bool {
+///             guard let previous = previous.base as? Self else { return false }
+///             var secondaryContext = context
+///             if let secondaryState = context.targetState.secondaryState {
+///                 secondaryContext.state = secondaryState
+///                 context.targetState.valueDelta = secondary.animate(
+///                     value: value, time: time - context.targetState.timeDelta,
+///                     context: &secondaryContext) ?? value
+///             } else {
+///                 context.targetState.valueDelta = value
+///             }
+///             // Reset the target each time a merge occurs.
+///             context.targetState.secondaryState = .init()
+///             context.targetState.timeDelta = time
+///             return base.shouldMerge(
+///                 previous: previous.base, value: value, time: time,
+///                 context: &context)
+///         }
+///     }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 public struct AnimationState<Value> where Value : VectorArithmetic {
 
-    /// Create an empty state container where no state has been set.
+    /// Create an empty state container.
+    ///
+    /// You don't typically create an instance of ``AnimationState`` directly.
+    /// Instead, the ``AnimationContext`` provides the animation state to an
+    /// instance of ``CustomAnimation``.
     public init()
 
-    /// Accesses the state associated with a custom key.
+    /// Accesses the state for a custom key.
+    ///
+    /// Create a custom animation state value by defining a key that conforms
+    /// to the ``AnimationStateKey`` protocol and provide the
+    /// ``AnimationStateKey/defaultValue`` for the key. Also include properties
+    /// to read and write state values that your ``CustomAnimation`` uses. For
+    /// example, the following code defines a key named `PausableState` that
+    /// has two state values, `paused` and `pauseTime`:
+    ///
+    ///     private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {
+    ///         var paused = false
+    ///         var pauseTime: TimeInterval = 0.0
+    ///
+    ///         static var defaultValue: Self { .init() }
+    ///     }
+    ///
+    /// Use that key with the subscript operator of the ``AnimationState``
+    /// structure to get and set a value for the key. For more convenient
+    /// access to the key value, extend ``AnimationContext`` with a computed
+    /// property that gets and sets the key's value.
+    ///
+    ///     extension AnimationContext {
+    ///         fileprivate var pausableState: PausableState<Value> {
+    ///             get { state[PausableState<Value>.self] }
+    ///             set { state[PausableState<Value>.self] = newValue }
+    ///         }
+    ///     }
+    ///
+    /// To access the state values in a ``CustomAnimation``, call the custom
+    /// computed property, then read and write the state values that the
+    /// custom ``AnimationStateKey`` provides.
+    ///
+    ///     struct PausableAnimation: CustomAnimation {
+    ///         let base: Animation
+    ///
+    ///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+    ///             let paused = context.environment.animationPaused
+    ///
+    ///             let pausableState = context.pausableState
+    ///             var pauseTime = pausableState.pauseTime
+    ///             if pausableState.paused != paused {
+    ///                 pauseTime = time - pauseTime
+    ///                 context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)
+    ///             }
+    ///
+    ///             let effectiveTime = paused ? pauseTime : time - pauseTime
+    ///             let result = base.animate(value: value, time: effectiveTime, context: &context)
+    ///             return result
+    ///         }
+    ///     }
     public subscript<K>(key: K.Type) -> K.Value where K : AnimationStateKey
 }
 
 /// A key for accessing animation state values.
 ///
-/// You can create animation state by declaring a new animation environment key
-/// type and specifying a value for the required ``defaultValue`` property.
-/// Often it is convenient to use the same type for the value and key:
+/// To access animation state from an ``AnimationContext`` in a custom
+/// animation, create an `AnimationStateKey`. For example, the following
+/// code creates an animation state key named `PausableState` and sets the
+/// value for the required ``defaultValue`` property. The code also defines
+/// properties for state values that the custom animation needs when
+/// calculating animation values. Keeping the state values in the animation
+/// state key makes it more convenient to read and write those values in the
+/// implementation of a ``CustomAnimation``.
 ///
-///     private struct PhysicsState<Value: VectorArithmetic>: AnimationStateKey {
-///         var initialVelocity: Vector = .zero
-///         var deltaValue: Vector = .zero
-///         var deltaTime: Double = 0
+///     private struct PausableState<Value: VectorArithmetic>: AnimationStateKey {
+///         var paused = false
+///         var pauseTime: TimeInterval = 0.0
 ///
 ///         static var defaultValue: Self { .init() }
 ///     }
 ///
-/// To make accessing the state more convenient, you can also define a property
-/// for it on ``AnimationContext``:
+/// To make accessing the value of the animation state key more convenient,
+/// define a property for it by extending ``AnimationContext``:
 ///
 ///     extension AnimationContext {
-///         fileprivate var physicsState: PhysicsState<Value> {
-///             get { state[PhysicsState<Value>.self] }
-///             set { state[PhysicsState<Value>.self] = newValue }
+///         fileprivate var pausableState: PausableState<Value> {
+///             get { state[PausableState<Value>.self] }
+///             set { state[PausableState<Value>.self] = newValue }
 ///         }
 ///     }
 ///
-/// Then, you can read and write your state from within a `CustomAnimation`
-/// implementation with the ``AnimationContext``:
+/// Then, you can read and write your state in an instance of `CustomAnimation`
+/// using the ``AnimationContext``:
 ///
-///     struct MyPhysicsAnimation: CustomAnimation {
-///         var acceleration: Double
+///     struct PausableAnimation: CustomAnimation {
+///         let base: Animation
 ///
-///         func animate<V: VectorArithmetic>(
-///             value: V, time: TimeInterval, context: inout AnimationContext<V>
-///         ) -> V? {
-///             let time = time - context.physicsState.deltaTime
-///             let value = value - context.physicsState.deltaValue
-///             let current = position(value: value, time: time)
-///             if hasEnded(current: current, value: value) {
-///                 return nil
+///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+///             let paused = context.environment.animationPaused
+///
+///             let pausableState = context.pausableState
+///             var pauseTime = pausableState.pauseTime
+///             if pausableState.paused != paused {
+///                 pauseTime = time - pauseTime
+///                 context.pausableState = PausableState(paused: paused, pauseTime: pauseTime)
 ///             }
-///             return current
-///         }
 ///
-///         func velocity<V: VectorArithmetic>(
-///             value: V, time: TimeInterval, context: AnimationContext<V>
-///         ) -> V? {
-///             currentVelocity(
-///                 value: value - context.physicsState.deltaValue,
-///                 initialVelocity: context.physicsState.initialVelocity,
-///                 time: time - context.physicsState.deltaTime)
-///         }
-///
-///         func shouldMerge<V: VectorArithmetic>(
-///             previous: Animation, value: V, time: TimeInterval,
-///             context: inout AnimationContext<V>
-///         ) -> Bool {
-///             var state = context.physicsState
-///             let value = value - state.deltaValue
-///             state.deltaTime = time
-///             state.initialVelocity = previous.velocity(
-///                 value: value, time: time - state.deltaTime, context: context) ?? .zero
-///             state.deltaValue += previous.animate(
-///                 value: value, time: time - state.deltaTime, context: &context) ?? value
-///             context.physicsState = state
-///             return true
-///         }
-///
-///         func currentPosition<V: VectorArithmetic>(
-///             value: V, initialVelocity: V, time: TimeInterval
-///         ) -> V {
-///             // Calculate current position based on value and initialVelocity
-///         }
-///
-///         func currentVelocity<V: VectorArithmetic>(
-///             value: V, initialVelocity: V, time: TimeInterval
-///         ) -> V {
-///             // Calculate current velocity based on value and initialVelocity
-///         }
-///
-///         func hasEnded<V: VectorArithmetic>(current: V, value: V) -> Bool {
-///             // Calculate whether the target is close enough to stop
+///             let effectiveTime = paused ? pauseTime : time - pauseTime
+///             let result = base.animate(value: value, time: effectiveTime, context: &context)
+///             return result
 ///         }
 ///     }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -7895,7 +8220,6 @@ public struct CircularProgressViewStyle : ProgressViewStyle {
     /// ``init(_:bundle:)``, or one you create from a dynamic UIKit or AppKit
     /// color, this property is `nil`. To evaluate all types of colors, use the
     /// `resolve(in:)` method.
-    @available(iOS 14.0, macOS 11, tvOS 14.0, watchOS 7.0, *)
     @available(iOS, introduced: 14.0, deprecated: 100000.0, renamed: "resolve(in:)")
     @available(macOS, introduced: 11.0, deprecated: 100000.0, renamed: "resolve(in:)")
     @available(tvOS, introduced: 14.0, deprecated: 100000.0, renamed: "resolve(in:)")
@@ -9654,6 +9978,9 @@ public enum ControlSize : CaseIterable, Sendable {
     @available(macOS 11.0, *)
     case large
 
+    @available(iOS 17.0, macOS 14.0, watchOS 10.0, xrOS 1.0, *)
+    case extraLarge
+
     /// A collection of all values of this type.
     public static var allCases: [ControlSize] { get }
 
@@ -9881,86 +10208,229 @@ public struct CubicKeyframe<Value> : KeyframeTrackContent where Value : Animatab
     public typealias Body = CubicKeyframe<Value>
 }
 
-/// A definition of how an animatable value should change over time.
+/// A type that defines how an animatable value changes over time.
 ///
-/// This example shows a simple linear animation:
+/// Use this protocol to create a type that changes an animatable value over
+/// time, which produces a custom visual transition of a view. For example, the
+/// follow code changes an animatable value using an elastic ease-in ease-out
+/// function:
 ///
-///     struct MyLinearAnimation: CustomAnimation {
-///         var duration: TimeInterval
+///     struct ElasticEaseInEaseOutAnimation: CustomAnimation {
+///         let duration: TimeInterval
 ///
-///         func animate<V: VectorArithmetic>(
-///             value: V, time: TimeInterval, context: inout AnimationContext<V>
-///         ) -> V? {
-///             if time > duration { return nil }
-///             return value.scaled(by: time / duration)
+///         func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic {
+///             if time > duration { return nil } // The animation has finished.
+///
+///             let p = time / duration
+///             let s = sin((20 * p - 11.125) * ((2 * Double.pi) / 4.5))
+///             if p < 0.5 {
+///                 return value.scaled(by: -(pow(2, 20 * p - 10) * s) / 2)
+///             } else {
+///                 return value.scaled(by: (pow(2, -20 * p + 10) * s) / 2 + 1)
+///             }
 ///         }
 ///     }
+///
+/// > Note: To maintain state during the life span of a custom animation, use
+/// the ``AnimationContext/state`` property available on the `context`
+/// parameter value. You can also use context's
+/// ``AnimationContext/environment`` property to retrieve environment values
+/// from the view that created the custom animation. For more information, see
+/// ``AnimationContext``.
+///
+/// To create an ``Animation`` instance of a custom animation, use the
+/// ``Animation/init(_:)`` initializer, passing in an instance of a custom
+/// animation; for example:
+///
+///     Animation(ElasticEaseInEaseOutAnimation(duration: 5.0))
+///
+/// To help make view code more readable, extend ``Animation`` and add a static
+/// property and function that returns an `Animation` instance of a custom
+/// animation. For example, the following code adds the static property
+/// `elasticEaseInEaseOut` that returns the elastic ease-in ease-out animation
+/// with a default duration of `0.35` seconds. Next, the code adds a method
+/// that returns the animation with a specified duration.
+///
+///     extension Animation {
+///         static var elasticEaseInEaseOut: Animation { elasticEaseInEaseOut(duration: 0.35) }
+///         static func elasticEaseInEaseOut(duration: TimeInterval) -> Animation {
+///             Animation(ElasticEaseInEaseOutAnimation(duration: duration))
+///         }
+///     }
+///
+/// To animate a view with the elastic ease-in ease-out animation, a view calls
+/// either `.elasticEaseInEaseOut` or `.elasticEaseInEaseOut(duration:)`. For
+/// example, the follow code includes an Animate button that, when clicked,
+/// animates a circle as it moves from one edge of the view to the other,
+/// using the elastic ease-in ease-out animation with a duration of `5`
+/// seconds:
+///
+///     struct ElasticEaseInEaseOutView: View {
+///         @State private var isActive = false
+///
+///         var body: some View {
+///             VStack(alignment: isActive ? .trailing : .leading) {
+///                 Circle()
+///                     .frame(width: 100.0)
+///                     .foregroundColor(.accentColor)
+///
+///                 Button("Animate") {
+///                     withAnimation(.elasticEaseInEaseOut(duration: 5.0)) {
+///                         isActive.toggle()
+///                     }
+///                 }
+///                 .frame(maxWidth: .infinity)
+///             }
+///             .padding()
+///         }
+///     }
+///
+/// @Video(source: "animation-20-elastic.mp4", poster: "animation-20-elastic.png", alt: "A video that shows a circle that moves from one edge of the view to the other using an elastic ease-in ease-out animation. The circle's initial position is near the leading edge of the view. The circle begins moving slightly towards the leading, then towards trail edges of the view before it moves off the leading edge showing only two-thirds of the circle. The circle then moves quickly to the trailing edge of the view, going slightly beyond the edge so that only two-thirds of the circle is visible. The circle bounces back into full view before settling into position near the trailing edge of the view. The circle repeats this animation in reverse, going from the trailing edge of the view to the leading edge.")
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 public protocol CustomAnimation : Hashable {
 
-    /// Calculates the current value of the animation (or nil if it is
-    /// finished).
+    /// Calculates the value of the animation at the specified time.
     ///
-    /// Long-lived state can be stored in the context to make it available the
-    /// next time that animate is called.
+    /// Implement this method to calculate and return the value of the
+    /// animation at a given point in time. If the animation has finished,
+    /// return `nil` as the value. This signals to the system that it can
+    /// remove the animation.
+    ///
+    /// If your custom animation needs to maintain state between calls to the
+    /// `animate(value:time:context:)` method, store the state data in
+    /// `context`. This makes the data available to the method next time
+    /// the system calls it. To learn more about managing state data in a
+    /// custom animation, see ``AnimationContext``.
     ///
     /// - Parameters:
     ///   - value: The vector to animate towards.
-    ///   - time: The amount of time that has elapsed since the animation began.
-    ///   - context: A struct that provides access to state and animation
-    ///     environment.
-    /// - Returns: The current value of the animation, or nil when the animation
-    ///   has finished to signal that it can be removed.
+    ///   - time: The elapsed time since the start of the animation.
+    ///   - context: An instance of ``AnimationContext`` that provides access
+    ///   to state and the animation environment.
+    /// - Returns: The current value of the animation, or `nil` if the
+    ///   animation has finished.
     func animate<V>(value: V, time: TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic
 
-    /// Calculates the current velocity of the animation (or nil if it is
-    /// unavailable).
+    /// Calculates the velocity of the animation at a specified time.
     ///
-    /// An animation can optionally provide its velocity at a given time so that
-    /// subsequent animations can merge with it and preserve continuity of
-    /// velocity.
+    /// Implement this method to provide the velocity of the animation at a
+    /// given time. Should subsequent animations merge with the animation,
+    /// the system preserves continuity of the velocity between animations.
+    ///
+    /// The default implementation of this method returns `nil`.
+    ///
+    /// > Note: State and environment data is available to this method via the
+    /// `context` parameter, but `context` is read-only. This behavior is
+    /// different than with ``animate(value:time:context:)`` and
+    /// ``shouldMerge(previous:value:time:context:)-7f4ts`` where `context` is
+    /// an `inout` parameter, letting you change the context including state
+    /// data of the animation. For more information about managing state data
+    /// in a custom animation, see ``AnimationContext``.
+    ///
+    /// - Parameters:
+    ///   - value: The vector to animate towards.
+    ///   - time: The amount of time since the start of the animation.
+    ///   - context: An instance of ``AnimationContext`` that provides access
+    ///   to state and the animation environment.
+    /// - Returns: The current velocity of the animation, or `nil` if the
+    ///   animation has finished.
     func velocity<V>(value: V, time: TimeInterval, context: AnimationContext<V>) -> V? where V : VectorArithmetic
 
-    /// Returns whether two instances should be merged together.
+    /// Determines whether an instance of the animation can merge with other
+    /// instance of the same type.
     ///
-    /// If a new animation is created on an animatable value that already has an
-    /// animation of the same type running, shouldMerge is called on the new
-    /// animation, passing the previous instance of the animation, value that is
-    /// being animated to, and elapsed time. The animation can update its state
-    /// in the provided context. An animation can return `true` to indicate that
-    /// the animations should be merged together, in which case the previous
-    /// animation's state and elapsed time will be used for the new animation,
-    /// and the old animation will be removed; or an animation can return
-    /// `false` to indicate that the animations should not be merged, in which
-    /// case both animations will be run together and their results will be
-    /// combined by the system.
+    /// When a view creates a new animation on an animatable value that already
+    /// has a running animation of the same animation type, the system calls
+    /// the `shouldMerge(previous:value:time:context:)` method on the new
+    /// instance to determine whether it can merge the two instance. Implement
+    /// this method if the animation can merge with another instance. The
+    /// default implementation returns `false`.
+    ///
+    /// If `shouldMerge(previous:value:time:context:)` returns `true`, the
+    /// system merges the new animation instance with the previous animation.
+    /// The system provides to the new instance the state and elapsed time from
+    /// the previous one. Then it removes the previous animation.
+    ///
+    /// If this method returns `false`, the system doesn't merge the animation
+    /// with the previous one. Instead, both animations run together and the
+    /// system combines their results.
+    ///
+    /// If your custom animation needs to maintain state between calls to the
+    /// `shouldMerge(previous:value:time:context:)` method, store the state
+    /// data in `context`. This makes the data available to the method next
+    /// time the system calls it. To learn more, see ``AnimationContext``.
+    ///
+    /// - Parameters:
+    ///   - previous: The previous running animation.
+    ///   - value: The vector to animate towards.
+    ///   - time: The amount of time since the start of the previous animation.
+    ///   - context: An instance of ``AnimationContext`` that provides access
+    ///   to state and the animation environment.
+    /// - Returns: A Boolean value of `true` if the animation should merge with
+    ///   the previous animation; otherwise, `false`.
     func shouldMerge<V>(previous: Animation, value: V, time: TimeInterval, context: inout AnimationContext<V>) -> Bool where V : VectorArithmetic
 }
 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension CustomAnimation {
 
-    /// Calculates the current velocity of the animation (or nil if it is
-    /// unavailable).
+    /// Calculates the velocity of the animation at a specified time.
     ///
-    /// An animation can optionally provide its velocity at a given time so that
-    /// subsequent animations can merge with it and preserve continuity of
-    /// velocity.
+    /// Implement this method to provide the velocity of the animation at a
+    /// given time. Should subsequent animations merge with the animation,
+    /// the system preserves continuity of the velocity between animations.
+    ///
+    /// The default implementation of this method returns `nil`.
+    ///
+    /// > Note: State and environment data is available to this method via the
+    /// `context` parameter, but `context` is read-only. This behavior is
+    /// different than with ``animate(value:time:context:)`` and
+    /// ``shouldMerge(previous:value:time:context:)-7f4ts`` where `context` is
+    /// an `inout` parameter, letting you change the context including state
+    /// data of the animation. For more information about managing state data
+    /// in a custom animation, see ``AnimationContext``.
+    ///
+    /// - Parameters:
+    ///   - value: The vector to animate towards.
+    ///   - time: The amount of time since the start of the animation.
+    ///   - context: An instance of ``AnimationContext`` that provides access
+    ///   to state and the animation environment.
+    /// - Returns: The current velocity of the animation, or `nil` if the
+    ///   animation has finished.
     public func velocity<V>(value: V, time: TimeInterval, context: AnimationContext<V>) -> V? where V : VectorArithmetic
 
-    /// Returns whether two instances should be merged together.
+    /// Determines whether an instance of the animation can merge with other
+    /// instance of the same type.
     ///
-    /// If a new animation is created on an animatable value that already has an
-    /// animation of the same type running, shouldMerge is called on the new
-    /// animation, passing the previous instance of the animation, value that is
-    /// being animated to, and elapsed time. The animation can update its state
-    /// in the provided context. An animation can return `true` to indicate that
-    /// the animations should be merged together, in which case the previous
-    /// animation's state and elapsed time will be used for the new animation,
-    /// and the old animation will be removed; or an animation can return
-    /// `false` to indicate that the animations should not be merged, in which
-    /// case both animations will be run together and their results will be
-    /// combined by the system.
+    /// When a view creates a new animation on an animatable value that already
+    /// has a running animation of the same animation type, the system calls
+    /// the `shouldMerge(previous:value:time:context:)` method on the new
+    /// instance to determine whether it can merge the two instance. Implement
+    /// this method if the animation can merge with another instance. The
+    /// default implementation returns `false`.
+    ///
+    /// If `shouldMerge(previous:value:time:context:)` returns `true`, the
+    /// system merges the new animation instance with the previous animation.
+    /// The system provides to the new instance the state and elapsed time from
+    /// the previous one. Then it removes the previous animation.
+    ///
+    /// If this method returns `false`, the system doesn't merge the animation
+    /// with the previous one. Instead, both animations run together and the
+    /// system combines their results.
+    ///
+    /// If your custom animation needs to maintain state between calls to the
+    /// `shouldMerge(previous:value:time:context:)` method, store the state
+    /// data in `context`. This makes the data available to the method next
+    /// time the system calls it. To learn more, see ``AnimationContext``.
+    ///
+    /// - Parameters:
+    ///   - previous: The previous running animation.
+    ///   - value: The vector to animate towards.
+    ///   - time: The amount of time since the start of the previous animation.
+    ///   - context: An instance of ``AnimationContext`` that provides access
+    ///   to state and the animation environment.
+    /// - Returns: A Boolean value of `true` if the animation should merge with
+    ///   the previous animation; otherwise, `false`.
     public func shouldMerge<V>(previous: Animation, value: V, time: TimeInterval, context: inout AnimationContext<V>) -> Bool where V : VectorArithmetic
 }
 
@@ -28410,55 +28880,6 @@ extension NavigationSplitView {
     ///   - sidebar: The view to show in the leading column.
     ///   - detail: The view to show in the detail area.
     public init(columnVisibility: Binding<NavigationSplitViewVisibility>, preferredCompactColumn: Binding<NavigationSplitViewColumn>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
-
-    /// Creates a three-column navigation split view that enforces programmatic
-    /// control of leading columns' visibility in regular sizes and enables
-    /// programmatic control over which column appears on top when the view
-    /// collapses into a single column in narrow sizes.
-    ///
-    /// Use this initializer when you want to manage column visibility manually.
-    /// People using your app can only show and hide columns using affordances
-    /// you provide. SwiftUI won't automatically add any toolbar buttons or
-    /// enable any gestures for showing and hiding columns.
-    ///
-    /// When you use this initializer, SwiftUI ignores some
-    /// ``View/navigationSplitViewStyle(_:)`` settings. For example, the
-    /// ``NavigationSplitViewStyle/prominentDetail`` style typically renders
-    /// with the sidebar overlaying the detail in narrower scenes. This
-    /// initializer disables that overlay behavior.
-    ///
-    /// - Parameters:
-    ///   - columnVisibility: The visibility of the leading columns.
-    ///   - preferredCompactColumn: A ``Binding`` to state that controls which
-    ///     column appears on top when the view collapses.
-    ///   - sidebar: The view to show in the leading column.
-    ///   - content: The view to show in the middle column.
-    ///   - detail: The view to show in the detail area.
-    public init(columnVisibility: NavigationSplitViewVisibility, preferredCompactColumn: Binding<NavigationSplitViewColumn>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder content: () -> Content, @ViewBuilder detail: () -> Detail)
-
-    /// Creates a two-column navigation split view that enforces programmatic
-    /// control of the leading column's visibility in regular sizes and enables
-    /// programmatic control over which column appears on top when the view
-    /// collapses into a single column in narrow sizes.
-    ///
-    /// Use this initializer when you want to manage column visibility manually.
-    /// People using your app can only show and hide columns using affordances
-    /// you provide. SwiftUI won't automatically add any toolbar buttons or
-    /// enable any gestures for showing and hiding columns.
-    ///
-    /// When you use this initializer, SwiftUI ignores some
-    /// ``View/navigationSplitViewStyle(_:)`` settings. For example, the
-    /// ``NavigationSplitViewStyle/prominentDetail`` style typically renders
-    /// with the sidebar overlaying the detail in narrower scenes. This
-    /// initializer disables that overlay behavior.
-    ///
-    /// - Parameters:
-    ///   - columnVisibility: The visibility of the leading columns.
-    ///   - preferredCompactColumn: A ``Binding`` to state that controls which
-    ///     column appears on top when the view collapses.
-    ///   - sidebar: The view to show in the leading column.
-    ///   - detail: The view to show in the detail area.
-    public init(columnVisibility: NavigationSplitViewVisibility, preferredCompactColumn: Binding<NavigationSplitViewColumn>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Content == EmptyView
 }
 
 /// A view that represents a column in a navigation split view.
@@ -29455,30 +29876,112 @@ public struct PagingScrollTargetBehavior : ScrollTargetBehavior {
     public init()
 
     /// Creates a path from an immutable shape path.
+    ///
+    /// - Parameter path: The immutable CoreGraphics path to initialize
+    ///   the new path from.
+    ///
     public init(_ path: CGPath)
 
     /// Creates a path from a copy of a mutable shape path.
+    ///
+    /// - Parameter path: The CoreGraphics path to initialize the new
+    ///   path from.
+    ///
     public init(_ path: CGMutablePath)
 
-    /// Creates a path as the given rectangle.
+    /// Creates a path containing a rectangle.
+    ///
+    /// This is a convenience function that creates a path of a
+    /// rectangle. Using this convenience function is more efficient
+    /// than creating a path and adding a rectangle to it.
+    ///
+    /// Calling this function is equivalent to using `minX` and related
+    /// properties to find the corners of the rectangle, then using the
+    /// `move(to:)`, `addLine(to:)`, and `closeSubpath()` functions to
+    /// add the rectangle.
+    ///
+    /// - Parameter rect: The rectangle to add.
+    ///
     public init(_ rect: CGRect)
 
-    /// Creates a path as the given rounded rectangle.
+    /// Creates a path containing a rounded rectangle.
+    ///
+    /// This is a convenience function that creates a path of a rounded
+    /// rectangle. Using this convenience function is more efficient
+    /// than creating a path and adding a rounded rectangle to it.
+    ///
+    /// - Parameters:
+    ///   - rect: A rectangle, specified in user space coordinates.
+    ///   - cornerSize: The size of the corners, specified in user space
+    ///     coordinates.
+    ///   - style: The corner style. Defaults to the `continous` style
+    ///     if not specified.
+    /// 
     public init(roundedRect rect: CGRect, cornerSize: CGSize, style: RoundedCornerStyle = .continuous)
 
-    /// Creates a path as the given rounded rectangle.
+    /// Creates a path containing a rounded rectangle.
+    ///
+    /// This is a convenience function that creates a path of a rounded
+    /// rectangle. Using this convenience function is more efficient
+    /// than creating a path and adding a rounded rectangle to it.
+    ///
+    /// - Parameters:
+    ///   - rect: A rectangle, specified in user space coordinates.
+    ///   - cornerRadius: The radius of all corners of the rectangle,
+    ///     specified in user space coordinates.
+    ///   - style: The corner style. Defaults to the `continous` style
+    ///     if not specified.
+    /// 
     public init(roundedRect rect: CGRect, cornerRadius: CGFloat, style: RoundedCornerStyle = .continuous)
 
     /// Creates a path as the given rounded rectangle, which may have
     /// uneven corner radii.
+    ///
+    /// This is a convenience function that creates a path of a rounded
+    /// rectangle. Using this function is more efficient than creating
+    /// a path and adding a rounded rectangle to it.
+    ///
+    /// - Parameters:
+    ///   - rect: A rectangle, specified in user space coordinates.
+    ///   - cornerRadii: The radius of each corner of the rectangle,
+    ///     specified in user space coordinates.
+    ///   - style: The corner style. Defaults to the `continous` style
+    ///     if not specified.
+    /// 
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public init(roundedRect rect: CGRect, cornerRadii: RectangleCornerRadii, style: RoundedCornerStyle = .continuous)
 
-    /// Creates a path as an ellipse inscribed within the given rectangle.
+    /// Creates a path as an ellipse within the given rectangle.
+    ///
+    /// This is a convenience function that creates a path of an
+    /// ellipse. Using this convenience function is more efficient than
+    /// creating a path and adding an ellipse to it.
+    ///
+    /// The ellipse is approximated by a sequence of Bézier
+    /// curves. Its center is the midpoint of the rectangle defined by
+    /// the rect parameter. If the rectangle is square, then the
+    /// ellipse is circular with a radius equal to one-half the width
+    /// (or height) of the rectangle. If the rect parameter specifies a
+    /// rectangular shape, then the major and minor axes of the ellipse
+    /// are defined by the width and height of the rectangle.
+    ///
+    /// The ellipse forms a complete subpath of the path—that
+    /// is, the ellipse drawing starts with a move-to operation and
+    /// ends with a close-subpath operation, with all moves oriented in
+    /// the clockwise direction. If you supply an affine transform,
+    /// then the constructed Bézier curves that define the
+    /// ellipse are transformed before they are added to the path.
+    ///
+    /// - Parameter rect: The rectangle that bounds the ellipse.
+    ///
     public init(ellipseIn rect: CGRect)
 
-    /// Creates an empty path, and then executes the closure to add the initial
-    /// elements.
+    /// Creates an empty path, then executes a closure to add its
+    /// initial elements.
+    ///
+    /// - Parameter callback: The Swift function that will be called to
+    ///   initialize the new path.
+    ///
     public init(_ callback: (inout Path) -> ())
 
     /// Initializes from the result of a previous call to
@@ -29497,6 +30000,10 @@ public struct PagingScrollTargetBehavior : ScrollTargetBehavior {
     public var isEmpty: Bool { get }
 
     /// A rectangle containing all path segments.
+    ///
+    /// This is the smallest rectangle completely enclosing all points
+    /// in the path but not including control points for Bézier
+    /// curves.
     public var boundingRect: CGRect { get }
 
     /// Returns true if the path contains a specified point.
@@ -29594,54 +30101,297 @@ extension Path : Shape {
 extension Path {
 
     /// Begins a new subpath at the specified point.
-    public mutating func move(to p: CGPoint)
+    ///
+    /// The specified point becomes the start point of a new subpath.
+    /// The current point is set to this start point.
+    ///
+    /// - Parameter end: The point, in user space coordinates, at which
+    ///   to start a new subpath.
+    ///
+    public mutating func move(to end: CGPoint)
 
-    /// Appends a straight line segment from the current point to the specified
-    /// point.
-    public mutating func addLine(to p: CGPoint)
+    /// Appends a straight line segment from the current point to the
+    /// specified point.
+    ///
+    /// After adding the line segment, the current point is set to the
+    /// endpoint of the line segment.
+    ///
+    /// - Parameter end: The location, in user space coordinates, for the
+    ///   end of the new line segment.
+    ///
+    public mutating func addLine(to end: CGPoint)
 
-    /// Adds a quadratic Bézier curve to the path, with the specified end point
-    /// and control point.
-    public mutating func addQuadCurve(to p: CGPoint, control cp: CGPoint)
+    ///     the curve.
+    ///   - control: The control point of the curve, in user space
+    ///     coordinates.
+    ///
+    public mutating func addQuadCurve(to end: CGPoint, control: CGPoint)
 
-    /// Adds a cubic Bézier curve to the path, with the specified end point and
-    /// control points.
-    public mutating func addCurve(to p: CGPoint, control1 cp1: CGPoint, control2 cp2: CGPoint)
+    ///     the curve.
+    ///   - control1: The first control point of the curve, in user
+    ///     space coordinates.
+    ///   - control2: The second control point of the curve, in user
+    ///     space coordinates.
+    ///
+    public mutating func addCurve(to end: CGPoint, control1: CGPoint, control2: CGPoint)
 
     /// Closes and completes the current subpath.
+    ///
+    /// Appends a line from the current point to the starting point of
+    /// the current subpath and ends the subpath.
+    ///
+    /// After closing the subpath, your application can begin a new
+    /// subpath without first calling `move(to:)`. In this case, a new
+    /// subpath is implicitly created with a starting and current point
+    /// equal to the previous subpath's starting point.
+    ///
     public mutating func closeSubpath()
 
     /// Adds a rectangular subpath to the path.
+    ///
+    /// This is a convenience function that adds a rectangle to a path,
+    /// starting by moving to the bottom-left corner and then adding
+    /// lines counter-clockwise to create a rectangle, closing the
+    /// subpath.
+    ///
+    /// - Parameters:
+    ///   - rect: A rectangle, specified in user space coordinates.
+    ///   - transform: An affine transform to apply to the rectangle
+    ///     before adding to the path. Defaults to the identity
+    ///     transform if not specified.
+    ///
     public mutating func addRect(_ rect: CGRect, transform: CGAffineTransform = .identity)
 
     /// Adds a rounded rectangle to the path.
+    ///
+    /// This is a convenience function that adds a rounded rectangle to
+    /// a path, starting by moving to the center of the right edge and
+    /// then adding lines and curves counter-clockwise to create a
+    /// rounded rectangle, closing the subpath.
+    ///
+    /// - Parameters:
+    ///   - rect: A rectangle, specified in user space coordinates.
+    ///   - cornerSize: The size of the corners, specified in user space
+    ///     coordinates.
+    ///   - style: The corner style. Defaults to the `continous` style
+    ///     if not specified.
+    ///   - transform: An affine transform to apply to the rectangle
+    ///     before adding to the path. Defaults to the identity
+    ///     transform if not specified.
+    ///
     public mutating func addRoundedRect(in rect: CGRect, cornerSize: CGSize, style: RoundedCornerStyle = .continuous, transform: CGAffineTransform = .identity)
 
     /// Adds a rounded rectangle with uneven corners to the path.
+    ///
+    /// This is a convenience function that adds a rounded rectangle to
+    /// a path, starting by moving to the center of the right edge and
+    /// then adding lines and curves counter-clockwise to create a
+    /// rounded rectangle, closing the subpath.
+    ///
+    /// - Parameters:
+    ///   - rect: A rectangle, specified in user space coordinates.
+    ///   - cornerRadii: The radius of each corner of the rectangle,
+    ///     specified in user space coordinates.
+    ///   - style: The corner style. Defaults to the `continous` style
+    ///     if not specified.
+    ///   - transform: An affine transform to apply to the rectangle
+    ///     before adding to the path. Defaults to the identity
+    ///     transform if not specified.
+    ///
     @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
     public mutating func addRoundedRect(in rect: CGRect, cornerRadii: RectangleCornerRadii, style: RoundedCornerStyle = .continuous, transform: CGAffineTransform = .identity)
 
-    /// Adds an ellipse to the path.
+    /// Adds an ellipse that fits inside the specified rectangle to the
+    /// path.
+    ///
+    /// The ellipse is approximated by a sequence of Bézier
+    /// curves. Its center is the midpoint of the rectangle defined by
+    /// the `rect` parameter. If the rectangle is square, then the
+    /// ellipse is circular with a radius equal to one-half the width
+    /// (or height) of the rectangle. If the `rect` parameter specifies
+    /// a rectangular shape, then the major and minor axes of the
+    /// ellipse are defined by the width and height of the rectangle.
+    ///
+    /// The ellipse forms a complete subpath of the path—
+    /// that is, the ellipse drawing starts with a move-to operation
+    /// and ends with a close-subpath operation, with all moves
+    /// oriented in the clockwise direction.
+    ///
+    /// - Parameter:
+    ///   - rect: A rectangle that defines the area for the ellipse to
+    ///     fit in.
+    ///   - transform: An affine transform to apply to the ellipse
+    ///     before adding to the path. Defaults to the identity
+    ///     transform if not specified.
+    ///
     public mutating func addEllipse(in rect: CGRect, transform: CGAffineTransform = .identity)
 
-    /// Adds a sequence of rectangular subpaths to the path.
+    /// Adds a set of rectangular subpaths to the path.
+    ///
+    /// Calling this convenience method is equivalent to repeatedly
+    /// calling the `addRect(_:transform:)` method for each rectangle
+    /// in the array.
+    ///
+    /// - Parameter:
+    ///   - rects: An array of rectangles, specified in user space
+    ///     coordinates.
+    ///   - transform: An affine transform to apply to the ellipse
+    ///     before adding to the path. Defaults to the identity
+    ///     transform if not specified.
+    ///
     public mutating func addRects(_ rects: [CGRect], transform: CGAffineTransform = .identity)
 
     /// Adds a sequence of connected straight-line segments to the path.
+    ///
+    /// Calling this convenience method is equivalent to applying the
+    /// transform to all points in the array, then calling the
+    /// `move(to:)` method with the first value in the `points` array,
+    /// then calling the `addLine(to:)` method for each subsequent
+    /// point until the array is exhausted. After calling this method,
+    /// the path's current point is the last point in the array.
+    ///
+    /// - Parameter:
+    ///   - lines: An array of values that specify the start and end
+    ///     points of the line segments to draw. Each point in the
+    ///     array specifies a position in user space. The first point
+    ///     in the array specifies the initial starting point.
+    ///   - transform: An affine transform to apply to the points
+    ///     before adding to the path. Defaults to the identity
+    ///     transform if not specified.
+    ///
     public mutating func addLines(_ lines: [CGPoint])
 
-    /// Adds an arc of a circle to the path, specified with a radius and a
-    /// difference in angle.
+    /// Adds an arc of a circle to the path, specified with a radius
+    /// and a difference in angle.
+    ///
+    /// This method calculates starting and ending points using the
+    /// radius and angles you specify, uses a sequence of cubic
+    /// Bézier curves to approximate a segment of a circle
+    /// between those points, and then appends those curves to the
+    /// path.
+    ///
+    /// The `delta` parameter determines both the length of the arc the
+    /// direction in which the arc is created; the actual direction of
+    /// the final path is dependent on the `transform` parameter and
+    /// the current transform of a context where the path is drawn.
+    /// However, because SwiftUI by default uses a vertically-flipped
+    /// coordinate system (with the origin in the top-left of the
+    /// view), specifying a clockwise arc results in a counterclockwise
+    /// arc after the transformation is applied.
+    ///
+    /// If the path ends with an unclosed subpath, this method adds a
+    /// line connecting the current point to the starting point of the
+    /// arc. If there is no unclosed subpath, this method creates a new
+    /// subpath whose starting point is the starting point of the arc.
+    /// The ending point of the arc becomes the new current point of
+    /// the path.
+    ///
+    /// - Parameters:
+    ///   - center: The center of the arc, in user space coordinates.
+    ///   - radius: The radius of the arc, in user space coordinates.
+    ///   - startAngle: The angle to the starting point of the arc,
+    ///     measured from the positive x-axis.
+    ///   - delta: The difference between the starting angle and ending
+    ///     angle of the arc. A positive value creates a counter-
+    ///     clockwise arc (in user space coordinates), and vice versa.
+    ///   - transform: An affine transform to apply to the arc before
+    ///     adding to the path. Defaults to the identity transform if
+    ///     not specified.
+    ////
     public mutating func addRelativeArc(center: CGPoint, radius: CGFloat, startAngle: Angle, delta: Angle, transform: CGAffineTransform = .identity)
 
-    /// Adds an arc of a circle to the path, specified with a radius and angles.
+    /// Adds an arc of a circle to the path, specified with a radius
+    /// and angles.
+    ///
+    /// This method calculates starting and ending points using the
+    /// radius and angles you specify, uses a sequence of cubic
+    /// Bézier curves to approximate a segment of a circle
+    /// between those points, and then appends those curves to the
+    /// path.
+    ///
+    /// The `clockwise` parameter determines the direction in which the
+    /// arc is created; the actual direction of the final path is
+    /// dependent on the `transform` parameter and the current
+    /// transform of a context where the path is drawn. However,
+    /// because SwiftUI by default uses a vertically-flipped coordinate
+    /// system (with the origin in the top-left of the view),
+    /// specifying a clockwise arc results in a counterclockwise arc
+    /// after the transformation is applied.
+    ///
+    /// If the path ends with an unclosed subpath, this method adds a
+    /// line connecting the current point to the starting point of the
+    /// arc. If there is no unclosed subpath, this method creates a new
+    /// subpath whose starting point is the starting point of the arc.
+    /// The ending point of the arc becomes the new current point of
+    /// the path.
+    ///
+    /// - Parameters:
+    ///   - center: The center of the arc, in user space coordinates.
+    ///   - radius: The radius of the arc, in user space coordinates.
+    ///   - startAngle: The angle to the starting point of the arc,
+    ///     measured from the positive x-axis.
+    ///   - endAngle: The angle to the end point of the arc, measured
+    ///     from the positive x-axis.
+    ///   - clockwise: true to make a clockwise arc; false to make a
+    ///     counterclockwise arc.
+    ///   - transform: An affine transform to apply to the arc before
+    ///     adding to the path. Defaults to the identity transform if
+    ///     not specified.
+    ///
     public mutating func addArc(center: CGPoint, radius: CGFloat, startAngle: Angle, endAngle: Angle, clockwise: Bool, transform: CGAffineTransform = .identity)
 
-    /// Adds an arc of a circle to the path, specified with a radius and two
-    /// tangent lines.
-    public mutating func addArc(tangent1End p1: CGPoint, tangent2End p2: CGPoint, radius: CGFloat, transform: CGAffineTransform = .identity)
+    /// Adds an arc of a circle to the path, specified with a radius
+    /// and two tangent lines.
+    ///
+    /// This method calculates two tangent lines—the first
+    /// from the current point to the tangent1End point, and the second
+    /// from the `tangent1End` point to the `tangent2End`
+    /// point—then calculates the start and end points for a
+    /// circular arc of the specified radius such that the arc is
+    /// tangent to both lines. Finally, this method approximates that
+    /// arc with a sequence of cubic Bézier curves and appends
+    /// those curves to the path.
+    ///
+    /// If the starting point of the arc (that is, the point where a
+    /// circle of the specified radius must meet the first tangent line
+    /// in order to also be tangent to the second line) is not the
+    /// current point, this method appends a straight line segment from
+    /// the current point to the starting point of the arc.
+    ///
+    /// The ending point of the arc (that is, the point where a circle
+    /// of the specified radius must meet the second tangent line in
+    /// order to also be tangent to the first line) becomes the new
+    /// current point of the path.
+    ///
+    /// - Parameters:
+    ///   - tangent1End:The end point, in user space coordinates, for
+    ///     the first tangent line to be used in constructing the arc.
+    ///     (The start point for this tangent line is the path's
+    ///     current point.)
+    ///   - tangent2End: The end point, in user space coordinates, for
+    ///     the second tangent line to be used in constructing the arc.
+    ///     (The start point for this tangent line is the tangent1End
+    ///     point.)
+    ///   - radius: The radius of the arc, in user space coordinates.
+    ///   - transform: An affine transform to apply to the arc before
+    ///     adding to the path. Defaults to the identity transform if
+    ///     not specified.
+    ///
+    public mutating func addArc(tangent1End: CGPoint, tangent2End: CGPoint, radius: CGFloat, transform: CGAffineTransform = .identity)
 
-    /// Appends a copy of the given path to this path.
+    /// Appends another path value to this path.
+    ///
+    /// If the `path` parameter is a non-empty empty path, its elements
+    /// are appended in order to this path. Afterward, the start point
+    /// and current point of this path are those of the last subpath in
+    /// the `path` parameter.
+    ///
+    /// - Parameters:
+    ///   - path: The path to add.
+    ///   - transform: An affine transform to apply to the path
+    ///     parameter before adding to this path. Defaults to the
+    ///     identity transform if not specified.
+    ///
     public mutating func addPath(_ path: Path, transform: CGAffineTransform = .identity)
 
     /// Returns the last point in the path, or nil if the path contains
@@ -29775,11 +30525,25 @@ extension Path {
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     public func lineSubtraction(_ other: Path, eoFill: Bool = false) -> Path
 
-    /// Returns a path constructed by applying the transform to all points of
-    /// the path.
+    /// Returns a path constructed by applying the transform to all
+    /// points of the path.
+    ///
+    /// - Parameter transform: An affine transform to apply to the path.
+    /// 
+    /// - Returns: a new copy of the path with the transform applied to
+    ///   all points.
+    ///
     public func applying(_ transform: CGAffineTransform) -> Path
 
-    /// Returns a path constructed by translating `self` by `(dx, dy)`.
+    /// Returns a path constructed by translating all its points.
+    ///
+    /// - Parameters:
+    ///   - dx: The offset to apply in the horizontal axis.
+    ///   - dy: The offset to apply in the vertical axis.
+    ///
+    /// - Returns: a new copy of the path with the offset applied to
+    ///   all points.
+    ///
     public func offsetBy(dx: CGFloat, dy: CGFloat) -> Path
 }
 
@@ -30817,10 +31581,19 @@ public struct PresentationMode {
 ///
 /// - Parameters:
 ///   - name: Optional display name for the preview, which appears in the canvas.
-///   - traits: Optional list of traits customizing the appearance of the preview.
+///   - traits: Trait customizing the appearance of the preview.
+///   - additionalTraits: Optional additional traits.
 ///   - body: A closure producing a SwiftUI view.
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@freestanding(declaration) public macro Preview(_ name: String? = nil, traits: PreviewTrait<Preview.ViewTraits>..., @ViewBuilder body: @escaping () -> View) -> () = #externalMacro(module: "PreviewsMacros", type: "SwiftUIView")
+@freestanding(declaration) public macro Preview(_ name: String? = nil, traits: PreviewTrait<Preview.ViewTraits>, _ additionalTraits: PreviewTrait<Preview.ViewTraits>..., body: @escaping () -> View) -> () = #externalMacro(module: "PreviewsMacros", type: "SwiftUIView")
+
+/// Creates a preview of a SwiftUI view.
+///
+/// - Parameters:
+///   - name: Optional display name for the preview, which appears in the canvas.
+///   - body: A closure producing a SwiftUI view.
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@freestanding(declaration, names: arbitrary) public macro Preview(_ name: String? = nil, body: @escaping () -> View) -> () = #externalMacro(module: "PreviewsMacros", type: "SwiftUIView")
 
 /// A context type for use with a preview.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -40416,7 +41189,7 @@ extension State where Value : ExpressibleByNilLiteral {
 ///             // SwiftUI ensures that the following initialization uses the
 ///             // closure only once during the lifetime of the view, so
 ///             // later changes to the view's name input have no effect.
-///             _model = StateObject(wrappedValue: { DataModel(name: name) }())
+///             _model = StateObject(wrappedValue: DataModel(name: name))
 ///         }
 ///
 ///         var body: some View {
@@ -50789,6 +51562,19 @@ extension View {
     ///         }
     ///     }
     ///
+    /// You can also use this modifier to specify the selectability of views
+    /// within a `Picker`. The following example represents a flavor picker
+    /// that disables selection on flavors that are unavailable.
+    ///
+    ///     Picker("Flavor", selection: $selectedFlavor) {
+    ///         ForEach(Flavor.allCases) { flavor in
+    ///             Text(flavor.rawValue.capitalized)
+    ///                 .selectionDisabled(isSoldOut(flavor))
+    ///         }
+    ///     }
+    ///
+    /// - Parameter isDisabled: A Boolean value that determines whether users can
+    ///   select this view.
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     public func selectionDisabled(_ isDisabled: Bool = true) -> some View
 
@@ -57628,8 +58414,11 @@ extension View {
 
     /// Configures the icon used by dialogs within this view.
     ///
-    /// In macOS, this icon replaces the default icon of the app. This modifier has
-    /// no effect in other platforms.
+    /// On macOS, this icon replaces the default icon of the app.
+    ///
+    /// On watchOS, this icon will be shown in any dialogs presented.
+    ///
+    /// This modifier has no effect on other platforms.
     ///
     /// The following example configures a `confirmationDialog` with a custom image.
     ///
@@ -59096,7 +59885,7 @@ extension View {
     ///         }
     ///     }
     ///     .listSectionSpacing(.compact)
-    public func listSectionSpacing(_ spacing: ListSectionSpacing) -> some View
+    @inlinable public func listSectionSpacing(_ spacing: ListSectionSpacing) -> some View
 
 
     /// Sets the spacing to a custom value between adjacent sections in a List.
@@ -59117,8 +59906,33 @@ extension View {
     ///     }
     ///     .listSectionSpacing(5.0)
     ///
+    /// Spacing can also be specified on a per-section basis. The following
+    /// example creates a List with compact spacing for its second section:
+    ///
+    ///     List {
+    ///         Section("Colors") {
+    ///             Text("Blue")
+    ///             Text("Red")
+    ///         }
+    ///
+    ///         Section("Borders") {
+    ///             Text("Dashed")
+    ///             Text("Solid")
+    ///         }
+    ///         .listSectionSpacing(.compact)
+    ///
+    ///         Section("Shapes") {
+    ///             Text("Square")
+    ///             Text("Circle")
+    ///         }
+    ///     }
+    ///
+    /// If adjacent sections have different spacing value, the smaller value on
+    /// the shared edge is used. Spacing specified inside the List is preferred
+    /// over any List-wide value.
+    ///
     /// - Parameter spacing: the amount of spacing to apply.
-    public func listSectionSpacing(_ spacing: CGFloat) -> some View
+    @inlinable public func listSectionSpacing(_ spacing: CGFloat) -> some View
 
 }
 
@@ -68348,7 +69162,7 @@ extension Preview {
     /// The `#Preview` macro expands into a declaration that calls this initializer. To create a preview
     /// that appears in the canvas, you must use the macro, not instantiate a Preview directly.
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-    public init(_ name: String? = nil, traits: PreviewTrait<Preview.ViewTraits>..., @ViewBuilder body: @escaping () -> View)
+    public init(_ name: String? = nil, traits: PreviewTrait<Preview.ViewTraits>..., body: @escaping () -> View)
 }
 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
